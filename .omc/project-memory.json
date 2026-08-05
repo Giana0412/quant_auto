@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1785907751944,
+  "projectRoot": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "company-src": {
+      "path": "company-src",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1785907751880,
+      "keyFiles": []
+    },
+    "vault": {
+      "path": "vault",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1785907751900,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

@@ -194,8 +194,16 @@
       "realclaudian:Open Claudian": false
     }
   },
-  "active": "be1977f3970fa7f5",
+  "active": "fa750c8331712b91",
   "lastOpenFiles": [
+    "vault/02-modules/dot-claude.md",
+    "vault/02-modules/claude.md",
+    "vault/02-modules/frontend.md",
+    "vault/02-modules/docs.md",
+    "vault/02-modules/research.md",
+    "vault/02-modules/omx.md",
+    "vault/04-logs/session-log.md",
+    "vault/03-notes/questions.md",
     "vault/00-overview/project-summary.md",
     "GEMINI.md",
     "README.md",
@@ -233,14 +241,6 @@
     "company-src/oursymbol/frontend/together/public/icons/toss.webp",
     "company-src/oursymbol/frontend/together/public/icons/supersol.webp",
     "company-src/oursymbol/frontend/together/public/icons/sok.webp",
-    "company-src/oursymbol/frontend/together/README.md",
-    "company-src/oursymbol/frontend/studio/README.md",
-    "company-src/oursymbol/frontend/office/README.md",
-    "company-src/oursymbol/frontend/app/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
-    "company-src/oursymbol/frontend/event/README.md",
-    "company-src/oursymbol/frontend/business/README.md",
-    "company-src/oursymbol/frontend/app/README.md",
-    "company-src/oursymbol/frontend/CLAUDE.md",
-    "company-src/oursymbol/docs/terms/README.md"
+    "company-src/oursymbol/frontend/together/README.md"
   ]
 }

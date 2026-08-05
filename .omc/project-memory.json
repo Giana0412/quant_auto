@@ -44,6 +44,235 @@
       "keyFiles": []
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "vault/03-notes/questions.md",
+      "accessCount": 11,
+      "lastAccessed": 1785912299391,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/omx.md",
+      "accessCount": 4,
+      "lastAccessed": 1785911911436,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/frontend.md",
+      "accessCount": 3,
+      "lastAccessed": 1785912164697,
+      "type": "file"
+    },
+    {
+      "path": "vault/04-logs/session-log.md",
+      "accessCount": 3,
+      "lastAccessed": 1785912174801,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/scripts/run.py",
+      "accessCount": 2,
+      "lastAccessed": 1785910589907,
+      "type": "file"
+    },
+    {
+      "path": "GEMINI.md",
+      "accessCount": 2,
+      "lastAccessed": 1785911367213,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/research.md",
+      "accessCount": 2,
+      "lastAccessed": 1785911606849,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/docs.md",
+      "accessCount": 2,
+      "lastAccessed": 1785912116434,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1785910562553,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/sources.yml",
+      "accessCount": 1,
+      "lastAccessed": 1785910562971,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/docker-compose.yml",
+      "accessCount": 1,
+      "lastAccessed": 1785910564081,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/Dockerfile",
+      "accessCount": 1,
+      "lastAccessed": 1785910564406,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/crontab",
+      "accessCount": 1,
+      "lastAccessed": 1785910565781,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/entrypoint.sh",
+      "accessCount": 1,
+      "lastAccessed": 1785910565812,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/research/.env.example",
+      "accessCount": 1,
+      "lastAccessed": 1785910566613,
+      "type": "file"
+    },
+    {
+      "path": "vault/01-architecture/repo-map.md",
+      "accessCount": 1,
+      "lastAccessed": 1785910582432,
+      "type": "file"
+    },
+    {
+      "path": "vault/00-overview/project-summary.md",
+      "accessCount": 1,
+      "lastAccessed": 1785910583971,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.omx/plans/20260429-app-campaign-detail-page-review-plan.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911377202,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.claude/CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911649567,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911674495,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/AGENTS.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911674900,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/frontend/CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911675644,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911675927,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1785911676038,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.claude/hooks/sync-env.sh",
+      "accessCount": 1,
+      "lastAccessed": 1785911693248,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.claude/memory/company/oao-ai-workflow.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911693309,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.claude/memory/project/oursymbol-vision.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911697135,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.claude/memory/company/oao-vision.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911697981,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/.claude/memory/people/김성준.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911698357,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911714012,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/auth-common/package.json",
+      "accessCount": 1,
+      "lastAccessed": 1785911862600,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/auth-common/index.d.ts",
+      "accessCount": 1,
+      "lastAccessed": 1785911862698,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/event-service/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911912011,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/photographer-service/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911912613,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/session-image-service/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911913638,
+      "type": "file"
+    },
+    {
+      "path": "company-src/oursymbol/backend/services/face-engine-service/README.md",
+      "accessCount": 1,
+      "lastAccessed": 1785911915692,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/claude.md",
+      "accessCount": 1,
+      "lastAccessed": 1785912061853,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/backend.md",
+      "accessCount": 1,
+      "lastAccessed": 1785912227244,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

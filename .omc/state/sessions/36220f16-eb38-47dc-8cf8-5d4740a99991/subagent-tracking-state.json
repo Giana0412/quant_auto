@@ -1,0 +1,110 @@
+{
+  "agents": [
+    {
+      "agent_id": "adoc-omx-1cda5c54f3e3255c",
+      "agent_type": "doc-omx",
+      "started_at": "2026-08-05T06:15:48.923Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:34:12.320Z",
+      "duration_ms": 1103397
+    },
+    {
+      "agent_id": "adoc-research-73072275d25b9e87",
+      "agent_type": "doc-research",
+      "started_at": "2026-08-05T06:15:54.132Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:33:08.133Z",
+      "duration_ms": 1034001
+    },
+    {
+      "agent_id": "a6373fd6cd21770b6",
+      "agent_type": "untracked-native-fork",
+      "started_at": "2026-08-05T06:19:07.422Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:19:07.422Z",
+      "synthetic": true,
+      "telemetry_status": "unmatched_stop",
+      "telemetry_note": "SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."
+    },
+    {
+      "agent_id": "adoc-claude-98ab3f8bc0dc578b",
+      "agent_type": "doc-claude",
+      "started_at": "2026-08-05T06:33:57.675Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:42:02.444Z",
+      "duration_ms": 484769,
+      "output_summary": "Marked as stale during unmatched stop reconciliation - exceeded timeout"
+    },
+    {
+      "agent_id": "adoc-docs-6873b13d889d584e",
+      "agent_type": "doc-docs",
+      "started_at": "2026-08-05T06:34:08.153Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:41:44.320Z",
+      "duration_ms": 456167,
+      "output_summary": "Marked as stale during unmatched stop reconciliation - exceeded timeout"
+    },
+    {
+      "agent_id": "adoc-backend-b43e8a41bcbd3327",
+      "agent_type": "doc-backend",
+      "started_at": "2026-08-05T06:34:17.103Z",
+      "parent_mode": "none",
+      "status": "failed",
+      "completed_at": "2026-08-05T06:40:24.946Z",
+      "duration_ms": 367843,
+      "output_summary": "Marked as stale during unmatched stop reconciliation - exceeded timeout"
+    },
+    {
+      "agent_id": "adoc-frontend-65fafcc085da9902",
+      "agent_type": "doc-frontend",
+      "started_at": "2026-08-05T06:34:24.884Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:42:00.113Z",
+      "duration_ms": 455229,
+      "output_summary": "Marked as stale during unmatched stop reconciliation - exceeded timeout"
+    },
+    {
+      "agent_id": "a5bb1345687ae2ada",
+      "agent_type": "untracked-native-fork",
+      "started_at": "2026-08-05T06:40:24.946Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:40:24.946Z",
+      "synthetic": true,
+      "telemetry_status": "unmatched_stop",
+      "telemetry_note": "SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."
+    },
+    {
+      "agent_id": "aae1c81961fd1fc06",
+      "agent_type": "untracked-native-fork",
+      "started_at": "2026-08-05T06:43:09.716Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:43:09.716Z",
+      "synthetic": true,
+      "telemetry_status": "unmatched_stop",
+      "telemetry_note": "SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."
+    },
+    {
+      "agent_id": "ae4f6367397952639",
+      "agent_type": "untracked-native-fork",
+      "started_at": "2026-08-05T06:46:18.392Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-05T06:46:18.392Z",
+      "synthetic": true,
+      "telemetry_status": "unmatched_stop",
+      "telemetry_note": "SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."
+    }
+  ],
+  "total_spawned": 6,
+  "total_completed": 9,
+  "total_failed": 4,
+  "last_updated": "2026-08-05T06:46:18.502Z"
+}

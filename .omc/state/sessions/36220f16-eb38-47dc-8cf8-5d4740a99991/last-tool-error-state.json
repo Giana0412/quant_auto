@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd /Users/gyuhyeongkim/orca/projects/obsidian_test/company-src/oursymbol/backend/services && echo \\\"=== migration runner search ===\\\" && grep -rilE 'migrat' --include=*.json --include=*.js...",
+  "error": "Exit code 1\n=== migration runner search ===\n(eval):1: no matches found: --include=*.json",
+  "timestamp": "2026-08-05T06:40:31.010Z",
+  "retry_count": 1
+}

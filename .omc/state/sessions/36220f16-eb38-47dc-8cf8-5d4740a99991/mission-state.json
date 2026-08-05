@@ -1,0 +1,159 @@
+{
+  "updatedAt": "2026-08-05T06:46:18.392Z",
+  "missions": [
+    {
+      "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
+      "source": "session",
+      "name": "none",
+      "objective": "Session mission",
+      "createdAt": "2026-08-05T06:15:48.923Z",
+      "updatedAt": "2026-08-05T06:46:18.392Z",
+      "status": "running",
+      "workerCount": 6,
+      "taskCounts": {
+        "total": 6,
+        "pending": 0,
+        "blocked": 0,
+        "inProgress": 1,
+        "completed": 5,
+        "failed": 0
+      },
+      "agents": [
+        {
+          "name": "doc-omx:adoc-om",
+          "role": "doc-omx",
+          "ownership": "adoc-omx-1cda5c54f3e3255c",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-08-05T06:46:18.392Z"
+        },
+        {
+          "name": "doc-research:adoc-re",
+          "role": "doc-research",
+          "ownership": "adoc-research-73072275d25b9e87",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-08-05T06:33:08.133Z"
+        },
+        {
+          "name": "doc-claude:adoc-cl",
+          "role": "doc-claude",
+          "ownership": "adoc-claude-98ab3f8bc0dc578b",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "completedSummary": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "updatedAt": "2026-08-05T06:42:02.444Z"
+        },
+        {
+          "name": "doc-docs:adoc-do",
+          "role": "doc-docs",
+          "ownership": "adoc-docs-6873b13d889d584e",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "completedSummary": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "updatedAt": "2026-08-05T06:41:44.320Z"
+        },
+        {
+          "name": "doc-backend:adoc-ba",
+          "role": "doc-backend",
+          "ownership": "adoc-backend-b43e8a41bcbd3327",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-08-05T06:34:17.103Z"
+        },
+        {
+          "name": "doc-frontend:adoc-fr",
+          "role": "doc-frontend",
+          "ownership": "adoc-frontend-65fafcc085da9902",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "completedSummary": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "updatedAt": "2026-08-05T06:42:00.113Z"
+        }
+      ],
+      "timeline": [
+        {
+          "id": "session-stop:adoc-omx-1cda5c54f3e3255c:2026-08-05T06:34:12.320Z",
+          "at": "2026-08-05T06:34:12.320Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:adoc-omx-1cda5c54f3e3255c"
+        },
+        {
+          "id": "session-start:adoc-backend-b43e8a41bcbd3327:2026-08-05T06:34:17.103Z",
+          "at": "2026-08-05T06:34:17.103Z",
+          "kind": "update",
+          "agent": "doc-backend:adoc-ba",
+          "detail": "started doc-backend:adoc-ba",
+          "sourceKey": "session-start:adoc-backend-b43e8a41bcbd3327"
+        },
+        {
+          "id": "session-start:adoc-frontend-65fafcc085da9902:2026-08-05T06:34:24.884Z",
+          "at": "2026-08-05T06:34:24.884Z",
+          "kind": "update",
+          "agent": "doc-frontend:adoc-fr",
+          "detail": "started doc-frontend:adoc-fr",
+          "sourceKey": "session-start:adoc-frontend-65fafcc085da9902"
+        },
+        {
+          "id": "session-stop:a5bb1345687ae2ada:2026-08-05T06:40:24.946Z",
+          "at": "2026-08-05T06:40:24.946Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:a5bb1345687ae2ada"
+        },
+        {
+          "id": "session-stop:adoc-docs-6873b13d889d584e:2026-08-05T06:41:44.320Z",
+          "at": "2026-08-05T06:41:44.320Z",
+          "kind": "completion",
+          "agent": "doc-docs:adoc-do",
+          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
+          "sourceKey": "session-stop:adoc-docs-6873b13d889d584e"
+        },
+        {
+          "id": "session-stop:adoc-frontend-65fafcc085da9902:2026-08-05T06:42:00.113Z",
+          "at": "2026-08-05T06:42:00.113Z",
+          "kind": "completion",
+          "agent": "doc-frontend:adoc-fr",
+          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
+          "sourceKey": "session-stop:adoc-frontend-65fafcc085da9902"
+        },
+        {
+          "id": "session-stop:adoc-claude-98ab3f8bc0dc578b:2026-08-05T06:42:02.444Z",
+          "at": "2026-08-05T06:42:02.444Z",
+          "kind": "completion",
+          "agent": "doc-claude:adoc-cl",
+          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
+          "sourceKey": "session-stop:adoc-claude-98ab3f8bc0dc578b"
+        },
+        {
+          "id": "session-stop:aae1c81961fd1fc06:2026-08-05T06:43:09.716Z",
+          "at": "2026-08-05T06:43:09.716Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:aae1c81961fd1fc06"
+        },
+        {
+          "id": "session-stop:ae4f6367397952639:2026-08-05T06:46:18.392Z",
+          "at": "2026-08-05T06:46:18.392Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:ae4f6367397952639"
+        }
+      ]
+    }
+  ]
+}

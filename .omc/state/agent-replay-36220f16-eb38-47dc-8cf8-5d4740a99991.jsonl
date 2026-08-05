@@ -1,0 +1,15 @@
+{"t":0,"agent":"adoc-om","agent_type":"doc-omx","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"adoc-re","agent_type":"doc-research","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a6373fd","agent_type":"untracked-native-fork","event":"agent_stop","success":true,"synthetic":true,"telemetry_status":"unmatched_stop","reason":"SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."}
+{"t":0,"agent":"adoc-re","agent_type":"doc-research","event":"agent_stop","success":true,"duration_ms":1034001}
+{"t":0,"agent":"adoc-cl","agent_type":"doc-claude","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"adoc-do","agent_type":"doc-docs","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"adoc-om","agent_type":"doc-omx","event":"agent_stop","success":true,"duration_ms":1103397}
+{"t":0,"agent":"adoc-ba","agent_type":"doc-backend","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"adoc-fr","agent_type":"doc-frontend","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a5bb134","agent_type":"untracked-native-fork","event":"agent_stop","success":true,"synthetic":true,"telemetry_status":"unmatched_stop","reason":"SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."}
+{"t":0,"agent":"adoc-do","agent_type":"doc-docs","event":"agent_stop","success":true,"duration_ms":456167}
+{"t":0,"agent":"adoc-fr","agent_type":"doc-frontend","event":"agent_stop","success":true,"duration_ms":455229}
+{"t":0,"agent":"adoc-cl","agent_type":"doc-claude","event":"agent_stop","success":true,"duration_ms":484769}
+{"t":0,"agent":"aae1c81","agent_type":"untracked-native-fork","event":"agent_stop","success":true,"synthetic":true,"telemetry_status":"unmatched_stop","reason":"SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."}
+{"t":0,"agent":"ae4f636","agent_type":"untracked-native-fork","event":"agent_stop","success":true,"synthetic":true,"telemetry_status":"unmatched_stop","reason":"SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."}

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "company-src/oursymbol/rules/auth.md",
+                "file": "vault/01-architecture/repo-map.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "auth"
+              "title": "repo-map"
             }
           }
         ]
@@ -194,14 +194,15 @@
       "realclaudian:Open Claudian": false
     }
   },
-  "active": "fa750c8331712b91",
+  "active": "be1977f3970fa7f5",
   "lastOpenFiles": [
-    "vault/01-architecture/repo-map.md",
     "vault/00-overview/project-summary.md",
+    "GEMINI.md",
+    "README.md",
+    "company-src/oursymbol/rules/auth.md",
+    "vault/01-architecture/repo-map.md",
     "company-src/oursymbol/research/README.md",
     "company-src/oursymbol/backend/services/advertisement-service/README.md",
-    "README.md",
-    "GEMINI.md",
     "vault/04-logs",
     "vault/03-notes",
     "vault/02-modules",
@@ -222,7 +223,6 @@
     "company-src/oursymbol/symba/SOUL.md",
     "company-src/oursymbol/symba/README.md",
     "company-src/oursymbol/scripts/event-scrapping/README.md",
-    "company-src/oursymbol/rules/auth.md",
     "company-src/oursymbol/frontend/together/public/images/main.png",
     "company-src/oursymbol/frontend/together/public/images/donation_template.png",
     "company-src/oursymbol/frontend/together/public/images/3.png",

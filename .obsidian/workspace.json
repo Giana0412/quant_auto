@@ -196,6 +196,7 @@
   },
   "active": "fa750c8331712b91",
   "lastOpenFiles": [
+    "vault/02-modules/backend.md",
     "vault/02-modules/dot-claude.md",
     "vault/02-modules/claude.md",
     "vault/02-modules/frontend.md",
@@ -240,7 +241,6 @@
     "company-src/oursymbol/frontend/together/public/icons/wa.webp",
     "company-src/oursymbol/frontend/together/public/icons/toss.webp",
     "company-src/oursymbol/frontend/together/public/icons/supersol.webp",
-    "company-src/oursymbol/frontend/together/public/icons/sok.webp",
-    "company-src/oursymbol/frontend/together/README.md"
+    "company-src/oursymbol/frontend/together/public/icons/sok.webp"
   ]
 }

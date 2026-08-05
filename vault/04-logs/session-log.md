@@ -11,3 +11,4 @@ Gemini 기반 모듈 문서화 작업 기록입니다. 실행마다 한 줄씩 �
 | 2026-08-05 | .claude | vault/02-modules/claude.md → dot-claude.md | 성공(파일명 수정) | Claude 서브에이전트(doc-claude). macOS 대소문자 비구분 파일시스템에서 `claude.md`가 `CLAUDE.md`(프로젝트 지침 자동로드 대상)와 동일 파일로 인식되어 하네스가 실제로 이 문서를 지침처럼 불러들이는 사고 발생. `dot-claude.md`로 즉시 rename하고 frontend.md의 [[claude]] 링크를 [[dot-claude]]로 수정. |
 | 2026-08-05 | docs | vault/02-modules/docs.md | 성공 | Claude 서브에이전트(doc-docs). |
 | 2026-08-05 | frontend | vault/02-modules/frontend.md | 성공 | Claude 서브에이전트(doc-frontend). |
+| 2026-08-05 | backend | vault/02-modules/backend.md | 성공 | Claude 서브에이전트(doc-backend). 옵션 A(모듈 문서화) 6개 전부 완료. |

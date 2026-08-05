@@ -47,8 +47,8 @@
   "hotPaths": [
     {
       "path": "vault/03-notes/questions.md",
-      "accessCount": 11,
-      "lastAccessed": 1785912299391,
+      "accessCount": 12,
+      "lastAccessed": 1785912478872,
       "type": "file"
     },
     {
@@ -58,15 +58,15 @@
       "type": "file"
     },
     {
-      "path": "vault/02-modules/frontend.md",
-      "accessCount": 3,
-      "lastAccessed": 1785912164697,
+      "path": "vault/04-logs/session-log.md",
+      "accessCount": 4,
+      "lastAccessed": 1785912473816,
       "type": "file"
     },
     {
-      "path": "vault/04-logs/session-log.md",
+      "path": "vault/02-modules/frontend.md",
       "accessCount": 3,
-      "lastAccessed": 1785912174801,
+      "lastAccessed": 1785912164697,
       "type": "file"
     },
     {
@@ -91,6 +91,12 @@
       "path": "vault/02-modules/docs.md",
       "accessCount": 2,
       "lastAccessed": 1785912116434,
+      "type": "file"
+    },
+    {
+      "path": "vault/02-modules/backend.md",
+      "accessCount": 2,
+      "lastAccessed": 1785912467373,
       "type": "file"
     },
     {
@@ -265,12 +271,6 @@
       "path": "vault/02-modules/claude.md",
       "accessCount": 1,
       "lastAccessed": 1785912061853,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/backend.md",
-      "accessCount": 1,
-      "lastAccessed": 1785912227244,
       "type": "file"
     }
   ],

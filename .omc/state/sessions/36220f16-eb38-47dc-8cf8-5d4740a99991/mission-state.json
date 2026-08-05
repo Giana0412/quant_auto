@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-05T06:46:18.392Z",
+  "updatedAt": "2026-08-05T06:51:27.123Z",
   "missions": [
     {
       "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
@@ -7,15 +7,15 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-08-05T06:15:48.923Z",
-      "updatedAt": "2026-08-05T06:46:18.392Z",
-      "status": "running",
+      "updatedAt": "2026-08-05T06:51:27.123Z",
+      "status": "done",
       "workerCount": 6,
       "taskCounts": {
         "total": 6,
         "pending": 0,
         "blocked": 0,
-        "inProgress": 1,
-        "completed": 5,
+        "inProgress": 0,
+        "completed": 6,
         "failed": 0
       },
       "agents": [
@@ -27,7 +27,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-05T06:46:18.392Z"
+          "updatedAt": "2026-08-05T06:51:27.123Z"
         },
         {
           "name": "doc-research:adoc-re",
@@ -63,11 +63,11 @@
           "name": "doc-backend:adoc-ba",
           "role": "doc-backend",
           "ownership": "adoc-backend-b43e8a41bcbd3327",
-          "status": "running",
+          "status": "done",
           "currentStep": null,
-          "latestUpdate": null,
-          "completedSummary": null,
-          "updatedAt": "2026-08-05T06:34:17.103Z"
+          "latestUpdate": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "completedSummary": "Marked as stale during unmatched stop reconciliation - exceed...",
+          "updatedAt": "2026-08-05T06:47:32.374Z"
         },
         {
           "name": "doc-frontend:adoc-fr",
@@ -152,6 +152,30 @@
           "agent": "doc-omx:adoc-om",
           "detail": "completed",
           "sourceKey": "session-stop:ae4f6367397952639"
+        },
+        {
+          "id": "session-stop:adoc-backend-b43e8a41bcbd3327:2026-08-05T06:47:32.374Z",
+          "at": "2026-08-05T06:47:32.374Z",
+          "kind": "completion",
+          "agent": "doc-backend:adoc-ba",
+          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
+          "sourceKey": "session-stop:adoc-backend-b43e8a41bcbd3327"
+        },
+        {
+          "id": "session-stop:aa7ee4a007946ff3b:2026-08-05T06:47:59.247Z",
+          "at": "2026-08-05T06:47:59.247Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:aa7ee4a007946ff3b"
+        },
+        {
+          "id": "session-stop:a0b37e5225cdd1117:2026-08-05T06:51:27.123Z",
+          "at": "2026-08-05T06:51:27.123Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:a0b37e5225cdd1117"
         }
       ]
     }

@@ -100,6 +100,12 @@
       "type": "file"
     },
     {
+      "path": ".obsidian/community-plugins.json",
+      "accessCount": 2,
+      "lastAccessed": 1785915688941,
+      "type": "file"
+    },
+    {
       "path": "company-src/oursymbol/research/README.md",
       "accessCount": 1,
       "lastAccessed": 1785910562553,

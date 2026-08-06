@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-06T08:38:32.458Z",
+  "updatedAt": "2026-08-06T09:23:03.052Z",
   "missions": [
     {
       "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
@@ -7,14 +7,14 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-08-05T06:15:48.923Z",
-      "updatedAt": "2026-08-06T08:38:32.458Z",
-      "status": "done",
-      "workerCount": 6,
+      "updatedAt": "2026-08-06T09:23:03.052Z",
+      "status": "running",
+      "workerCount": 11,
       "taskCounts": {
-        "total": 6,
+        "total": 11,
         "pending": 0,
         "blocked": 0,
-        "inProgress": 0,
+        "inProgress": 5,
         "completed": 6,
         "failed": 0
       },
@@ -78,400 +78,82 @@
           "latestUpdate": "Marked as stale during unmatched stop reconciliation - exceed...",
           "completedSummary": "Marked as stale during unmatched stop reconciliation - exceed...",
           "updatedAt": "2026-08-05T06:42:00.113Z"
+        },
+        {
+          "name": "doc-jiho0710:adoc-ji",
+          "role": "doc-jiho0710",
+          "ownership": "adoc-jiho0710-9aaa51aad85e64ec",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-08-06T09:22:35.173Z"
+        },
+        {
+          "name": "doc-research-obsidian-0803:adoc-re",
+          "role": "doc-research-obsidian-0803",
+          "ownership": "adoc-research-obsidian-0803-9d3cc42bc08e8cff",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-08-06T09:22:41.583Z"
+        },
+        {
+          "name": "doc-notion-lecture:adoc-no",
+          "role": "doc-notion-lecture",
+          "ownership": "adoc-notion-lecture-8c7e458a1fc8b729",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-08-06T09:22:50.247Z"
+        },
+        {
+          "name": "doc-junbeom-0728:adoc-ju",
+          "role": "doc-junbeom-0728",
+          "ownership": "adoc-junbeom-0728-1cd116d6fb298f91",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-08-06T09:22:56.566Z"
+        },
+        {
+          "name": "doc-junbeom-0724:adoc-ju",
+          "role": "doc-junbeom-0724",
+          "ownership": "adoc-junbeom-0724-d9a6e1e56b62ae1f",
+          "status": "running",
+          "currentStep": null,
+          "latestUpdate": null,
+          "completedSummary": null,
+          "updatedAt": "2026-08-06T09:23:03.052Z"
         }
       ],
       "timeline": [
         {
-          "id": "session-stop:adoc-omx-1cda5c54f3e3255c:2026-08-05T06:34:12.320Z",
-          "at": "2026-08-05T06:34:12.320Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:adoc-omx-1cda5c54f3e3255c"
-        },
-        {
-          "id": "session-start:adoc-backend-b43e8a41bcbd3327:2026-08-05T06:34:17.103Z",
-          "at": "2026-08-05T06:34:17.103Z",
+          "id": "session-start:adoc-notion-lecture-8c7e458a1fc8b729:2026-08-06T09:22:50.247Z",
+          "at": "2026-08-06T09:22:50.247Z",
           "kind": "update",
-          "agent": "doc-backend:adoc-ba",
-          "detail": "started doc-backend:adoc-ba",
-          "sourceKey": "session-start:adoc-backend-b43e8a41bcbd3327"
+          "agent": "doc-notion-lecture:adoc-no",
+          "detail": "started doc-notion-lecture:adoc-no",
+          "sourceKey": "session-start:adoc-notion-lecture-8c7e458a1fc8b729"
         },
         {
-          "id": "session-start:adoc-frontend-65fafcc085da9902:2026-08-05T06:34:24.884Z",
-          "at": "2026-08-05T06:34:24.884Z",
+          "id": "session-start:adoc-junbeom-0728-1cd116d6fb298f91:2026-08-06T09:22:56.566Z",
+          "at": "2026-08-06T09:22:56.566Z",
           "kind": "update",
-          "agent": "doc-frontend:adoc-fr",
-          "detail": "started doc-frontend:adoc-fr",
-          "sourceKey": "session-start:adoc-frontend-65fafcc085da9902"
+          "agent": "doc-junbeom-0728:adoc-ju",
+          "detail": "started doc-junbeom-0728:adoc-ju",
+          "sourceKey": "session-start:adoc-junbeom-0728-1cd116d6fb298f91"
         },
         {
-          "id": "session-stop:a5bb1345687ae2ada:2026-08-05T06:40:24.946Z",
-          "at": "2026-08-05T06:40:24.946Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a5bb1345687ae2ada"
-        },
-        {
-          "id": "session-stop:adoc-docs-6873b13d889d584e:2026-08-05T06:41:44.320Z",
-          "at": "2026-08-05T06:41:44.320Z",
-          "kind": "completion",
-          "agent": "doc-docs:adoc-do",
-          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
-          "sourceKey": "session-stop:adoc-docs-6873b13d889d584e"
-        },
-        {
-          "id": "session-stop:adoc-frontend-65fafcc085da9902:2026-08-05T06:42:00.113Z",
-          "at": "2026-08-05T06:42:00.113Z",
-          "kind": "completion",
-          "agent": "doc-frontend:adoc-fr",
-          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
-          "sourceKey": "session-stop:adoc-frontend-65fafcc085da9902"
-        },
-        {
-          "id": "session-stop:adoc-claude-98ab3f8bc0dc578b:2026-08-05T06:42:02.444Z",
-          "at": "2026-08-05T06:42:02.444Z",
-          "kind": "completion",
-          "agent": "doc-claude:adoc-cl",
-          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
-          "sourceKey": "session-stop:adoc-claude-98ab3f8bc0dc578b"
-        },
-        {
-          "id": "session-stop:aae1c81961fd1fc06:2026-08-05T06:43:09.716Z",
-          "at": "2026-08-05T06:43:09.716Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aae1c81961fd1fc06"
-        },
-        {
-          "id": "session-stop:ae4f6367397952639:2026-08-05T06:46:18.392Z",
-          "at": "2026-08-05T06:46:18.392Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ae4f6367397952639"
-        },
-        {
-          "id": "session-stop:adoc-backend-b43e8a41bcbd3327:2026-08-05T06:47:32.374Z",
-          "at": "2026-08-05T06:47:32.374Z",
-          "kind": "completion",
-          "agent": "doc-backend:adoc-ba",
-          "detail": "Marked as stale during unmatched stop reconciliation - exceeded timeout",
-          "sourceKey": "session-stop:adoc-backend-b43e8a41bcbd3327"
-        },
-        {
-          "id": "session-stop:aa7ee4a007946ff3b:2026-08-05T06:47:59.247Z",
-          "at": "2026-08-05T06:47:59.247Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aa7ee4a007946ff3b"
-        },
-        {
-          "id": "session-stop:a0b37e5225cdd1117:2026-08-05T06:51:27.123Z",
-          "at": "2026-08-05T06:51:27.123Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a0b37e5225cdd1117"
-        },
-        {
-          "id": "session-stop:a8defc19e5ab1a835:2026-08-06T00:49:53.090Z",
-          "at": "2026-08-06T00:49:53.090Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a8defc19e5ab1a835"
-        },
-        {
-          "id": "session-stop:a2a1f1d0e0ed26a94:2026-08-06T00:51:23.654Z",
-          "at": "2026-08-06T00:51:23.654Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a2a1f1d0e0ed26a94"
-        },
-        {
-          "id": "session-stop:a1a50f3e6596b2747:2026-08-06T00:54:25.399Z",
-          "at": "2026-08-06T00:54:25.399Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a1a50f3e6596b2747"
-        },
-        {
-          "id": "session-stop:af40e049a4e8b8783:2026-08-06T00:59:21.039Z",
-          "at": "2026-08-06T00:59:21.039Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:af40e049a4e8b8783"
-        },
-        {
-          "id": "session-stop:aa35bdacd93eb3a71:2026-08-06T01:00:49.437Z",
-          "at": "2026-08-06T01:00:49.437Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aa35bdacd93eb3a71"
-        },
-        {
-          "id": "session-stop:ad6779b275f460b72:2026-08-06T01:03:51.894Z",
-          "at": "2026-08-06T01:03:51.894Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ad6779b275f460b72"
-        },
-        {
-          "id": "session-stop:aa952e0e2882b55bc:2026-08-06T01:11:22.661Z",
-          "at": "2026-08-06T01:11:22.661Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aa952e0e2882b55bc"
-        },
-        {
-          "id": "session-stop:a62e43982c12cc116:2026-08-06T01:19:10.028Z",
-          "at": "2026-08-06T01:19:10.028Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a62e43982c12cc116"
-        },
-        {
-          "id": "session-stop:aedec8ed554dec90c:2026-08-06T01:23:04.719Z",
-          "at": "2026-08-06T01:23:04.719Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aedec8ed554dec90c"
-        },
-        {
-          "id": "session-stop:a2e90c5e2524163ad:2026-08-06T01:24:16.554Z",
-          "at": "2026-08-06T01:24:16.554Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a2e90c5e2524163ad"
-        },
-        {
-          "id": "session-stop:affbe226756f603d1:2026-08-06T01:31:41.520Z",
-          "at": "2026-08-06T01:31:41.520Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:affbe226756f603d1"
-        },
-        {
-          "id": "session-stop:a8f3586854cdc80ae:2026-08-06T01:42:01.733Z",
-          "at": "2026-08-06T01:42:01.733Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a8f3586854cdc80ae"
-        },
-        {
-          "id": "session-stop:a485f8ee2b95aaf1f:2026-08-06T01:45:01.674Z",
-          "at": "2026-08-06T01:45:01.674Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a485f8ee2b95aaf1f"
-        },
-        {
-          "id": "session-stop:ad441387ad70d52a5:2026-08-06T01:50:50.001Z",
-          "at": "2026-08-06T01:50:50.001Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ad441387ad70d52a5"
-        },
-        {
-          "id": "session-stop:a2da0b945161158c3:2026-08-06T01:51:53.156Z",
-          "at": "2026-08-06T01:51:53.156Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a2da0b945161158c3"
-        },
-        {
-          "id": "session-stop:a9742bdf5fea0bd7e:2026-08-06T02:03:09.390Z",
-          "at": "2026-08-06T02:03:09.390Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a9742bdf5fea0bd7e"
-        },
-        {
-          "id": "session-stop:aea7b2978edb0d0f8:2026-08-06T02:11:01.813Z",
-          "at": "2026-08-06T02:11:01.813Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aea7b2978edb0d0f8"
-        },
-        {
-          "id": "session-stop:a91b9fb2d0ca1273f:2026-08-06T02:19:38.721Z",
-          "at": "2026-08-06T02:19:38.721Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a91b9fb2d0ca1273f"
-        },
-        {
-          "id": "session-stop:ae537198ee3d3a832:2026-08-06T02:22:38.484Z",
-          "at": "2026-08-06T02:22:38.484Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ae537198ee3d3a832"
-        },
-        {
-          "id": "session-stop:a8f38e55e0e3e1a3e:2026-08-06T02:24:54.487Z",
-          "at": "2026-08-06T02:24:54.487Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a8f38e55e0e3e1a3e"
-        },
-        {
-          "id": "session-stop:a7908526ecd7ea882:2026-08-06T02:27:55.932Z",
-          "at": "2026-08-06T02:27:55.932Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a7908526ecd7ea882"
-        },
-        {
-          "id": "session-stop:aa6e8e3793223ee24:2026-08-06T02:45:58.930Z",
-          "at": "2026-08-06T02:45:58.930Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aa6e8e3793223ee24"
-        },
-        {
-          "id": "session-stop:a3f421a06d5098bff:2026-08-06T04:41:26.989Z",
-          "at": "2026-08-06T04:41:26.989Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a3f421a06d5098bff"
-        },
-        {
-          "id": "session-stop:a5400bd79222b555b:2026-08-06T04:44:31.405Z",
-          "at": "2026-08-06T04:44:31.405Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a5400bd79222b555b"
-        },
-        {
-          "id": "session-stop:a83c45e9195ec77c8:2026-08-06T05:06:46.717Z",
-          "at": "2026-08-06T05:06:46.717Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a83c45e9195ec77c8"
-        },
-        {
-          "id": "session-stop:a8d31af9c2e767ead:2026-08-06T05:14:44.972Z",
-          "at": "2026-08-06T05:14:44.972Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a8d31af9c2e767ead"
-        },
-        {
-          "id": "session-stop:a0dfe7382e4b78f23:2026-08-06T05:18:20.656Z",
-          "at": "2026-08-06T05:18:20.656Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a0dfe7382e4b78f23"
-        },
-        {
-          "id": "session-stop:ae78cf51fffe0483a:2026-08-06T05:19:28.102Z",
-          "at": "2026-08-06T05:19:28.102Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ae78cf51fffe0483a"
-        },
-        {
-          "id": "session-stop:aa8f96fdcd808e3ad:2026-08-06T05:20:33.905Z",
-          "at": "2026-08-06T05:20:33.905Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:aa8f96fdcd808e3ad"
-        },
-        {
-          "id": "session-stop:a97b6a5d708895f97:2026-08-06T05:33:18.019Z",
-          "at": "2026-08-06T05:33:18.019Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a97b6a5d708895f97"
-        },
-        {
-          "id": "session-stop:a41bf30b60a4e96d4:2026-08-06T05:34:09.800Z",
-          "at": "2026-08-06T05:34:09.800Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a41bf30b60a4e96d4"
-        },
-        {
-          "id": "session-stop:acacfc9f55ca693a1:2026-08-06T05:46:16.944Z",
-          "at": "2026-08-06T05:46:16.944Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:acacfc9f55ca693a1"
-        },
-        {
-          "id": "session-stop:ae5257b59f19e5685:2026-08-06T06:04:57.108Z",
-          "at": "2026-08-06T06:04:57.108Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ae5257b59f19e5685"
-        },
-        {
-          "id": "session-stop:af71edf5190d52780:2026-08-06T06:08:08.993Z",
-          "at": "2026-08-06T06:08:08.993Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:af71edf5190d52780"
-        },
-        {
-          "id": "session-stop:a018c50027d0ac0cf:2026-08-06T07:15:04.668Z",
-          "at": "2026-08-06T07:15:04.668Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a018c50027d0ac0cf"
-        },
-        {
-          "id": "session-stop:a39e72aca42374689:2026-08-06T07:23:14.429Z",
-          "at": "2026-08-06T07:23:14.429Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:a39e72aca42374689"
-        },
-        {
-          "id": "session-stop:ac10d08a51334976a:2026-08-06T08:38:32.458Z",
-          "at": "2026-08-06T08:38:32.458Z",
-          "kind": "completion",
-          "agent": "doc-omx:adoc-om",
-          "detail": "completed",
-          "sourceKey": "session-stop:ac10d08a51334976a"
+          "id": "session-start:adoc-junbeom-0724-d9a6e1e56b62ae1f:2026-08-06T09:23:03.052Z",
+          "at": "2026-08-06T09:23:03.052Z",
+          "kind": "update",
+          "agent": "doc-junbeom-0724:adoc-ju",
+          "detail": "started doc-junbeom-0724:adoc-ju",
+          "sourceKey": "session-start:adoc-junbeom-0724-d9a6e1e56b62ae1f"
         }
       ]
     }

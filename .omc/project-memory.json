@@ -53,9 +53,33 @@
   },
   "hotPaths": [
     {
+      "path": "vault/06-docs/_템플릿-가이드.md",
+      "accessCount": 9,
+      "lastAccessed": 1786008186962,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
+      "accessCount": 8,
+      "lastAccessed": 1786008196716,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
+      "accessCount": 7,
+      "lastAccessed": 1786008196465,
+      "type": "file"
+    },
+    {
       "path": "personal/07-profile/person-profile.md",
       "accessCount": 6,
       "lastAccessed": 1786003932454,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
+      "accessCount": 6,
+      "lastAccessed": 1786008195432,
       "type": "file"
     },
     {
@@ -68,12 +92,6 @@
       "path": ".automation/archive-newsletters.sh",
       "accessCount": 5,
       "lastAccessed": 1786005866952,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 4,
-      "lastAccessed": 1786005815521,
       "type": "file"
     },
     {
@@ -113,12 +131,6 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 3,
-      "lastAccessed": 1786005855620,
-      "type": "file"
-    },
-    {
       "path": "personal/09-newsletters/_README.md",
       "accessCount": 3,
       "lastAccessed": 1786006355872,
@@ -131,21 +143,9 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 2,
-      "lastAccessed": 1786002191330,
-      "type": "file"
-    },
-    {
       "path": "vault/00-overview/project-summary.md",
       "accessCount": 2,
       "lastAccessed": 1786003909759,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
-      "accessCount": 1,
-      "lastAccessed": 1785998535747,
       "type": "file"
     },
     {
@@ -164,6 +164,30 @@
       "path": "vault/00-overview/vault-rationale.md",
       "accessCount": 1,
       "lastAccessed": 1786003900023,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/01-전사본/260731-노션활용강의-전사본.md",
+      "accessCount": 1,
+      "lastAccessed": 1786008286461,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/01-전사본/260710-지호님미팅-전사본.md",
+      "accessCount": 1,
+      "lastAccessed": 1786008311636,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/02-정리본/260731-노션활용강의-정리본.md",
+      "accessCount": 1,
+      "lastAccessed": 1786008342002,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/03-결정사항/260731-노션활용강의-결정사항.md",
+      "accessCount": 1,
+      "lastAccessed": 1786008354600,
       "type": "file"
     }
   ],

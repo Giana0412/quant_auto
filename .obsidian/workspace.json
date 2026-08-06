@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "vault/01-architecture/repo-map.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "repo-map"
+              "title": "README"
             }
           }
         ]
@@ -194,22 +194,22 @@
       "realclaudian:Open Claudian": false
     }
   },
-  "active": "fa750c8331712b91",
+  "active": "be1977f3970fa7f5",
   "lastOpenFiles": [
+    "GEMINI.md",
+    "vault/02-modules/docs.md",
+    "vault/01-architecture/repo-map.md",
     "vault/02-modules/backend.md",
     "vault/02-modules/dot-claude.md",
     "vault/02-modules/claude.md",
     "vault/02-modules/frontend.md",
-    "vault/02-modules/docs.md",
     "vault/02-modules/research.md",
     "vault/02-modules/omx.md",
     "vault/04-logs/session-log.md",
     "vault/03-notes/questions.md",
     "vault/00-overview/project-summary.md",
-    "GEMINI.md",
     "README.md",
     "company-src/oursymbol/rules/auth.md",
-    "vault/01-architecture/repo-map.md",
     "company-src/oursymbol/research/README.md",
     "company-src/oursymbol/backend/services/advertisement-service/README.md",
     "vault/04-logs",

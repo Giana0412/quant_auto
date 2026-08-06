@@ -11,10 +11,14 @@
             "id": "ca2921d747120edc",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "personal/08-imports/_README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "_README"
             }
           }
         ]
@@ -194,6 +198,12 @@
   },
   "active": "ca2921d747120edc",
   "lastOpenFiles": [
+    "personal/07-profile/person-profile.md",
+    "vault/01-architecture/repo-map.md",
+    "vault/05-slack/20260806_김규형_1024.md",
+    "vault/05-slack/20260806_U0BP6FXCLHE.md",
+    "vault/05-slack/20260806_U0BC06201S5.md",
+    "vault/05-slack/20260806_clipboard_260804_AX.md",
     "personal/08-imports/kakao/KakaoTalk_Chat_신소울_2026-08-06-14-36-05.csv",
     "personal/08-imports/whatsapp",
     "personal/08-imports/other",
@@ -201,7 +211,6 @@
     "personal/07-profile/self-intro.md",
     "personal/08-imports/_README.md",
     "personal/07-profile/portfolio.md",
-    "personal/07-profile/person-profile.md",
     "personal/08-imports",
     "personal/07-profile",
     "personal",
@@ -209,25 +218,19 @@
     "vault/08-imports/whatsapp",
     "vault/08-imports/other",
     "vault/08-imports/kakao",
-    "vault/08-imports",
     "vault/07-profile/person-profile.md",
     "vault/07-profile/portfolio.md",
-    "vault/05-slack/20260806_clipboard_260804_AX.md",
     "vault/05-slack/20260806_10.md",
     "vault/07-profile/self-intro.md",
     "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
     "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
     "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
     "vault/02-modules/docs.md",
-    "vault/05-slack/20260806_김규형_1024.md",
     "2026-08-06.md",
-    "vault/05-slack/20260806_U0BC06201S5.md",
-    "vault/05-slack/20260806_U0BP6FXCLHE.md",
     "vault/04-logs/session-log.md",
     "vault/06-docs/_템플릿-가이드.md",
     "README.md",
     "GEMINI.md",
-    "vault/01-architecture/repo-map.md",
     "vault/02-modules/backend.md",
     "vault/02-modules/dot-claude.md",
     "company-src/oursymbol/frontend/together/public/images/main.png",

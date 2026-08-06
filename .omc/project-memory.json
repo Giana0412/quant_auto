@@ -59,8 +59,14 @@
     },
     {
       "path": "vault/04-logs/session-log.md",
+      "accessCount": 6,
+      "lastAccessed": 1785982246909,
+      "type": "file"
+    },
+    {
+      "path": ".automation/process-slack-docs.sh",
       "accessCount": 5,
-      "lastAccessed": 1785981776131,
+      "lastAccessed": 1785982220566,
       "type": "file"
     },
     {
@@ -73,12 +79,6 @@
       "path": "vault/02-modules/frontend.md",
       "accessCount": 3,
       "lastAccessed": 1785912164697,
-      "type": "file"
-    },
-    {
-      "path": ".automation/process-slack-docs.sh",
-      "accessCount": 3,
-      "lastAccessed": 1785981655145,
       "type": "file"
     },
     {
@@ -331,6 +331,12 @@
       "path": "vault/05-slack/20260806_김규형_1024.md",
       "accessCount": 1,
       "lastAccessed": 1785981702964,
+      "type": "file"
+    },
+    {
+      "path": ".automation/action-items.json",
+      "accessCount": 1,
+      "lastAccessed": 1785982176674,
       "type": "file"
     }
   ],

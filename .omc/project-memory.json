@@ -107,6 +107,12 @@
       "type": "file"
     },
     {
+      "path": ".automation/archive-newsletters.sh",
+      "accessCount": 3,
+      "lastAccessed": 1786005539150,
+      "type": "file"
+    },
+    {
       "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
       "accessCount": 2,
       "lastAccessed": 1785998536675,
@@ -122,6 +128,12 @@
       "path": "vault/00-overview/project-summary.md",
       "accessCount": 2,
       "lastAccessed": 1786003909759,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_README.md",
+      "accessCount": 2,
+      "lastAccessed": 1786005483459,
       "type": "file"
     },
     {
@@ -146,6 +158,12 @@
       "path": "vault/00-overview/vault-rationale.md",
       "accessCount": 1,
       "lastAccessed": 1786003900023,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_state.json",
+      "accessCount": 1,
+      "lastAccessed": 1786005483760,
       "type": "file"
     }
   ],

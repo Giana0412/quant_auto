@@ -1,3 +1,7 @@
 # Slack bot token, AI API keys 등 평문 시크릿이 저장되는 파일 — 절대 커밋 금지
 .obsidian/plugins/slack-sync/data.json
 .automation/.slack-auth.curlrc
+
+# 개인 프로필/디지털 트윈 데이터 — 별도 로컬 전용 git repo(personal/.git)로 분리됨.
+# 이 회사 지식 vault repo에는 (gitlink로도) 절대 들어가면 안 됨.
+personal/

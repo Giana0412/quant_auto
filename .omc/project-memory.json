@@ -54,8 +54,8 @@
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 12,
-      "lastAccessed": 1786025373715,
+      "accessCount": 13,
+      "lastAccessed": 1786029018414,
       "type": "file"
     },
     {
@@ -71,39 +71,39 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 7,
-      "lastAccessed": 1786008196465,
-      "type": "file"
-    },
-    {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 7,
-      "lastAccessed": 1786025380045,
+      "accessCount": 8,
+      "lastAccessed": 1786029027316,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 7,
-      "lastAccessed": 1786025380775,
+      "accessCount": 8,
+      "lastAccessed": 1786029027806,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 7,
-      "lastAccessed": 1786025381512,
+      "accessCount": 8,
+      "lastAccessed": 1786029028622,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 7,
-      "lastAccessed": 1786025381647,
+      "accessCount": 8,
+      "lastAccessed": 1786029028701,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 8,
+      "lastAccessed": 1786029033214,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
       "accessCount": 7,
-      "lastAccessed": 1786025386068,
+      "lastAccessed": 1786008196465,
       "type": "file"
     },
     {

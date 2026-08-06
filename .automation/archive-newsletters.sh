@@ -26,7 +26,7 @@ PROMPT="personal/09-newsletters/_README.md 를 먼저 읽는다.
    쿼리 예: 'from:whatsup@newneek.co OR from:moneyletter@uppity.co.kr OR from:noreply@news.bloomberg.com'
 2. personal/09-newsletters/_state.json 을 읽는다. 스키마: { \"<threadId>\": true, ... } — 이미 처리한 스레드 ID 집합.
 3. _state.json에 없는 새 스레드만 get_thread(messageFormat=FULL_CONTENT)로 본문을 가져온다.
-4. 구독 확인/환영 메일(제목에 '구독' 확인, 'You've subscribed', 활용법 안내 등 실제 발행물이 아닌 것)은 저장하지 않는다 — 실제 뉴스레터 발행물만 저장한다. 단, 이렇게 건너뛴 스레드 ID도 반드시 _state.json에 기록한다(파일 저장 여부와 무관하게 "이미 판단을 마친 스레드"는 전부 기록 — 그래야 다음 실행에서 같은 웰컴 메일을 매번 재검토하지 않는다).
+4. 구독 확인/환영 메일(제목에 '구독' 확인, 'You've subscribed', 활용법 안내 등 실제 발행물이 아닌 것)은 저장하지 않는다 — 실제 뉴스레터 발행물만 저장한다. 단, 이렇게 건너뛴 스레드 ID도 반드시 _state.json에 기록한다(파일 저장 여부와 무관하게 '이미 판단을 마친 스레드'는 전부 기록 — 그래야 다음 실행에서 같은 웰컴 메일을 매번 재검토하지 않는다).
 5. 발신자별로 저장 폴더를 정한다:
    - whatsup@newneek.co → personal/09-newsletters/newneek/
    - moneyletter@uppity.co.kr → personal/09-newsletters/uppity/

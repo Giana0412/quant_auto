@@ -1,0 +1,7 @@
+{
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/a62b06e9-8d64-4ec1-9c23-f2d2d2142562/tool-results/mcp-claude_ai_Gmail-get_thread-1786006379169.txt\",\"...",
+  "error": "File content (37261 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.",
+  "timestamp": "2026-08-06T08:53:18.801Z",
+  "retry_count": 1
+}

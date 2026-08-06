@@ -54,8 +54,8 @@
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 10,
-      "lastAccessed": 1786009468680,
+      "accessCount": 11,
+      "lastAccessed": 1786013111449,
       "type": "file"
     },
     {
@@ -65,21 +65,51 @@
       "type": "file"
     },
     {
+      "path": "personal/07-profile/person-profile.md",
+      "accessCount": 8,
+      "lastAccessed": 1786012387582,
+      "type": "file"
+    },
+    {
       "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
       "accessCount": 7,
       "lastAccessed": 1786008196465,
       "type": "file"
     },
     {
-      "path": "personal/07-profile/person-profile.md",
-      "accessCount": 6,
-      "lastAccessed": 1786003932454,
-      "type": "file"
-    },
-    {
       "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 6,
       "lastAccessed": 1786008195432,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_10.md",
+      "accessCount": 6,
+      "lastAccessed": 1786013118431,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
+      "accessCount": 6,
+      "lastAccessed": 1786013119018,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
+      "accessCount": 6,
+      "lastAccessed": 1786013119715,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
+      "accessCount": 6,
+      "lastAccessed": 1786013119834,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 6,
+      "lastAccessed": 1786013123725,
       "type": "file"
     },
     {
@@ -95,33 +125,9 @@
       "type": "file"
     },
     {
-      "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 5,
-      "lastAccessed": 1786009475181,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 5,
-      "lastAccessed": 1786009475932,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 5,
-      "lastAccessed": 1786009476595,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 5,
-      "lastAccessed": 1786009476734,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 5,
-      "lastAccessed": 1786009482225,
+      "path": "vault/04-logs/session-log.md",
+      "accessCount": 4,
+      "lastAccessed": 1786012407443,
       "type": "file"
     },
     {
@@ -158,12 +164,6 @@
       "path": ".claude/settings.local.json",
       "accessCount": 1,
       "lastAccessed": 1786000201843,
-      "type": "file"
-    },
-    {
-      "path": "vault/04-logs/session-log.md",
-      "accessCount": 1,
-      "lastAccessed": 1786000982803,
       "type": "file"
     },
     {
@@ -218,6 +218,24 @@
       "path": "vault/06-docs/03-결정사항/260724-준범님원온원이벤트DB-결정사항.md",
       "accessCount": 1,
       "lastAccessed": 1786010522752,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/02-정리본/260803-이벤트리서치옵시디언방향성논의-정리본.md",
+      "accessCount": 1,
+      "lastAccessed": 1786011384552,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/03-결정사항/260803-이벤트리서치옵시디언방향성논의-결정사항.md",
+      "accessCount": 1,
+      "lastAccessed": 1786011423777,
+      "type": "file"
+    },
+    {
+      "path": "personal/07-profile/voice-style.md",
+      "accessCount": 1,
+      "lastAccessed": 1786012377050,
       "type": "file"
     }
   ],

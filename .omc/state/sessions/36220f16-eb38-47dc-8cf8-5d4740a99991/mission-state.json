@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-06T00:51:23.654Z",
+  "updatedAt": "2026-08-06T01:03:51.894Z",
   "missions": [
     {
       "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
@@ -7,7 +7,7 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-08-05T06:15:48.923Z",
-      "updatedAt": "2026-08-06T00:51:23.654Z",
+      "updatedAt": "2026-08-06T01:03:51.894Z",
       "status": "done",
       "workerCount": 6,
       "taskCounts": {
@@ -27,7 +27,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T00:51:23.654Z"
+          "updatedAt": "2026-08-06T01:03:51.894Z"
         },
         {
           "name": "doc-research:adoc-re",
@@ -192,6 +192,38 @@
           "agent": "doc-omx:adoc-om",
           "detail": "completed",
           "sourceKey": "session-stop:a2a1f1d0e0ed26a94"
+        },
+        {
+          "id": "session-stop:a1a50f3e6596b2747:2026-08-06T00:54:25.399Z",
+          "at": "2026-08-06T00:54:25.399Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:a1a50f3e6596b2747"
+        },
+        {
+          "id": "session-stop:af40e049a4e8b8783:2026-08-06T00:59:21.039Z",
+          "at": "2026-08-06T00:59:21.039Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:af40e049a4e8b8783"
+        },
+        {
+          "id": "session-stop:aa35bdacd93eb3a71:2026-08-06T01:00:49.437Z",
+          "at": "2026-08-06T01:00:49.437Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:aa35bdacd93eb3a71"
+        },
+        {
+          "id": "session-stop:ad6779b275f460b72:2026-08-06T01:03:51.894Z",
+          "at": "2026-08-06T01:03:51.894Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:ad6779b275f460b72"
         }
       ]
     }

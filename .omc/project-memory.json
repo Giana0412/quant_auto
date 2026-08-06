@@ -278,6 +278,12 @@
       "accessCount": 1,
       "lastAccessed": 1785912061853,
       "type": "file"
+    },
+    {
+      "path": ".obsidian/plugins/slack-sync/data.json",
+      "accessCount": 1,
+      "lastAccessed": 1785978031028,
+      "type": "file"
     }
   ],
   "userDirectives": []

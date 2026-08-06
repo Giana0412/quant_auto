@@ -194,8 +194,9 @@
       "realclaudian:Open Claudian": false
     }
   },
-  "active": "be1977f3970fa7f5",
+  "active": "4787c0aa897832ed",
   "lastOpenFiles": [
+    "vault/05-slack",
     "GEMINI.md",
     "vault/02-modules/docs.md",
     "vault/01-architecture/repo-map.md",
@@ -231,7 +232,6 @@
     "company-src/oursymbol/symba/docker-compose.yml",
     "company-src/oursymbol/symba/SOUL.md",
     "company-src/oursymbol/symba/README.md",
-    "company-src/oursymbol/scripts/event-scrapping/README.md",
     "company-src/oursymbol/frontend/together/public/images/main.png",
     "company-src/oursymbol/frontend/together/public/images/donation_template.png",
     "company-src/oursymbol/frontend/together/public/images/3.png",

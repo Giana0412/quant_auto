@@ -65,57 +65,69 @@
       "type": "file"
     },
     {
+      "path": ".automation/archive-newsletters.sh",
+      "accessCount": 5,
+      "lastAccessed": 1786005866952,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/_템플릿-가이드.md",
+      "accessCount": 4,
+      "lastAccessed": 1786005815521,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_10.md",
+      "accessCount": 4,
+      "lastAccessed": 1786005830306,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
+      "accessCount": 4,
+      "lastAccessed": 1786005831182,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
+      "accessCount": 4,
+      "lastAccessed": 1786005831711,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
+      "accessCount": 4,
+      "lastAccessed": 1786005832389,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 4,
+      "lastAccessed": 1786005837822,
+      "type": "file"
+    },
+    {
       "path": ".automation/process-slack-docs.sh",
       "accessCount": 3,
       "lastAccessed": 1786000950420,
       "type": "file"
     },
     {
-      "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 3,
-      "lastAccessed": 1786002174860,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 3,
-      "lastAccessed": 1786002183242,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 3,
-      "lastAccessed": 1786002183906,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 3,
-      "lastAccessed": 1786002184643,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 3,
-      "lastAccessed": 1786002185398,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 3,
-      "lastAccessed": 1786002189867,
-      "type": "file"
-    },
-    {
-      "path": ".automation/archive-newsletters.sh",
-      "accessCount": 3,
-      "lastAccessed": 1786005539150,
-      "type": "file"
-    },
-    {
       "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998536675,
+      "accessCount": 3,
+      "lastAccessed": 1786005855620,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_README.md",
+      "accessCount": 3,
+      "lastAccessed": 1786006355872,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_state.json",
+      "accessCount": 3,
+      "lastAccessed": 1786006492768,
       "type": "file"
     },
     {
@@ -128,12 +140,6 @@
       "path": "vault/00-overview/project-summary.md",
       "accessCount": 2,
       "lastAccessed": 1786003909759,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_README.md",
-      "accessCount": 2,
-      "lastAccessed": 1786005483459,
       "type": "file"
     },
     {
@@ -158,12 +164,6 @@
       "path": "vault/00-overview/vault-rationale.md",
       "accessCount": 1,
       "lastAccessed": 1786003900023,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_state.json",
-      "accessCount": 1,
-      "lastAccessed": 1786005483760,
       "type": "file"
     }
   ],

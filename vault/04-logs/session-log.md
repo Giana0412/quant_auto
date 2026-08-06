@@ -12,3 +12,6 @@ Gemini 기반 모듈 문서화 작업 기록입니다. 실행마다 한 줄씩 �
 | 2026-08-05 | docs | vault/02-modules/docs.md | 성공 | Claude 서브에이전트(doc-docs). |
 | 2026-08-05 | frontend | vault/02-modules/frontend.md | 성공 | Claude 서브에이전트(doc-frontend). |
 | 2026-08-05 | backend | vault/02-modules/backend.md | 성공 | Claude 서브에이전트(doc-backend). 옵션 A(모듈 문서화) 6개 전부 완료. |
+| 2026-08-06 | Slack 연동 | .obsidian/plugins/slack-sync/ | 성공 | obsidian-slack-sync 플러그인 설치. 코드 버그 2건 수정(비공개 채널 조회 안 됨, 스레드 답글 channel 파라미터 오류) + 파일 첨부(files[]) 미지원 문제 수정. `.gitignore`로 토큰 파일 보호. |
+| 2026-08-06 | 06-docs 파이프라인 | vault/06-docs/ | 성공 | 원온원 미팅 전사본 1건을 전사본/정리본/결정사항 3종으로 수동 정리 (`260804-상욱현지규형원온원-*.md`). 템플릿은 `_템플릿-가이드.md`에 고정. |
+| 2026-08-06 | 자동화 구축 | .automation/, launchd | 성공 | Slack Sync autoSync 켬(1시간 간격). `.automation/process-slack-docs.sh` + launchd(`com.giana.obsidian-slack-docs-sync`, 1시간마다, RunAtLoad)로 vault/05-slack→06-docs 자동 문서화 파이프라인 구성. 첫 실행 검증 완료(신규 원본 없어 정상 스킵). 클라우드 cron(`schedule`/RemoteTrigger)은 로컬 파일 미접근+git 자동 push/pull 미설정으로 부적합 판단, 로컬 launchd로 대체. |

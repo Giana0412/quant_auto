@@ -40,7 +40,7 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 #   - Google Calendar MCP 연결(claude.ai/customize/connectors)이 돼 있어야 함
 #   둘 다 준비되면 이 스크립트의 STAGE2_ENABLED를 true로 바꾸고,
 #   --allowedTools 에 정확한 캘린더 MCP 도구 이름을 추가해야 한다 (연결 후 `claude mcp list`로 확인).
-STAGE2_ENABLED=false
+STAGE2_ENABLED=true
 
 if [ "$STAGE2_ENABLED" = "true" ]; then
   SLACK_TOKEN=$(python3 -c "import json;print(json.load(open('$VAULT_DIR/.obsidian/plugins/slack-sync/data.json'))['slackToken'])")
@@ -72,7 +72,7 @@ action-items.json 과 Slack API 호출 외의 다른 파일/서비스는 건드�
 
   {
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] 실행 시작 ==="
-    SLACK_TOKEN="$SLACK_TOKEN" "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*)" 2>&1
+    SLACK_TOKEN="$SLACK_TOKEN" "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*) mcp__claude_ai_Google_Calendar__create_event mcp__claude_ai_Google_Calendar__list_events mcp__claude_ai_Google_Calendar__list_calendars" 2>&1
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] 실행 종료 ==="
     echo
   } >> "$LOG_FILE"

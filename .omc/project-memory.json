@@ -52,6 +52,12 @@
       "type": "file"
     },
     {
+      "path": ".automation/process-slack-docs.sh",
+      "accessCount": 8,
+      "lastAccessed": 1785982879689,
+      "type": "file"
+    },
+    {
       "path": ".obsidian/plugins/slack-sync/data.json",
       "accessCount": 7,
       "lastAccessed": 1785981420500,
@@ -64,21 +70,45 @@
       "type": "file"
     },
     {
-      "path": ".automation/process-slack-docs.sh",
-      "accessCount": 5,
-      "lastAccessed": 1785982220566,
-      "type": "file"
-    },
-    {
       "path": "vault/02-modules/omx.md",
       "accessCount": 4,
       "lastAccessed": 1785911911436,
       "type": "file"
     },
     {
+      "path": "vault/06-docs/_템플릿-가이드.md",
+      "accessCount": 4,
+      "lastAccessed": 1785983084220,
+      "type": "file"
+    },
+    {
       "path": "vault/02-modules/frontend.md",
       "accessCount": 3,
       "lastAccessed": 1785912164697,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
+      "accessCount": 3,
+      "lastAccessed": 1785983089972,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 3,
+      "lastAccessed": 1785983091327,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
+      "accessCount": 3,
+      "lastAccessed": 1785983091387,
+      "type": "file"
+    },
+    {
+      "path": ".automation/action-items.json",
+      "accessCount": 3,
+      "lastAccessed": 1785983120541,
       "type": "file"
     },
     {
@@ -118,9 +148,15 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/_템플릿-가이드.md",
+      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
       "accessCount": 2,
-      "lastAccessed": 1785981691946,
+      "lastAccessed": 1785982817377,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
+      "accessCount": 2,
+      "lastAccessed": 1785983101843,
       "type": "file"
     },
     {
@@ -298,45 +334,9 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 1,
-      "lastAccessed": 1785981330593,
-      "type": "file"
-    },
-    {
       "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 1,
       "lastAccessed": 1785981355487,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 1,
-      "lastAccessed": 1785981358861,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 1,
-      "lastAccessed": 1785981702324,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 1,
-      "lastAccessed": 1785981702902,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 1,
-      "lastAccessed": 1785981702964,
-      "type": "file"
-    },
-    {
-      "path": ".automation/action-items.json",
-      "accessCount": 1,
-      "lastAccessed": 1785982176674,
       "type": "file"
     }
   ],

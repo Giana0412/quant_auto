@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"curl -s -K .automation/.slack-auth.curlrc \\\"https://slack.com/api/conversations.list?types=public_channel,private_channel&limit=200\\\" -o .automation/logs/_chans.json; jq -r '.ok, (.channel...",
+  "error": "Exit code 127\n(eval):1: command not found: jq",
+  "timestamp": "2026-08-06T02:36:56.834Z",
+  "retry_count": 1
+}

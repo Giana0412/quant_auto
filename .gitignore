@@ -1,2 +1,3 @@
 # Slack bot token, AI API keys 등 평문 시크릿이 저장되는 파일 — 절대 커밋 금지
 .obsidian/plugins/slack-sync/data.json
+.automation/.slack-auth.curlrc

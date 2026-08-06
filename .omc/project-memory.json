@@ -53,6 +53,18 @@
   },
   "hotPaths": [
     {
+      "path": "personal/08-imports/kakao/KakaoTalk_Chat_banana123_2026-08-06-14-35-23.csv",
+      "accessCount": 5,
+      "lastAccessed": 1786001467236,
+      "type": "file"
+    },
+    {
+      "path": "personal/07-profile/person-profile.md",
+      "accessCount": 4,
+      "lastAccessed": 1786002646851,
+      "type": "file"
+    },
+    {
       "path": ".automation/process-slack-docs.sh",
       "accessCount": 3,
       "lastAccessed": 1786000950420,
@@ -60,38 +72,38 @@
     },
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998460595,
+      "accessCount": 3,
+      "lastAccessed": 1786002174860,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998487115,
+      "accessCount": 3,
+      "lastAccessed": 1786002183242,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998487548,
+      "accessCount": 3,
+      "lastAccessed": 1786002183906,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998487711,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998495333,
+      "accessCount": 3,
+      "lastAccessed": 1786002184643,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 2,
-      "lastAccessed": 1785998495418,
+      "accessCount": 3,
+      "lastAccessed": 1786002185398,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 3,
+      "lastAccessed": 1786002189867,
       "type": "file"
     },
     {
@@ -102,8 +114,8 @@
     },
     {
       "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 1,
-      "lastAccessed": 1785998535326,
+      "accessCount": 2,
+      "lastAccessed": 1786002191330,
       "type": "file"
     },
     {
@@ -116,6 +128,12 @@
       "path": ".claude/settings.local.json",
       "accessCount": 1,
       "lastAccessed": 1786000201843,
+      "type": "file"
+    },
+    {
+      "path": "vault/04-logs/session-log.md",
+      "accessCount": 1,
+      "lastAccessed": 1786000982803,
       "type": "file"
     }
   ],

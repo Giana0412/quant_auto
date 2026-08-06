@@ -53,6 +53,12 @@
   },
   "hotPaths": [
     {
+      "path": ".automation/process-slack-docs.sh",
+      "accessCount": 3,
+      "lastAccessed": 1786000950420,
+      "type": "file"
+    },
+    {
       "path": "vault/06-docs/_템플릿-가이드.md",
       "accessCount": 2,
       "lastAccessed": 1785998460595,
@@ -104,6 +110,12 @@
       "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 1,
       "lastAccessed": 1785998535747,
+      "type": "file"
+    },
+    {
+      "path": ".claude/settings.local.json",
+      "accessCount": 1,
+      "lastAccessed": 1786000201843,
       "type": "file"
     }
   ],

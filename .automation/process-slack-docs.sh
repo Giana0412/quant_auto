@@ -40,7 +40,16 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 #   - Google Calendar MCP 연결(claude.ai/customize/connectors)이 돼 있어야 함
 #   둘 다 준비되면 이 스크립트의 STAGE2_ENABLED를 true로 바꾸고,
 #   --allowedTools 에 정확한 캘린더 MCP 도구 이름을 추가해야 한다 (연결 후 `claude mcp list`로 확인).
+#
+# 캘린더 계정 분리 (중요, 절대 섞이면 안 됨):
+#   - 이 스크립트가 다루는 소스(vault/06-docs/03-결정사항)는 전부 회사 Slack(#test_ob, OAO
+#     워크스페이스)에서 나온 회의 결정사항이다 → 회사 캘린더(gkimam@oao-corp.com, mcp__claude_ai_Google_Calendar__*)에만 등록한다.
+#   - 카카오톡/왓츠앱 등 personal/08-imports발 개인 일정은 절대 이 경로로 만들지 않는다.
+#     개인 일정은 별도 계정 캘린더(kimgyuh04@gmail.com, mcp__google-calendar-personal__* MCP 서버,
+#     `~/.config/google-calendar-mcp/`에 로컬 OAuth 토큰)를 쓴다 — 필요해지면 별도 스크립트로 분리할 것.
+#   - allowedTools에 mcp__claude_ai_Google_Calendar__* 외의 캘린더 도구를 추가하지 말 것.
 STAGE2_ENABLED=true
+STAGE2_CALENDAR_ID="gkimam@oao-corp.com"  # 회사 캘린더 고정 — "기본/primary"에 의존하지 않는다
 
 if [ "$STAGE2_ENABLED" = "true" ]; then
   SLACK_CHANNEL="test_ob"
@@ -57,6 +66,8 @@ if [ "$STAGE2_ENABLED" = "true" ]; then
   unset SLACK_TOKEN
 
   PROMPT2="오늘 날짜(KST): ${TODAY_KST}. Slack 채널: #${SLACK_CHANNEL}.
+
+중요: 이 작업에서 다루는 액션 아이템은 전부 회사 업무(회사 Slack 워크스페이스 결정사항)다. Google Calendar 도구를 호출할 때는 반드시 calendarId 파라미터에 '${STAGE2_CALENDAR_ID}'를 명시적으로 넣는다 ('기본/primary 캘린더' 같은 암묵적 대상에 의존하지 않는다). 이 값 외의 캘린더(특히 개인 Gmail 계정)에는 절대 일정을 만들지 않는다.
 
 중요: Slack API를 호출할 때는 반드시 'curl -K .automation/.slack-auth.curlrc <나머지 옵션/URL>' 형태로 호출한다. 이 설정 파일에 Authorization 헤더가 이미 들어있다. 토큰 값 자체를 알아내거나, cat으로 읽거나, curl 명령 인자·Authorization 헤더에 직접 타이핑하지 않는다 (이 파일 경로를 참조하는 것만으로 충분하다).
 

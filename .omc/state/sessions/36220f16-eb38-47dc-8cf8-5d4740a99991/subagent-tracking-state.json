@@ -530,10 +530,45 @@
       "synthetic": true,
       "telemetry_status": "unmatched_stop",
       "telemetry_note": "SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."
+    },
+    {
+      "agent_id": "adoc-jiho0710-9aaa51aad85e64ec",
+      "agent_type": "doc-jiho0710",
+      "started_at": "2026-08-06T09:22:35.173Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "adoc-research-obsidian-0803-9d3cc42bc08e8cff",
+      "agent_type": "doc-research-obsidian-0803",
+      "started_at": "2026-08-06T09:22:41.583Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "adoc-notion-lecture-8c7e458a1fc8b729",
+      "agent_type": "doc-notion-lecture",
+      "started_at": "2026-08-06T09:22:50.247Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "adoc-junbeom-0728-1cd116d6fb298f91",
+      "agent_type": "doc-junbeom-0728",
+      "started_at": "2026-08-06T09:22:56.566Z",
+      "parent_mode": "none",
+      "status": "running"
+    },
+    {
+      "agent_id": "adoc-junbeom-0724-d9a6e1e56b62ae1f",
+      "agent_type": "doc-junbeom-0724",
+      "started_at": "2026-08-06T09:23:03.052Z",
+      "parent_mode": "none",
+      "status": "running"
     }
   ],
-  "total_spawned": 6,
+  "total_spawned": 11,
   "total_completed": 49,
   "total_failed": 4,
-  "last_updated": "2026-08-06T08:38:32.561Z"
+  "last_updated": "2026-08-06T09:23:03.156Z"
 }

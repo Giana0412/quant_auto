@@ -108,7 +108,7 @@ var SlackSyncPlugin = class extends import_obsidian.Plugin {
     let channelId = channelName;
     try {
       const channelListResponse = await (0, import_obsidian.requestUrl)({
-        url: "https://slack.com/api/conversations.list",
+        url: "https://slack.com/api/conversations.list?types=public_channel,private_channel&limit=1000",
         headers: {
           "Authorization": `Bearer ${this.settings.slackToken}`,
           "Content-Type": "application/json"
@@ -201,7 +201,7 @@ var SlackSyncPlugin = class extends import_obsidian.Plugin {
     if (message.reply_count && message.reply_count > 0) {
       try {
         const threadResponse = await (0, import_obsidian.requestUrl)({
-          url: `https://slack.com/api/conversations.replies?channel=${channelName}&ts=${message.ts}`,
+          url: `https://slack.com/api/conversations.replies?channel=${channelId}&ts=${message.ts}`,
           headers: {
             "Authorization": `Bearer ${this.settings.slackToken}`,
             "Content-Type": "application/json"

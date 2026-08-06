@@ -70,6 +70,12 @@
       "type": "file"
     },
     {
+      "path": ".obsidian/plugins/slack-sync/data.json",
+      "accessCount": 3,
+      "lastAccessed": 1785979258712,
+      "type": "file"
+    },
+    {
       "path": "company-src/oursymbol/research/scripts/run.py",
       "accessCount": 2,
       "lastAccessed": 1785910589907,
@@ -277,12 +283,6 @@
       "path": "vault/02-modules/claude.md",
       "accessCount": 1,
       "lastAccessed": 1785912061853,
-      "type": "file"
-    },
-    {
-      "path": ".obsidian/plugins/slack-sync/data.json",
-      "accessCount": 1,
-      "lastAccessed": 1785978031028,
       "type": "file"
     }
   ],

@@ -11,10 +11,14 @@
             "id": "ca2921d747120edc",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "vault/05-slack/20260806_김규형_1024.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "20260806_김규형_1024"
             }
           }
         ]
@@ -193,10 +197,20 @@
   },
   "active": "ca2921d747120edc",
   "lastOpenFiles": [
+    "2026-08-06.md",
+    "vault/05-slack/20260806_김규형_1024.md",
+    "vault/05-slack/20260806_U0BC06201S5.md",
+    "vault/05-slack/20260806_U0BP6FXCLHE.md",
+    "vault/04-logs/session-log.md",
+    "vault/06-docs/_템플릿-가이드.md",
     "README.md",
-    "vault/05-slack",
+    "vault/06-docs/03-결정사항",
+    "vault/06-docs/02-정리본",
+    "vault/06-docs/01-전사본",
+    "vault/06-docs",
     "GEMINI.md",
     "vault/02-modules/docs.md",
+    "vault/05-slack",
     "vault/01-architecture/repo-map.md",
     "vault/02-modules/backend.md",
     "vault/02-modules/dot-claude.md",
@@ -204,7 +218,6 @@
     "vault/02-modules/frontend.md",
     "vault/02-modules/research.md",
     "vault/02-modules/omx.md",
-    "vault/04-logs/session-log.md",
     "vault/03-notes/questions.md",
     "vault/00-overview/project-summary.md",
     "company-src/oursymbol/rules/auth.md",
@@ -215,19 +228,11 @@
     "vault/02-modules",
     "vault/01-architecture",
     "vault/00-overview",
-    "company-src/oursymbol/tsconfig.base.json",
     "company-src/oursymbol/symba/personas/finance.md",
     "company-src/oursymbol/symba/personas/strategist.md",
     "company-src/oursymbol/symba/personas/researcher.md",
     "company-src/oursymbol/symba/personas/critic.md",
     "company-src/oursymbol/symba/personas/developer.md",
-    "company-src/oursymbol/symba/personas/analyst.md",
-    "company-src/oursymbol/symba/memory/CLAUDE.md",
-    "company-src/oursymbol/symba/start-all.sh",
-    "company-src/oursymbol/symba/personas",
-    "company-src/oursymbol/symba/memory",
-    "company-src/oursymbol/symba/SOUL.md",
-    "company-src/oursymbol/symba/README.md",
     "company-src/oursymbol/frontend/together/public/images/main.png",
     "company-src/oursymbol/frontend/together/public/images/donation_template.png",
     "company-src/oursymbol/frontend/together/public/images/3.png",

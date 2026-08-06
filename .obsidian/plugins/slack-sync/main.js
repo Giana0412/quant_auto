@@ -294,8 +294,44 @@ var SlackSyncPlugin = class extends import_obsidian.Plugin {
     }
     const fileName = `${dateString}_${documentTitle}.md`;
     const filePath = `${this.settings.outputFolder}/${fileName}`;
-    const markdown = this.generateSingleMessageMarkdown(threadMessages, aiSummary, extractedTags, workspaceUrl, channelId);
+    const markdown = await this.generateSingleMessageMarkdown(threadMessages, aiSummary, extractedTags, workspaceUrl, channelId);
     await this.app.vault.adapter.write(filePath, markdown);
+  }
+  // Slack 메시지에 첨부된 파일(files[])을 마크다운으로 변환.
+  // 텍스트류 파일은 내용을 인라인 코드블록으로 포함하고, 그 외(이미지 등)는 링크만 남긴다.
+  async formatSlackFile(file) {
+    const name = file.name || file.title || "file";
+    const permalink = file.permalink || file.url_private || "";
+    const filetype = (file.filetype || "").toLowerCase();
+    const mimetype = file.mimetype || "";
+    const isTextLike = mimetype.startsWith("text/") || ["text", "markdown", "txt", "csv", "json", "log", "yaml", "yml"].includes(filetype);
+    const MAX_INLINE_BYTES = 2e5;
+    const sizeOk = !file.size || file.size < MAX_INLINE_BYTES;
+    if (isTextLike && sizeOk && file.url_private_download) {
+      try {
+        const fileResponse = await (0, import_obsidian.requestUrl)({
+          url: file.url_private_download,
+          headers: {
+            "Authorization": `Bearer ${this.settings.slackToken}`
+          }
+        });
+        const content = (fileResponse.text || "").trim();
+        return `
+\u{1F4CE} **${name}**
+
+\`\`\`
+${content}
+\`\`\`
+
+`;
+      } catch (error) {
+      }
+    }
+    const sizeLabel = file.size ? ` (${Math.round(file.size / 1024)}KB)` : "";
+    return `
+\u{1F4CE} [${name}](${permalink})${sizeLabel}
+
+`;
   }
   generateMarkdown(channelName, messages, aiSummary = "", extractedTags = [], workspaceUrl = "") {
     const now = /* @__PURE__ */ new Date();
@@ -327,7 +363,7 @@ tags:`;
     markdown += this.generateMessagesMarkdown(messages);
     return markdown;
   }
-  generateSingleMessageMarkdown(messages, aiSummary = "", extractedTags = [], workspaceUrl = "", channelId = "") {
+  async generateSingleMessageMarkdown(messages, aiSummary = "", extractedTags = [], workspaceUrl = "", channelId = "") {
     const now = /* @__PURE__ */ new Date();
     const dateString = now.toISOString().split("T")[0];
     const uniqueTags = extractedTags.length > 0 ? [...new Set(extractedTags)] : [];
@@ -358,7 +394,8 @@ tags:`;
       markdown += aiSummary + "\n\n";
       markdown += "---\n\n";
     }
-    messages.forEach((message, index) => {
+    for (let index = 0; index < messages.length; index++) {
+      const message = messages[index];
       const timestamp = new Date(parseFloat(message.ts) * 1e3);
       const timeString = timestamp.toLocaleTimeString("ja-JP", {
         hour: "2-digit",
@@ -377,7 +414,12 @@ tags:`;
       markdown += `${message.text || ""}
 
 `;
-    });
+      if (message.files && message.files.length > 0) {
+        for (const file of message.files) {
+          markdown += await this.formatSlackFile(file);
+        }
+      }
+    }
     return markdown;
   }
   generateMessagesMarkdown(messages) {

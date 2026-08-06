@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "personal/08-imports/_README.md",
+                "file": "personal/07-profile/self-intro.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "_README"
+              "title": "self-intro"
             }
           }
         ]
@@ -199,6 +199,8 @@
   "active": "ca2921d747120edc",
   "lastOpenFiles": [
     "personal/07-profile/person-profile.md",
+    "2026-08-06.md",
+    "personal/08-imports/_README.md",
     "vault/01-architecture/repo-map.md",
     "vault/05-slack/20260806_김규형_1024.md",
     "vault/05-slack/20260806_U0BP6FXCLHE.md",
@@ -209,7 +211,6 @@
     "personal/08-imports/other",
     "personal/08-imports/kakao",
     "personal/07-profile/self-intro.md",
-    "personal/08-imports/_README.md",
     "personal/07-profile/portfolio.md",
     "personal/08-imports",
     "personal/07-profile",
@@ -226,7 +227,6 @@
     "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
     "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
     "vault/02-modules/docs.md",
-    "2026-08-06.md",
     "vault/04-logs/session-log.md",
     "vault/06-docs/_템플릿-가이드.md",
     "README.md",

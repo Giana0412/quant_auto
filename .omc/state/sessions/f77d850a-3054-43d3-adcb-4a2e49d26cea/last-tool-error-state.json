@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cat .claude/settings.json .claude/settings.local.json 2>/dev/null\",\"description\":\"Read project permission settings\"}",
+  "error": "Exit code 1\n{\n  \"permissions\": {\n    \"allow\": [\n      \"Bash(echo \\\"exit:$?\\\")\",\n      \"Bash(gemini --help)\",\n      \"Bash(timeout 300 gemini -p 'company-src/oursymbol/.omx/ 디렉터리를 탐색해서 vault/02-modules/omx.md 파일을 새로 작성하세요. *)\",\n      \"WebFetch(domain:github.com)\",\n      \"WebFetch(domain:raw.githubusercontent.com)\",\n      \"Bash(npm -v)\",\n      \"Bash(node esbuild.config.mjs)\",\n      \"Bash(node esbuild.config.mjs production)\",\n      \"Bash(md5 /Users/gyuhyeongkim/orca/projects/obsidian_test/.obsidian/...",
+  "timestamp": "2026-08-06T02:21:19.757Z",
+  "retry_count": 1
+}

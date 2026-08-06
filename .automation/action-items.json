@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "260804-상욱현지규형원온원-결정사항-1",
+    "source_doc": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
+    "owner": "김규형",
+    "task": "\"우리가 원하는 AX(에이전트)가 무엇인지\" 지속적으로 정의해나가기",
+    "status": "awaiting_due_date",
+    "due_date": null,
+    "slack_prompt_ts": "1785982945.478599",
+    "calendar_event_id": null
+  },
+  {
+    "id": "260804-상욱현지규형원온원-결정사항-2",
+    "source_doc": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
+    "owner": "김규형",
+    "task": "옵시디언 관련 작업 내용, 이번 주 내 공유 예정 (오며가며 짧게 얘기하기로 함)",
+    "status": "awaiting_due_date",
+    "due_date": null,
+    "slack_prompt_ts": "1785982945.478599",
+    "calendar_event_id": null
+  }
+]

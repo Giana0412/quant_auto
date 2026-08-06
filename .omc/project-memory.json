@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1785907751944,
+  "lastScanned": 1785994804278,
   "projectRoot": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
   "techStack": {
     "languages": [],
@@ -33,316 +33,65 @@
       "path": "company-src",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1785907751880,
+      "lastAccessed": 1785994804265,
+      "keyFiles": []
+    },
+    "personal": {
+      "path": "personal",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1785994804266,
       "keyFiles": []
     },
     "vault": {
       "path": "vault",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1785907751900,
+      "lastAccessed": 1785994804266,
       "keyFiles": []
     }
   },
   "hotPaths": [
     {
-      "path": ".automation/process-slack-docs.sh",
-      "accessCount": 15,
-      "lastAccessed": 1785984094651,
-      "type": "file"
-    },
-    {
-      "path": "vault/03-notes/questions.md",
-      "accessCount": 12,
-      "lastAccessed": 1785912478872,
-      "type": "file"
-    },
-    {
-      "path": ".obsidian/plugins/slack-sync/data.json",
-      "accessCount": 8,
-      "lastAccessed": 1785983296686,
-      "type": "file"
-    },
-    {
-      "path": ".automation/action-items.json",
-      "accessCount": 7,
-      "lastAccessed": 1785984122425,
-      "type": "file"
-    },
-    {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 7,
-      "lastAccessed": 1785991160870,
-      "type": "file"
-    },
-    {
-      "path": "vault/04-logs/session-log.md",
-      "accessCount": 6,
-      "lastAccessed": 1785982246909,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 6,
-      "lastAccessed": 1785991168831,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 6,
-      "lastAccessed": 1785991172649,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 6,
-      "lastAccessed": 1785991185894,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 5,
-      "lastAccessed": 1785987533435,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/omx.md",
-      "accessCount": 4,
-      "lastAccessed": 1785911911436,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/frontend.md",
-      "accessCount": 3,
-      "lastAccessed": 1785912164697,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 3,
-      "lastAccessed": 1785983765061,
+      "accessCount": 1,
+      "lastAccessed": 1785994809834,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 3,
-      "lastAccessed": 1785991168146,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/research/scripts/run.py",
-      "accessCount": 2,
-      "lastAccessed": 1785910589907,
-      "type": "file"
-    },
-    {
-      "path": "GEMINI.md",
-      "accessCount": 2,
-      "lastAccessed": 1785911367213,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/research.md",
-      "accessCount": 2,
-      "lastAccessed": 1785911606849,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/docs.md",
-      "accessCount": 2,
-      "lastAccessed": 1785912116434,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/backend.md",
-      "accessCount": 2,
-      "lastAccessed": 1785912467373,
-      "type": "file"
-    },
-    {
-      "path": ".obsidian/community-plugins.json",
-      "accessCount": 2,
-      "lastAccessed": 1785915688941,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/research/README.md",
       "accessCount": 1,
-      "lastAccessed": 1785910562553,
+      "lastAccessed": 1785994817594,
       "type": "file"
     },
     {
-      "path": "company-src/oursymbol/research/sources.yml",
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
       "accessCount": 1,
-      "lastAccessed": 1785910562971,
+      "lastAccessed": 1785994818405,
       "type": "file"
     },
     {
-      "path": "company-src/oursymbol/research/docker-compose.yml",
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
       "accessCount": 1,
-      "lastAccessed": 1785910564081,
+      "lastAccessed": 1785994818938,
       "type": "file"
     },
     {
-      "path": "company-src/oursymbol/research/Dockerfile",
+      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
       "accessCount": 1,
-      "lastAccessed": 1785910564406,
+      "lastAccessed": 1785994819652,
       "type": "file"
     },
     {
-      "path": "company-src/oursymbol/research/crontab",
+      "path": "vault/05-slack/20260806_김규형_1024.md",
       "accessCount": 1,
-      "lastAccessed": 1785910565781,
+      "lastAccessed": 1785994826048,
       "type": "file"
     },
     {
-      "path": "company-src/oursymbol/research/entrypoint.sh",
+      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
       "accessCount": 1,
-      "lastAccessed": 1785910565812,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/research/.env.example",
-      "accessCount": 1,
-      "lastAccessed": 1785910566613,
-      "type": "file"
-    },
-    {
-      "path": "vault/01-architecture/repo-map.md",
-      "accessCount": 1,
-      "lastAccessed": 1785910582432,
-      "type": "file"
-    },
-    {
-      "path": "vault/00-overview/project-summary.md",
-      "accessCount": 1,
-      "lastAccessed": 1785910583971,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.omx/plans/20260429-app-campaign-detail-page-review-plan.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911377202,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.claude/CLAUDE.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911649567,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911674495,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/AGENTS.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911674900,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/frontend/CLAUDE.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911675644,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/CLAUDE.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911675927,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/package.json",
-      "accessCount": 1,
-      "lastAccessed": 1785911676038,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.claude/hooks/sync-env.sh",
-      "accessCount": 1,
-      "lastAccessed": 1785911693248,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.claude/memory/company/oao-ai-workflow.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911693309,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.claude/memory/project/oursymbol-vision.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911697135,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.claude/memory/company/oao-vision.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911697981,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/.claude/memory/people/김성준.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911698357,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/CLAUDE.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911714012,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/auth-common/package.json",
-      "accessCount": 1,
-      "lastAccessed": 1785911862600,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/auth-common/index.d.ts",
-      "accessCount": 1,
-      "lastAccessed": 1785911862698,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/event-service/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911912011,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/photographer-service/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911912613,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/session-image-service/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911913638,
-      "type": "file"
-    },
-    {
-      "path": "company-src/oursymbol/backend/services/face-engine-service/README.md",
-      "accessCount": 1,
-      "lastAccessed": 1785911915692,
-      "type": "file"
-    },
-    {
-      "path": "vault/02-modules/claude.md",
-      "accessCount": 1,
-      "lastAccessed": 1785912061853,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
-      "accessCount": 1,
-      "lastAccessed": 1785981355487,
+      "lastAccessed": 1785994835276,
       "type": "file"
     }
   ],

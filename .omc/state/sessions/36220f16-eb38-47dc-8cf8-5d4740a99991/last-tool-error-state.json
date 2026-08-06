@@ -1,7 +1,7 @@
 {
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"claude mcp add --transport http --scope user \\\"claude.ai Google Calendar\\\" https://calendarmcp.googleapis.com/mcp/v1 2>&1\",\"description\":\"Attempt to add Google Calendar MCP connector at us...",
-  "error": "Exit code 1\nInvalid name claude.ai Google Calendar. Names can only contain letters, numbers, hyphens, and underscores.",
-  "timestamp": "2026-08-06T02:05:57.365Z",
+  "tool_name": "mcp__claude_ai_Gmail__list_labels",
+  "tool_input_preview": "{}",
+  "error": "Streamable HTTP error: Error POSTing to endpoint: {\"id\":4,\"jsonrpc\":\"2.0\",\"result\":{\"content\":[{\"text\":\"Request had insufficient authentication scopes.\",\"type\":\"text\"}],\"isError\":true}}",
+  "timestamp": "2026-08-06T08:13:42.294Z",
   "retry_count": 1
 }

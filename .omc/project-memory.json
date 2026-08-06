@@ -53,15 +53,15 @@
   },
   "hotPaths": [
     {
-      "path": "personal/08-imports/kakao/KakaoTalk_Chat_banana123_2026-08-06-14-35-23.csv",
-      "accessCount": 5,
-      "lastAccessed": 1786001467236,
+      "path": "personal/07-profile/person-profile.md",
+      "accessCount": 6,
+      "lastAccessed": 1786003932454,
       "type": "file"
     },
     {
-      "path": "personal/07-profile/person-profile.md",
-      "accessCount": 4,
-      "lastAccessed": 1786002646851,
+      "path": "personal/08-imports/kakao/KakaoTalk_Chat_banana123_2026-08-06-14-35-23.csv",
+      "accessCount": 5,
+      "lastAccessed": 1786001467236,
       "type": "file"
     },
     {
@@ -119,6 +119,12 @@
       "type": "file"
     },
     {
+      "path": "vault/00-overview/project-summary.md",
+      "accessCount": 2,
+      "lastAccessed": 1786003909759,
+      "type": "file"
+    },
+    {
       "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 1,
       "lastAccessed": 1785998535747,
@@ -134,6 +140,12 @@
       "path": "vault/04-logs/session-log.md",
       "accessCount": 1,
       "lastAccessed": 1786000982803,
+      "type": "file"
+    },
+    {
+      "path": "vault/00-overview/vault-rationale.md",
+      "accessCount": 1,
+      "lastAccessed": 1786003900023,
       "type": "file"
     }
   ],

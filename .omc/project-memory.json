@@ -149,6 +149,12 @@
       "type": "file"
     },
     {
+      "path": "vault/06-docs/03-결정사항/260710-지호님미팅-결정사항.md",
+      "accessCount": 2,
+      "lastAccessed": 1786010422883,
+      "type": "file"
+    },
+    {
       "path": ".claude/settings.local.json",
       "accessCount": 1,
       "lastAccessed": 1786000201843,
@@ -197,9 +203,21 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/03-결정사항/260710-지호님미팅-결정사항.md",
+      "path": "vault/06-docs/03-결정사항/260728-준범님원온원-결정사항.md",
       "accessCount": 1,
-      "lastAccessed": 1786008407258,
+      "lastAccessed": 1786010459936,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/02-정리본/260724-준범님원온원이벤트DB-정리본.md",
+      "accessCount": 1,
+      "lastAccessed": 1786010492049,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/03-결정사항/260724-준범님원온원이벤트DB-결정사항.md",
+      "accessCount": 1,
+      "lastAccessed": 1786010522752,
       "type": "file"
     }
   ],

@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /Users/gyuhyeongkim/orca/projects/obsidian_test/company-src/oursymbol/backend/services && echo \\\"=== migration runner search ===\\\" && grep -rilE 'migrat' --include=*.json --include=*.js...",
-  "error": "Exit code 1\n=== migration runner search ===\n(eval):1: no matches found: --include=*.json",
-  "timestamp": "2026-08-05T06:40:31.010Z",
+  "tool_input_preview": "{\"command\":\"claude mcp add --transport http --scope user \\\"claude.ai Google Calendar\\\" https://calendarmcp.googleapis.com/mcp/v1 2>&1\",\"description\":\"Attempt to add Google Calendar MCP connector at us...",
+  "error": "Exit code 1\nInvalid name claude.ai Google Calendar. Names can only contain letters, numbers, hyphens, and underscores.",
+  "timestamp": "2026-08-06T02:05:57.365Z",
   "retry_count": 1
 }

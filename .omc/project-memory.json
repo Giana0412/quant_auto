@@ -52,6 +52,12 @@
       "type": "file"
     },
     {
+      "path": ".obsidian/plugins/slack-sync/data.json",
+      "accessCount": 5,
+      "lastAccessed": 1785979712050,
+      "type": "file"
+    },
+    {
       "path": "vault/02-modules/omx.md",
       "accessCount": 4,
       "lastAccessed": 1785911911436,
@@ -67,12 +73,6 @@
       "path": "vault/02-modules/frontend.md",
       "accessCount": 3,
       "lastAccessed": 1785912164697,
-      "type": "file"
-    },
-    {
-      "path": ".obsidian/plugins/slack-sync/data.json",
-      "accessCount": 3,
-      "lastAccessed": 1785979258712,
       "type": "file"
     },
     {
@@ -283,6 +283,12 @@
       "path": "vault/02-modules/claude.md",
       "accessCount": 1,
       "lastAccessed": 1785912061853,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/_템플릿-가이드.md",
+      "accessCount": 1,
+      "lastAccessed": 1785980512720,
       "type": "file"
     }
   ],

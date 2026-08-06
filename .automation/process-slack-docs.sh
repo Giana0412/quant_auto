@@ -43,28 +43,45 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 STAGE2_ENABLED=true
 
 if [ "$STAGE2_ENABLED" = "true" ]; then
-  SLACK_TOKEN=$(python3 -c "import json;print(json.load(open('$VAULT_DIR/.obsidian/plugins/slack-sync/data.json'))['slackToken'])")
   SLACK_CHANNEL="test_ob"
   TODAY_KST=$(TZ=Asia/Seoul date +%Y-%m-%d)
 
-  PROMPT2="오늘 날짜(KST): ${TODAY_KST}. Slack 채널: #${SLACK_CHANNEL}. Slack Bot Token은 환경변수 SLACK_TOKEN에 있다 (절대 출력/로그에 그대로 남기지 말고 curl 헤더에만 사용).
+  # 토큰을 headless 에이전트의 도구 호출(curl 명령 인자)에 절대 노출시키지 않기 위해
+  # curl 설정 파일에 Authorization 헤더를 미리 박아두고, 에이전트는 파일 경로만 참조한다.
+  # (Bash(curl:*) 허용 패턴에서는 $VAR 같은 셸 변수 확장이 정적분석 불가로 차단되므로
+  #  환경변수 전달 방식은 쓸 수 없다 — curl -K 설정파일이 유일한 우회로다.)
+  SLACK_AUTH_RC="$VAULT_DIR/.automation/.slack-auth.curlrc"
+  SLACK_TOKEN=$(python3 -c "import json;print(json.load(open('$VAULT_DIR/.obsidian/plugins/slack-sync/data.json'))['slackToken'])")
+  printf 'header = "Authorization: Bearer %s"\n' "$SLACK_TOKEN" > "$SLACK_AUTH_RC"
+  chmod 600 "$SLACK_AUTH_RC"
+  unset SLACK_TOKEN
 
-.automation/action-items.json 을 상태 저장소로 쓴다. 스키마: [{id, source_doc, owner, task, status(awaiting_due_date|scheduled|reminded), due_date(YYYY-MM-DD|null), slack_prompt_ts(string|null), calendar_event_id(string|null)}]
+  PROMPT2="오늘 날짜(KST): ${TODAY_KST}. Slack 채널: #${SLACK_CHANNEL}.
+
+중요: Slack API를 호출할 때는 반드시 'curl -K .automation/.slack-auth.curlrc <나머지 옵션/URL>' 형태로 호출한다. 이 설정 파일에 Authorization 헤더가 이미 들어있다. 토큰 값 자체를 알아내거나, cat으로 읽거나, curl 명령 인자·Authorization 헤더에 직접 타이핑하지 않는다 (이 파일 경로를 참조하는 것만으로 충분하다).
+
+.automation/action-items.json 을 상태 저장소로 쓴다. 스키마: [{id, source_doc, owner, task, status(awaiting_due_date|scheduled|reminded), due_date(YYYY-MM-DD|null), due_time(HH:MM, 24시간제, KST, 시각 언급 없었으면 null), slack_prompt_ts(string|null), calendar_event_id(string|null)}]
 
 3단계로 처리한다:
 
 [A] 신규 액션 아이템 발견
 - vault/06-docs/03-결정사항/*.md 를 훑어서, action-items.json에 아직 없는(source_doc 기준) 문서의 '## 액션 아이템'을 파싱해 새 항목들을 status=awaiting_due_date로 추가한다.
-- 새로 추가된 항목이 있는 문서마다, curl로 https://slack.com/api/chat.postMessage 를 호출해 #${SLACK_CHANNEL}에 아래 형식으로 게시하고, 응답의 message ts를 그 문서의 모든 신규 항목의 slack_prompt_ts에 저장한다:
-  '📋 <문서명> 액션 아이템 기한을 정해주세요:\n1) [담당자] 항목\n2) ...\n\n각 번호에 날짜로 답장해주세요 (예: 1) 8/10  2) 8/8)'
+- 새로 추가된 항목이 있는 문서마다, curl -K .automation/.slack-auth.curlrc 로 https://slack.com/api/chat.postMessage 를 호출해 #${SLACK_CHANNEL}에 아래 형식으로 게시하고, 응답의 message ts를 그 문서의 모든 신규 항목의 slack_prompt_ts에 저장한다:
+  '📋 <문서명> 액션 아이템 기한을 정해주세요:\n1) [담당자] 항목\n2) ...\n\n각 번호에 날짜로 답장해주세요 (예: 1) 8/10  2) 8/8). 스레드 답장이든 채널에 그냥 타이핑이든 상관없습니다.'
 
 [B] 답장 확인
-- status=awaiting_due_date 이고 slack_prompt_ts가 있는 항목들에 대해, curl로 https://slack.com/api/conversations.replies?channel=<채널ID>&ts=<slack_prompt_ts> 를 호출해 사람이 남긴 답장(봇 메시지 제외)이 있는지 확인한다 (채널ID는 https://slack.com/api/conversations.list?types=public_channel,private_channel 로 이름→ID 변환).
-- 답장 텍스트에서 번호별 날짜를 파싱한다 (자연어 날짜 허용, 연도 없으면 올해로 간주, KST 기준).
-- 매칭된 항목은 status=scheduled, due_date를 채우고, curl로 https://slack.com/api/users.list 에서 owner 이름과 매칭되는 사용자를 찾아 Slack user id를 얻은 뒤, 사용 가능한 Google Calendar MCP 도구로 해당 날짜에 종일 일정을 만든다 (제목: '[담당자] task 내용', 설명에 source_doc 경로 포함). 생성된 이벤트 id를 calendar_event_id에 저장한다.
+- status=awaiting_due_date 이고 slack_prompt_ts가 있는 항목들에 대해 답장을 찾는다. 두 가지 다 확인할 것:
+  1) curl -K .automation/.slack-auth.curlrc 로 conversations.replies?channel=<채널ID>&ts=<slack_prompt_ts> (스레드로 답장한 경우)
+  2) curl -K .automation/.slack-auth.curlrc 로 conversations.history?channel=<채널ID>&oldest=<slack_prompt_ts> (채널에 그냥 새 메시지로 타이핑한 경우 — ts가 slack_prompt_ts보다 크고 봇이 아닌 사람이 보낸 가장 가까운 메시지)
+  (채널ID는 conversations.list?types=public_channel,private_channel 로 이름→ID 변환)
+- 둘 중 어느 쪽이든 사람이 남긴 답장(봇 메시지 제외)을 찾으면 그 텍스트에서 번호별 날짜와 시각을 모두 파싱한다 (자연어 날짜/시각 허용 — 예: "8/10 오후 2시" → 날짜 2026-08-10, 시각 14:00. 연도 없으면 올해로 간주, KST 기준).
+- 매칭된 항목은 status=scheduled, due_date(및 시각이 있으면 due_time)를 채우고, curl -K .automation/.slack-auth.curlrc 로 users.list 에서 owner 이름과 매칭되는 사용자를 찾아 Slack user id를 얻는다. 그 다음 사용 가능한 Google Calendar MCP 도구로 일정을 만든다:
+  - due_time이 있으면 그 날짜·시각에 시작하는 1시간짜리 일정 (Asia/Seoul 타임존)
+  - due_time이 없으면 그 날짜의 종일 일정
+  제목: '[담당자] task 내용', 설명에 source_doc 경로 포함. 생성된 이벤트 id를 calendar_event_id에 저장한다.
 
 [C] 당일 알림
-- status=scheduled 이고 due_date == ${TODAY_KST} 인 항목에 대해, curl로 chat.postMessage 를 호출해 #${SLACK_CHANNEL}에 '<@SLACK_USER_ID>님, 오늘 이거 해야 함: <task>' 를 게시하고 status=reminded로 바꾼다. owner의 Slack user id를 못 찾으면 이름을 그대로 쓴다.
+- status=scheduled 이고 due_date == ${TODAY_KST} 인 항목에 대해, curl -K .automation/.slack-auth.curlrc 로 chat.postMessage 를 호출해 #${SLACK_CHANNEL}에 '<@SLACK_USER_ID>님, 오늘 이거 해야 함: <task>' 를 게시하고 status=reminded로 바꾼다. owner의 Slack user id를 못 찾으면 이름을 그대로 쓴다.
 
 마지막에 A/B/C 각각 몇 건 처리했는지 한 줄로 요약 출력. 할 일이 전혀 없으면 '처리할 액션 아이템 없음'만 출력.
 
@@ -72,10 +89,12 @@ action-items.json 과 Slack API 호출 외의 다른 파일/서비스는 건드�
 
   {
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] 실행 시작 ==="
-    SLACK_TOKEN="$SLACK_TOKEN" "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*) mcp__claude_ai_Google_Calendar__create_event mcp__claude_ai_Google_Calendar__list_events mcp__claude_ai_Google_Calendar__list_calendars" 2>&1
+    "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*) mcp__claude_ai_Google_Calendar__create_event mcp__claude_ai_Google_Calendar__update_event mcp__claude_ai_Google_Calendar__list_events mcp__claude_ai_Google_Calendar__list_calendars" 2>&1
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] 실행 종료 ==="
     echo
   } >> "$LOG_FILE"
+
+  shred -u "$SLACK_AUTH_RC" 2>/dev/null || rm -f "$SLACK_AUTH_RC"
 else
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] STAGE2_ENABLED=false, 건너뜀 ===" >> "$LOG_FILE"
 fi

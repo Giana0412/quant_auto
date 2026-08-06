@@ -546,8 +546,8 @@
       "started_at": "2026-08-06T09:22:41.583Z",
       "parent_mode": "none",
       "status": "completed",
-      "completed_at": "2026-08-06T10:12:28.306Z",
-      "duration_ms": 2986723
+      "completed_at": "2026-08-06T10:17:30.198Z",
+      "duration_ms": 3288615
     },
     {
       "agent_id": "adoc-notion-lecture-8c7e458a1fc8b729",
@@ -575,10 +575,21 @@
       "status": "completed",
       "completed_at": "2026-08-06T10:02:24.858Z",
       "duration_ms": 2361806
+    },
+    {
+      "agent_id": "a06860a19bf2c3c7c",
+      "agent_type": "untracked-native-fork",
+      "started_at": "2026-08-06T10:15:29.200Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-06T10:15:29.200Z",
+      "synthetic": true,
+      "telemetry_status": "unmatched_stop",
+      "telemetry_note": "SubagentStop arrived without a matching SubagentStart; native Agent/Task start telemetry was not observed."
     }
   ],
   "total_spawned": 11,
-  "total_completed": 54,
+  "total_completed": 56,
   "total_failed": 4,
-  "last_updated": "2026-08-06T10:12:28.409Z"
+  "last_updated": "2026-08-06T10:17:30.303Z"
 }

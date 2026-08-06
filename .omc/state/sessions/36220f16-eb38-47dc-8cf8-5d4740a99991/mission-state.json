@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-06T10:12:28.306Z",
+  "updatedAt": "2026-08-06T10:17:30.198Z",
   "missions": [
     {
       "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
@@ -7,15 +7,15 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-08-05T06:15:48.923Z",
-      "updatedAt": "2026-08-06T10:12:28.306Z",
-      "status": "running",
+      "updatedAt": "2026-08-06T10:17:30.198Z",
+      "status": "done",
       "workerCount": 11,
       "taskCounts": {
         "total": 11,
         "pending": 0,
         "blocked": 0,
-        "inProgress": 1,
-        "completed": 10,
+        "inProgress": 0,
+        "completed": 11,
         "failed": 0
       },
       "agents": [
@@ -27,7 +27,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T10:12:28.306Z"
+          "updatedAt": "2026-08-06T10:15:29.200Z"
         },
         {
           "name": "doc-research:adoc-re",
@@ -93,11 +93,11 @@
           "name": "doc-research-obsidian-0803:adoc-re",
           "role": "doc-research-obsidian-0803",
           "ownership": "adoc-research-obsidian-0803-9d3cc42bc08e8cff",
-          "status": "running",
+          "status": "done",
           "currentStep": null,
-          "latestUpdate": null,
+          "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T09:22:41.583Z"
+          "updatedAt": "2026-08-06T10:17:30.198Z"
         },
         {
           "name": "doc-notion-lecture:adoc-no",
@@ -194,6 +194,22 @@
           "agent": "doc-omx:adoc-om",
           "detail": "completed",
           "sourceKey": "session-stop:a5749faace11f72d9"
+        },
+        {
+          "id": "session-stop:a06860a19bf2c3c7c:2026-08-06T10:15:29.200Z",
+          "at": "2026-08-06T10:15:29.200Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:a06860a19bf2c3c7c"
+        },
+        {
+          "id": "session-stop:adoc-research-obsidian-0803-9d3cc42bc08e8cff:2026-08-06T10:17:30.198Z",
+          "at": "2026-08-06T10:17:30.198Z",
+          "kind": "completion",
+          "agent": "doc-research-obsidian-0803:adoc-re",
+          "detail": "completed",
+          "sourceKey": "session-stop:adoc-research-obsidian-0803-9d3cc42bc08e8cff"
         }
       ]
     }

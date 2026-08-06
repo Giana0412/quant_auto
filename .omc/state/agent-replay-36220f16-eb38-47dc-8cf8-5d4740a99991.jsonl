@@ -1,0 +1,5 @@
+{"t":0,"agent":"adoc-ji","agent_type":"doc-jiho0710","event":"agent_stop","success":true,"duration_ms":2260786}
+{"t":0,"agent":"adoc-ju","agent_type":"doc-junbeom-0728","event":"agent_stop","success":true,"duration_ms":2314923}
+{"t":0,"agent":"adoc-ju","agent_type":"doc-junbeom-0724","event":"agent_stop","success":true,"duration_ms":2361806}
+{"t":0,"agent":"adoc-no","agent_type":"doc-notion-lecture","event":"agent_stop","success":true,"duration_ms":2969748}
+{"t":0,"agent":"a5749fa","agent_type":"doc-research-obsidian-0803","event":"agent_stop","success":true,"duration_ms":2986723}

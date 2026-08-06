@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-06T09:23:03.052Z",
+  "updatedAt": "2026-08-06T10:12:28.306Z",
   "missions": [
     {
       "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
@@ -7,15 +7,15 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-08-05T06:15:48.923Z",
-      "updatedAt": "2026-08-06T09:23:03.052Z",
+      "updatedAt": "2026-08-06T10:12:28.306Z",
       "status": "running",
       "workerCount": 11,
       "taskCounts": {
         "total": 11,
         "pending": 0,
         "blocked": 0,
-        "inProgress": 5,
-        "completed": 6,
+        "inProgress": 1,
+        "completed": 10,
         "failed": 0
       },
       "agents": [
@@ -27,7 +27,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T08:38:32.458Z"
+          "updatedAt": "2026-08-06T10:12:28.306Z"
         },
         {
           "name": "doc-research:adoc-re",
@@ -83,11 +83,11 @@
           "name": "doc-jiho0710:adoc-ji",
           "role": "doc-jiho0710",
           "ownership": "adoc-jiho0710-9aaa51aad85e64ec",
-          "status": "running",
+          "status": "done",
           "currentStep": null,
-          "latestUpdate": null,
+          "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T09:22:35.173Z"
+          "updatedAt": "2026-08-06T10:00:15.959Z"
         },
         {
           "name": "doc-research-obsidian-0803:adoc-re",
@@ -103,31 +103,31 @@
           "name": "doc-notion-lecture:adoc-no",
           "role": "doc-notion-lecture",
           "ownership": "adoc-notion-lecture-8c7e458a1fc8b729",
-          "status": "running",
+          "status": "done",
           "currentStep": null,
-          "latestUpdate": null,
+          "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T09:22:50.247Z"
+          "updatedAt": "2026-08-06T10:12:19.995Z"
         },
         {
           "name": "doc-junbeom-0728:adoc-ju",
           "role": "doc-junbeom-0728",
           "ownership": "adoc-junbeom-0728-1cd116d6fb298f91",
-          "status": "running",
+          "status": "done",
           "currentStep": null,
-          "latestUpdate": null,
+          "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T09:22:56.566Z"
+          "updatedAt": "2026-08-06T10:01:31.489Z"
         },
         {
           "name": "doc-junbeom-0724:adoc-ju",
           "role": "doc-junbeom-0724",
           "ownership": "adoc-junbeom-0724-d9a6e1e56b62ae1f",
-          "status": "running",
+          "status": "done",
           "currentStep": null,
-          "latestUpdate": null,
+          "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-06T09:23:03.052Z"
+          "updatedAt": "2026-08-06T10:02:24.858Z"
         }
       ],
       "timeline": [
@@ -154,6 +154,46 @@
           "agent": "doc-junbeom-0724:adoc-ju",
           "detail": "started doc-junbeom-0724:adoc-ju",
           "sourceKey": "session-start:adoc-junbeom-0724-d9a6e1e56b62ae1f"
+        },
+        {
+          "id": "session-stop:adoc-jiho0710-9aaa51aad85e64ec:2026-08-06T10:00:15.959Z",
+          "at": "2026-08-06T10:00:15.959Z",
+          "kind": "completion",
+          "agent": "doc-jiho0710:adoc-ji",
+          "detail": "completed",
+          "sourceKey": "session-stop:adoc-jiho0710-9aaa51aad85e64ec"
+        },
+        {
+          "id": "session-stop:adoc-junbeom-0728-1cd116d6fb298f91:2026-08-06T10:01:31.489Z",
+          "at": "2026-08-06T10:01:31.489Z",
+          "kind": "completion",
+          "agent": "doc-junbeom-0728:adoc-ju",
+          "detail": "completed",
+          "sourceKey": "session-stop:adoc-junbeom-0728-1cd116d6fb298f91"
+        },
+        {
+          "id": "session-stop:adoc-junbeom-0724-d9a6e1e56b62ae1f:2026-08-06T10:02:24.858Z",
+          "at": "2026-08-06T10:02:24.858Z",
+          "kind": "completion",
+          "agent": "doc-junbeom-0724:adoc-ju",
+          "detail": "completed",
+          "sourceKey": "session-stop:adoc-junbeom-0724-d9a6e1e56b62ae1f"
+        },
+        {
+          "id": "session-stop:adoc-notion-lecture-8c7e458a1fc8b729:2026-08-06T10:12:19.995Z",
+          "at": "2026-08-06T10:12:19.995Z",
+          "kind": "completion",
+          "agent": "doc-notion-lecture:adoc-no",
+          "detail": "completed",
+          "sourceKey": "session-stop:adoc-notion-lecture-8c7e458a1fc8b729"
+        },
+        {
+          "id": "session-stop:a5749faace11f72d9:2026-08-06T10:12:28.306Z",
+          "at": "2026-08-06T10:12:28.306Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:a5749faace11f72d9"
         }
       ]
     }

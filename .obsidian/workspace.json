@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "company-src/oursymbol/rules/auth.md",
+                "file": "personal/09-newsletters/_README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "auth"
+              "title": "_README"
             }
           }
         ]
@@ -198,6 +198,10 @@
   },
   "active": "ca2921d747120edc",
   "lastOpenFiles": [
+    "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
+    "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
+    "company-src/oursymbol/rules/auth.md",
+    "personal/09-newsletters/uppity/260807-(광고)💰금값 바닥 다졌다 vs. 아직 아니다.md",
     "personal/07-profile/voice-style.md",
     "vault/06-docs/03-결정사항/260803-이벤트리서치옵시디언방향성논의-결정사항.md",
     "vault/06-docs/02-정리본/260803-이벤트리서치옵시디언방향성논의-정리본.md",
@@ -226,10 +230,6 @@
     "personal/07-profile/self-intro.md",
     "personal/07-profile/person-profile.md",
     "2026-08-06.md",
-    "personal/08-imports/_README.md",
-    "vault/01-architecture/repo-map.md",
-    "vault/05-slack/20260806_김규형_1024.md",
-    "vault/05-slack/20260806_U0BP6FXCLHE.md",
     "personal/08-imports/kakao/KakaoTalk_Chat_신소울_2026-08-06-14-36-05.csv",
     "personal/08-imports/whatsapp",
     "personal/08-imports/other",

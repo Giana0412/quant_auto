@@ -125,27 +125,27 @@
       "type": "file"
     },
     {
+      "path": "personal/09-newsletters/_state.json",
+      "accessCount": 5,
+      "lastAccessed": 1786061101989,
+      "type": "file"
+    },
+    {
       "path": "vault/04-logs/session-log.md",
       "accessCount": 4,
       "lastAccessed": 1786012407443,
       "type": "file"
     },
     {
+      "path": "personal/09-newsletters/_README.md",
+      "accessCount": 4,
+      "lastAccessed": 1786060956358,
+      "type": "file"
+    },
+    {
       "path": ".automation/process-slack-docs.sh",
       "accessCount": 3,
       "lastAccessed": 1786000950420,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_README.md",
-      "accessCount": 3,
-      "lastAccessed": 1786006355872,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_state.json",
-      "accessCount": 3,
-      "lastAccessed": 1786006492768,
       "type": "file"
     },
     {
@@ -158,6 +158,12 @@
       "path": "vault/06-docs/03-결정사항/260710-지호님미팅-결정사항.md",
       "accessCount": 2,
       "lastAccessed": 1786010422883,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
+      "accessCount": 2,
+      "lastAccessed": 1786061092723,
       "type": "file"
     },
     {
@@ -236,6 +242,18 @@
       "path": "personal/07-profile/voice-style.md",
       "accessCount": 1,
       "lastAccessed": 1786012377050,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
+      "accessCount": 1,
+      "lastAccessed": 1786061059389,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/uppity/260807-(광고)💰금값 바닥 다졌다 vs. 아직 아니다.md",
+      "accessCount": 1,
+      "lastAccessed": 1786061059930,
       "type": "file"
     }
   ],

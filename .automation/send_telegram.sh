@@ -33,17 +33,33 @@ fi
 TEXT=$(cat "$MSG_FILE")
 TEXT="${TEXT:0:4000}"  # 텔레그램 메시지 4096자 제한
 
-RESPONSE=$(curl -s -w "\n%{http_code}" \
-  "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-  --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-  --data-urlencode "text=${TEXT}" \
-  --data-urlencode "parse_mode=Markdown")
+send_message() {
+  local parse_mode_arg=("$@")
+  curl -s -w "\n%{http_code}" \
+    "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+    --data-urlencode "text=${TEXT}" \
+    "${parse_mode_arg[@]}"
+}
 
+RESPONSE=$(send_message --data-urlencode "parse_mode=Markdown")
 HTTP_CODE=$(echo "$RESPONSE" | tail -1)
 BODY=$(echo "$RESPONSE" | head -1)
 
 if [ "$HTTP_CODE" = "200" ]; then
   echo "텔레그램 발송 성공"
+  exit 0
+fi
+
+# Markdown 파싱 실패(예: 짝 안 맞는 _..._, *...*)는 흔한 실수라
+# 서식 없이 평문으로 한 번 더 시도한다 — 메시지 자체를 못 보내는 것보다 낫다.
+echo "Markdown 발송 실패 (HTTP $HTTP_CODE): $BODY — 평문으로 재시도" >&2
+RESPONSE=$(send_message)
+HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+BODY=$(echo "$RESPONSE" | head -1)
+
+if [ "$HTTP_CODE" = "200" ]; then
+  echo "텔레그램 발송 성공 (평문 폴백)"
 else
   echo "텔레그램 발송 실패 (HTTP $HTTP_CODE): $BODY" >&2
   exit 1

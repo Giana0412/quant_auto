@@ -125,6 +125,12 @@
       "type": "file"
     },
     {
+      "path": "vault/04-logs/session-log.md",
+      "accessCount": 6,
+      "lastAccessed": 1786070102074,
+      "type": "file"
+    },
+    {
       "path": "personal/08-imports/kakao/KakaoTalk_Chat_banana123_2026-08-06-14-35-23.csv",
       "accessCount": 5,
       "lastAccessed": 1786001467236,
@@ -137,12 +143,6 @@
       "type": "file"
     },
     {
-      "path": "vault/04-logs/session-log.md",
-      "accessCount": 5,
-      "lastAccessed": 1786067501608,
-      "type": "file"
-    },
-    {
       "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
       "accessCount": 4,
       "lastAccessed": 1786063627933,
@@ -152,6 +152,12 @@
       "path": "personal/09-newsletters/_digests/260807-일일요약.md",
       "accessCount": 4,
       "lastAccessed": 1786067401015,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
+      "accessCount": 4,
+      "lastAccessed": 1786069819363,
       "type": "file"
     },
     {
@@ -179,6 +185,18 @@
       "type": "file"
     },
     {
+      "path": ".automation/send_telegram.sh",
+      "accessCount": 3,
+      "lastAccessed": 1786069836153,
+      "type": "file"
+    },
+    {
+      "path": ".automation/daily-conclusion.sh",
+      "accessCount": 3,
+      "lastAccessed": 1786069859148,
+      "type": "file"
+    },
+    {
       "path": "vault/00-overview/project-summary.md",
       "accessCount": 2,
       "lastAccessed": 1786003909759,
@@ -200,12 +218,6 @@
       "path": "personal/10-market/_README.md",
       "accessCount": 2,
       "lastAccessed": 1786067175636,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
-      "accessCount": 2,
-      "lastAccessed": 1786067462756,
       "type": "file"
     },
     {
@@ -308,18 +320,6 @@
       "path": ".automation/market-snapshot.sh",
       "accessCount": 1,
       "lastAccessed": 1786065322633,
-      "type": "file"
-    },
-    {
-      "path": ".automation/send_telegram.sh",
-      "accessCount": 1,
-      "lastAccessed": 1786065358992,
-      "type": "file"
-    },
-    {
-      "path": ".automation/daily-conclusion.sh",
-      "accessCount": 1,
-      "lastAccessed": 1786065419119,
       "type": "file"
     },
     {

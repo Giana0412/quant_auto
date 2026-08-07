@@ -53,51 +53,51 @@
   },
   "hotPaths": [
     {
+      "path": "vault/06-docs/_템플릿-가이드.md",
+      "accessCount": 4,
+      "lastAccessed": 1786093405307,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_10.md",
+      "accessCount": 4,
+      "lastAccessed": 1786093414707,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
+      "accessCount": 4,
+      "lastAccessed": 1786093415258,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
+      "accessCount": 4,
+      "lastAccessed": 1786093416033,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
+      "accessCount": 4,
+      "lastAccessed": 1786093416046,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 4,
+      "lastAccessed": 1786093421718,
+      "type": "file"
+    },
+    {
       "path": "vault/04-logs/session-log.md",
       "accessCount": 3,
       "lastAccessed": 1786083357451,
       "type": "file"
     },
     {
-      "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 3,
-      "lastAccessed": 1786089760819,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 3,
-      "lastAccessed": 1786089772602,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 3,
-      "lastAccessed": 1786089772654,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 3,
-      "lastAccessed": 1786089773203,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 3,
-      "lastAccessed": 1786089773930,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 3,
-      "lastAccessed": 1786089778184,
-      "type": "file"
-    },
-    {
       "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 2,
-      "lastAccessed": 1786082484422,
+      "accessCount": 3,
+      "lastAccessed": 1786093432398,
       "type": "file"
     },
     {
@@ -116,6 +116,12 @@
       "path": "personal/07-profile/persona-personal.md",
       "accessCount": 2,
       "lastAccessed": 1786083350772,
+      "type": "file"
+    },
+    {
+      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
+      "accessCount": 2,
+      "lastAccessed": 1786093431821,
       "type": "file"
     },
     {
@@ -152,12 +158,6 @@
       "path": "personal/07-profile/demo-personal-answer.md",
       "accessCount": 1,
       "lastAccessed": 1786083334016,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786086134540,
       "type": "file"
     }
   ],

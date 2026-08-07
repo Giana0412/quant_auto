@@ -54,38 +54,38 @@
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 20,
-      "lastAccessed": 1786060574496,
+      "accessCount": 21,
+      "lastAccessed": 1786064229279,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 15,
-      "lastAccessed": 1786060583738,
+      "accessCount": 16,
+      "lastAccessed": 1786064236869,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 15,
-      "lastAccessed": 1786060586022,
+      "accessCount": 16,
+      "lastAccessed": 1786064237571,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 15,
-      "lastAccessed": 1786060586612,
+      "accessCount": 16,
+      "lastAccessed": 1786064238290,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 15,
-      "lastAccessed": 1786060586676,
+      "accessCount": 16,
+      "lastAccessed": 1786064238595,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 15,
-      "lastAccessed": 1786060596184,
+      "accessCount": 16,
+      "lastAccessed": 1786064242829,
       "type": "file"
     },
     {
@@ -113,15 +113,15 @@
       "type": "file"
     },
     {
-      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
-      "accessCount": 6,
-      "lastAccessed": 1786008195432,
+      "path": "personal/09-newsletters/_state.json",
+      "accessCount": 7,
+      "lastAccessed": 1786063606384,
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/_state.json",
+      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 6,
-      "lastAccessed": 1786063364986,
+      "lastAccessed": 1786008195432,
       "type": "file"
     },
     {
@@ -143,15 +143,27 @@
       "type": "file"
     },
     {
+      "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
+      "accessCount": 4,
+      "lastAccessed": 1786063627933,
+      "type": "file"
+    },
+    {
       "path": ".automation/process-slack-docs.sh",
       "accessCount": 3,
       "lastAccessed": 1786000950420,
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
+      "path": "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
       "accessCount": 3,
-      "lastAccessed": 1786061929120,
+      "lastAccessed": 1786063625679,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/uppity/260807-(광고)💰금값 바닥 다졌다 vs. 아직 아니다.md",
+      "accessCount": 3,
+      "lastAccessed": 1786063626366,
       "type": "file"
     },
     {
@@ -167,15 +179,15 @@
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
+      "path": "personal/09-newsletters/uppity/260807-(광고)👛 당신이 ‘엄미새’라면, 이 글을 꼭 확인하셔야 합니다.md",
       "accessCount": 2,
-      "lastAccessed": 1786061927532,
+      "lastAccessed": 1786063627013,
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/uppity/260807-(광고)💰금값 바닥 다졌다 vs. 아직 아니다.md",
+      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
       "accessCount": 2,
-      "lastAccessed": 1786061928355,
+      "lastAccessed": 1786063756190,
       "type": "file"
     },
     {
@@ -266,6 +278,36 @@
       "path": "personal/09-newsletters/_weekly/260807-주간리포트.md",
       "accessCount": 1,
       "lastAccessed": 1786062116656,
+      "type": "file"
+    },
+    {
+      "path": ".automation/market_snapshot.py",
+      "accessCount": 1,
+      "lastAccessed": 1786065213622,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_README.md",
+      "accessCount": 1,
+      "lastAccessed": 1786065300409,
+      "type": "file"
+    },
+    {
+      "path": ".automation/market-snapshot.sh",
+      "accessCount": 1,
+      "lastAccessed": 1786065322633,
+      "type": "file"
+    },
+    {
+      "path": ".automation/send_telegram.sh",
+      "accessCount": 1,
+      "lastAccessed": 1786065358992,
+      "type": "file"
+    },
+    {
+      "path": ".automation/daily-conclusion.sh",
+      "accessCount": 1,
+      "lastAccessed": 1786065419119,
       "type": "file"
     }
   ],

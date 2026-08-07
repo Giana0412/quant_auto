@@ -131,6 +131,12 @@
       "type": "file"
     },
     {
+      "path": ".automation/daily-conclusion.sh",
+      "accessCount": 6,
+      "lastAccessed": 1786071123255,
+      "type": "file"
+    },
+    {
       "path": "personal/08-imports/kakao/KakaoTalk_Chat_banana123_2026-08-06-14-35-23.csv",
       "accessCount": 5,
       "lastAccessed": 1786001467236,
@@ -143,21 +149,33 @@
       "type": "file"
     },
     {
+      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "accessCount": 5,
+      "lastAccessed": 1786071208194,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
+      "accessCount": 5,
+      "lastAccessed": 1786071231239,
+      "type": "file"
+    },
+    {
       "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
       "accessCount": 4,
       "lastAccessed": 1786063627933,
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "path": "personal/10-market/_README.md",
       "accessCount": 4,
-      "lastAccessed": 1786067401015,
+      "lastAccessed": 1786071143372,
       "type": "file"
     },
     {
-      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
+      "path": "personal/10-market/data/260807-시장데이터.md",
       "accessCount": 4,
-      "lastAccessed": 1786069819363,
+      "lastAccessed": 1786071208142,
       "type": "file"
     },
     {
@@ -179,21 +197,9 @@
       "type": "file"
     },
     {
-      "path": "personal/10-market/data/260807-시장데이터.md",
-      "accessCount": 3,
-      "lastAccessed": 1786067401582,
-      "type": "file"
-    },
-    {
       "path": ".automation/send_telegram.sh",
       "accessCount": 3,
       "lastAccessed": 1786069836153,
-      "type": "file"
-    },
-    {
-      "path": ".automation/daily-conclusion.sh",
-      "accessCount": 3,
-      "lastAccessed": 1786069859148,
       "type": "file"
     },
     {
@@ -212,12 +218,6 @@
       "path": "personal/09-newsletters/uppity/260807-(광고)👛 당신이 ‘엄미새’라면, 이 글을 꼭 확인하셔야 합니다.md",
       "accessCount": 2,
       "lastAccessed": 1786063627013,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_README.md",
-      "accessCount": 2,
-      "lastAccessed": 1786067175636,
       "type": "file"
     },
     {
@@ -326,6 +326,12 @@
       "path": ".automation/.telegram.env",
       "accessCount": 1,
       "lastAccessed": 1786069530405,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론-쉬운설명.md",
+      "accessCount": 1,
+      "lastAccessed": 1786071261360,
       "type": "file"
     }
   ],

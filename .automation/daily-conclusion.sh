@@ -16,6 +16,7 @@ cd "$VAULT_DIR"
 TODAY_KST=$(TZ=Asia/Seoul date +%y%m%d)
 TODAY_ISO_KST=$(TZ=Asia/Seoul date +%Y-%m-%d)
 CONCLUSION_PATH="personal/10-market/_conclusions/${TODAY_KST}-오늘의결론.md"
+EASY_PATH="personal/10-market/_conclusions/${TODAY_KST}-오늘의결론-쉬운설명.md"
 
 PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
 
@@ -42,6 +43,15 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
 4. 파일을 다 쓴 뒤, 다음 명령으로 텔레그램에 발송한다:
    .automation/send_telegram.sh ${CONCLUSION_PATH}
    (이 스크립트는 텔레그램이 아직 설정 안 됐으면 조용히 건너뛴다 — 실패로 취급하지 않는다. 출력 결과를 그대로 보고해라.)
+
+5. 이어서 ${EASY_PATH} 를 작성한다 — **같은 사실을 훨씬 쉽고 재밌게 풀어쓴 두 번째 버전**. 3번 버전이 팩트를 압축한 브리핑이라면, 이건 친한 친구가 오늘 있었던 일을 옆에서 조곤조곤 재밌게 설명해주는 버전이다.
+   - 숫자·전문용어를 몰라도 이해되게 풀어쓴다 (예: '코스피 -4.58%' → '한국 주식시장 전체가 오늘 꽤 크게 빠졌어요'). 비유·일상적인 표현을 적극 쓴다.
+   - 딱딱한 표/구조 대신 이야기하듯 자연스럽게 흐르게 쓴다. '오늘 제일 재밌었던 건', '한 줄로 말하면' 같은 후킹 문장으로 시작해도 좋다.
+   - **사실을 과장하거나 지어내지 않는다** — 원본(뉴스 다이제스트/시장데이터)에 없는 숫자·사건을 만들지 않는다. 쉽게 풀어쓰는 것과 없는 걸 지어내는 건 다르다.
+   - 이모지는 자유롭게 써도 되지만 과하지 않게. 분량은 3번 버전보다 길어도 된다(20줄 정도까지 — 텔레그램에서 편하게 읽히는 선).
+   - 마찬가지로 _italic_ 문법은 쓰지 않는다(*bold*, \`code\`만). 파일 경로는 이 버전엔 안 넣어도 된다(원문은 3번 버전에 이미 있음).
+6. ${EASY_PATH} 도 텔레그램에 발송한다:
+   .automation/send_telegram.sh ${EASY_PATH}
 
 personal/10-market/_conclusions/ 외의 다른 파일은 건드리지 않는다. git commit/push는 하지 않는다."
 

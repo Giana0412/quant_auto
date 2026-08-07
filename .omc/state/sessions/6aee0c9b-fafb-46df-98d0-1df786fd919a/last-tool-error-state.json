@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cat .automation/market-snapshot.sh 2>/dev/null; echo \\\"---VENVS---\\\"; ls -d .automation/*venv* .venv venv 2>/dev/null\",\"description\":\"Inspect market-snapshot.sh and look for venv\"}",
+  "error": "Exit code 1\n#!/bin/bash\n# 시장봇: 대표 지수/환율/금 고정 세트 + 오늘 뉴스에 언급된 종목을 yfinance로 스냅샷.\n# launchd가 매일 20:15 KST에 호출한다 (com.giana.market-snapshot.plist).\n# 뉴스레터 일일 다이제스트(archive-newsletters.sh, 20:00) 이후에 돌도록 스케줄돼 있다.\n\nset -euo pipefail\n\nVAULT_DIR=\"/Users/gyuhyeongkim/orca/projects/obsidian_test\"\nCLAUDE_BIN=\"/Users/gyuhyeongkim/.local/bin/claude\"\nLOG_DIR=\"$VAULT_DIR/.automation/logs\"\nLOG_FILE=\"$LOG_DIR/$(date +%Y%m%d).log\"\n\nmkdir -p \"$LOG_DIR\"\ncd \"$VAULT_DIR\"\n\nTODAY_KST=$(TZ=Asia/Seoul date +%y%m%d)\nTODA...",
+  "timestamp": "2026-08-07T11:15:37.601Z",
+  "retry_count": 2
+}

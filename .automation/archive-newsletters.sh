@@ -51,3 +51,40 @@ personal/09-newsletters/ 외의 다른 파일은 건드리지 않는다. git com
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 아카이브] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"
+
+# --- 2단계: 일일 교차 다이제스트 ---
+# 오늘 새로 아카이브된 뉴스레터가 있으면, 소스 간 공통 주제를 뽑아 한국어로 요약한다.
+# 원본 아카이브(1단계)는 원문 그대로 보존하는 게 원칙이라 요약하지 않지만,
+# 이 다이제스트는 분석 보조용 별도 산출물이라 요약·번역이 목적에 맞다.
+TODAY_KST=$(TZ=Asia/Seoul date +%y%m%d)
+
+PROMPT_DIGEST="오늘 날짜(KST, YYMMDD): ${TODAY_KST}
+
+작업:
+1. personal/09-newsletters/{newneek,uppity,bloomberg}/ 에서 파일명이 '${TODAY_KST}-'로 시작하는 파일을 Glob으로 찾는다.
+2. 하나도 없으면 '오늘 발행물 없음 — 다이제스트 생략'만 출력하고 끝낸다.
+3. 있으면 각 파일을 읽는다. 영문(주로 bloomberg)은 한국어로 번역해서 이해한다.
+4. personal/09-newsletters/_digests/${TODAY_KST}-일일요약.md 를 작성한다. 형식:
+   ---
+   date: (오늘 날짜 YYYY-MM-DD)
+   sources: (오늘 포함된 소스 목록)
+   ---
+
+   # ${TODAY_KST} 뉴스레터 일일 요약
+
+   ## 소스별 핵심 (한국어, 영문 원문은 번역)
+   - **뉴닉**: (있으면 2-3문장 요약)
+   - **어피티**: (있으면 2-3문장 요약)
+   - **블룸버그**: (있으면 2-3문장 요약, 영문 원문 번역 포함)
+
+   ## 오늘의 교차 주제
+   (2개 이상 소스에서 공통으로 다룬 주제가 있으면 짚는다. 없으면 '오늘은 소스 간 겹치는 주제 없음'이라고 명시한다 — 없는 걸 억지로 만들지 않는다.)
+
+personal/09-newsletters/_digests/ 외의 다른 파일은 건드리지 않는다. git commit/push는 하지 않는다."
+
+{
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 일일다이제스트] 실행 시작 ==="
+  "$CLAUDE_BIN" -p "$PROMPT_DIGEST" --allowedTools "Read Write Glob Grep" 2>&1
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 일일다이제스트] 실행 종료 ==="
+  echo
+} >> "$LOG_FILE"

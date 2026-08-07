@@ -101,6 +101,18 @@
       "type": "file"
     },
     {
+      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "accessCount": 3,
+      "lastAccessed": 1786102217598,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/data/260807-시장데이터.md",
+      "accessCount": 3,
+      "lastAccessed": 1786102218111,
+      "type": "file"
+    },
+    {
       "path": "vault/07-persona/persona-shared-core.md",
       "accessCount": 2,
       "lastAccessed": 1786082839815,
@@ -140,18 +152,6 @@
       "path": "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
       "accessCount": 2,
       "lastAccessed": 1786100541423,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
-      "accessCount": 2,
-      "lastAccessed": 1786101312235,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/data/260807-시장데이터.md",
-      "accessCount": 2,
-      "lastAccessed": 1786101438583,
       "type": "file"
     },
     {
@@ -218,6 +218,18 @@
       "path": "personal/10-market/_README.md",
       "accessCount": 1,
       "lastAccessed": 1786101311504,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
+      "accessCount": 1,
+      "lastAccessed": 1786102231532,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론-쉬운설명.md",
+      "accessCount": 1,
+      "lastAccessed": 1786102259856,
       "type": "file"
     }
   ],

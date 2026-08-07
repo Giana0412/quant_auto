@@ -54,44 +54,44 @@
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 21,
-      "lastAccessed": 1786064229279,
+      "accessCount": 22,
+      "lastAccessed": 1786067882502,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 16,
-      "lastAccessed": 1786064236869,
+      "accessCount": 17,
+      "lastAccessed": 1786067889911,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 16,
-      "lastAccessed": 1786064237571,
+      "accessCount": 17,
+      "lastAccessed": 1786067890328,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 16,
-      "lastAccessed": 1786064238290,
+      "accessCount": 17,
+      "lastAccessed": 1786067890928,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 16,
-      "lastAccessed": 1786064238595,
+      "accessCount": 17,
+      "lastAccessed": 1786067891460,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 16,
-      "lastAccessed": 1786064242829,
+      "accessCount": 17,
+      "lastAccessed": 1786067896674,
       "type": "file"
     },
     {
       "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 10,
-      "lastAccessed": 1786060608366,
+      "accessCount": 11,
+      "lastAccessed": 1786067912153,
       "type": "file"
     },
     {
@@ -138,14 +138,20 @@
     },
     {
       "path": "vault/04-logs/session-log.md",
-      "accessCount": 4,
-      "lastAccessed": 1786012407443,
+      "accessCount": 5,
+      "lastAccessed": 1786067501608,
       "type": "file"
     },
     {
       "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
       "accessCount": 4,
       "lastAccessed": 1786063627933,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "accessCount": 4,
+      "lastAccessed": 1786067401015,
       "type": "file"
     },
     {
@@ -167,6 +173,12 @@
       "type": "file"
     },
     {
+      "path": "personal/10-market/data/260807-시장데이터.md",
+      "accessCount": 3,
+      "lastAccessed": 1786067401582,
+      "type": "file"
+    },
+    {
       "path": "vault/00-overview/project-summary.md",
       "accessCount": 2,
       "lastAccessed": 1786003909759,
@@ -185,9 +197,15 @@
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "path": "personal/10-market/_README.md",
       "accessCount": 2,
-      "lastAccessed": 1786063756190,
+      "lastAccessed": 1786067175636,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
+      "accessCount": 2,
+      "lastAccessed": 1786067462756,
       "type": "file"
     },
     {
@@ -284,12 +302,6 @@
       "path": ".automation/market_snapshot.py",
       "accessCount": 1,
       "lastAccessed": 1786065213622,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_README.md",
-      "accessCount": 1,
-      "lastAccessed": 1786065300409,
       "type": "file"
     },
     {

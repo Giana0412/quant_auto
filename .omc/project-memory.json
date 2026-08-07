@@ -321,6 +321,12 @@
       "accessCount": 1,
       "lastAccessed": 1786065419119,
       "type": "file"
+    },
+    {
+      "path": ".automation/.telegram.env",
+      "accessCount": 1,
+      "lastAccessed": 1786069530405,
+      "type": "file"
     }
   ],
   "userDirectives": []

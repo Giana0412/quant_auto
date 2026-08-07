@@ -54,38 +54,38 @@
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 4,
-      "lastAccessed": 1786093405307,
+      "accessCount": 5,
+      "lastAccessed": 1786100207312,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 4,
-      "lastAccessed": 1786093414707,
+      "accessCount": 5,
+      "lastAccessed": 1786100214481,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 4,
-      "lastAccessed": 1786093415258,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 4,
-      "lastAccessed": 1786093416033,
+      "accessCount": 5,
+      "lastAccessed": 1786100215135,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 4,
-      "lastAccessed": 1786093416046,
+      "accessCount": 5,
+      "lastAccessed": 1786100215890,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
+      "accessCount": 5,
+      "lastAccessed": 1786100215945,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 4,
-      "lastAccessed": 1786093421718,
+      "accessCount": 5,
+      "lastAccessed": 1786100219414,
       "type": "file"
     },
     {
@@ -125,6 +125,24 @@
       "type": "file"
     },
     {
+      "path": "personal/09-newsletters/_state.json",
+      "accessCount": 2,
+      "lastAccessed": 1786100515599,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/newneek/260807-💓메가커피, 덕수궁까지 '나폴리탄 괴담'에 빠진 이유 👻.md",
+      "accessCount": 2,
+      "lastAccessed": 1786100541101,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
+      "accessCount": 2,
+      "lastAccessed": 1786100541423,
+      "type": "file"
+    },
+    {
       "path": "vault/02-modules/research.md",
       "accessCount": 1,
       "lastAccessed": 1786082244461,
@@ -158,6 +176,36 @@
       "path": "personal/07-profile/demo-personal-answer.md",
       "accessCount": 1,
       "lastAccessed": 1786083334016,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_README.md",
+      "accessCount": 1,
+      "lastAccessed": 1786100410514,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/uppity/260807-(광고)💰금값 바닥 다졌다 vs. 아직 아니다.md",
+      "accessCount": 1,
+      "lastAccessed": 1786100542863,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/uppity/260807-(광고)👛 당신이 ‘엄미새’라면, 이 글을 꼭 확인하셔야 합니다.md",
+      "accessCount": 1,
+      "lastAccessed": 1786100543623,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
+      "accessCount": 1,
+      "lastAccessed": 1786100543988,
+      "type": "file"
+    },
+    {
+      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "accessCount": 1,
+      "lastAccessed": 1786100596837,
       "type": "file"
     }
   ],

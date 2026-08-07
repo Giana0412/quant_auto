@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1785994804278,
+  "lastScanned": 1786082232163,
   "projectRoot": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
   "techStack": {
     "languages": [],
@@ -33,305 +33,113 @@
       "path": "company-src",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1785994804265,
+      "lastAccessed": 1786082232144,
       "keyFiles": []
     },
     "personal": {
       "path": "personal",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1785994804266,
+      "lastAccessed": 1786082232148,
       "keyFiles": []
     },
     "vault": {
       "path": "vault",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1785994804266,
+      "lastAccessed": 1786082232149,
       "keyFiles": []
     }
   },
   "hotPaths": [
     {
-      "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 24,
-      "lastAccessed": 1786078781554,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 19,
-      "lastAccessed": 1786078784532,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 19,
-      "lastAccessed": 1786078785748,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 19,
-      "lastAccessed": 1786078786275,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 19,
-      "lastAccessed": 1786078786595,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 19,
-      "lastAccessed": 1786078786962,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 11,
-      "lastAccessed": 1786067912153,
-      "type": "file"
-    },
-    {
-      "path": "personal/07-profile/person-profile.md",
-      "accessCount": 8,
-      "lastAccessed": 1786012387582,
-      "type": "file"
-    },
-    {
-      "path": ".automation/daily-conclusion.sh",
-      "accessCount": 8,
-      "lastAccessed": 1786072069441,
-      "type": "file"
-    },
-    {
       "path": "vault/06-docs/03-결정사항/260804-상욱현지규형원온원-결정사항.md",
-      "accessCount": 8,
-      "lastAccessed": 1786078825649,
+      "accessCount": 2,
+      "lastAccessed": 1786082484422,
       "type": "file"
     },
     {
-      "path": ".automation/archive-newsletters.sh",
-      "accessCount": 7,
-      "lastAccessed": 1786061556321,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_state.json",
-      "accessCount": 7,
-      "lastAccessed": 1786063606384,
+      "path": "vault/07-persona/persona-shared-core.md",
+      "accessCount": 2,
+      "lastAccessed": 1786082839815,
       "type": "file"
     },
     {
       "path": "vault/04-logs/session-log.md",
-      "accessCount": 7,
-      "lastAccessed": 1786071849099,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
-      "accessCount": 7,
-      "lastAccessed": 1786072287894,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
-      "accessCount": 6,
-      "lastAccessed": 1786008195432,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
-      "accessCount": 6,
-      "lastAccessed": 1786072201577,
-      "type": "file"
-    },
-    {
-      "path": "personal/08-imports/kakao/KakaoTalk_Chat_banana123_2026-08-06-14-35-23.csv",
-      "accessCount": 5,
-      "lastAccessed": 1786001467236,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/_README.md",
-      "accessCount": 5,
-      "lastAccessed": 1786063357239,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/data/260807-시장데이터.md",
-      "accessCount": 5,
-      "lastAccessed": 1786072201666,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/bloomberg/260807-Money Stuff Fake SpaceX Stock Isn’t Worth as Much.md",
-      "accessCount": 4,
-      "lastAccessed": 1786063627933,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_README.md",
-      "accessCount": 4,
-      "lastAccessed": 1786071143372,
-      "type": "file"
-    },
-    {
-      "path": ".automation/process-slack-docs.sh",
-      "accessCount": 3,
-      "lastAccessed": 1786000950420,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/newneek/260807-(광고)🦔길고양이 vs. 새, 댓글만 봐선 모르는 진짜 쟁점.md",
-      "accessCount": 3,
-      "lastAccessed": 1786063625679,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/uppity/260807-(광고)💰금값 바닥 다졌다 vs. 아직 아니다.md",
-      "accessCount": 3,
-      "lastAccessed": 1786063626366,
-      "type": "file"
-    },
-    {
-      "path": ".automation/send_telegram.sh",
-      "accessCount": 3,
-      "lastAccessed": 1786069836153,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_conclusions/260807-오늘의결론-쉬운설명.md",
-      "accessCount": 3,
-      "lastAccessed": 1786072253178,
-      "type": "file"
-    },
-    {
-      "path": "vault/00-overview/project-summary.md",
       "accessCount": 2,
-      "lastAccessed": 1786003909759,
+      "lastAccessed": 1786082958937,
       "type": "file"
     },
     {
-      "path": "vault/06-docs/03-결정사항/260710-지호님미팅-결정사항.md",
-      "accessCount": 2,
-      "lastAccessed": 1786010422883,
-      "type": "file"
-    },
-    {
-      "path": "personal/09-newsletters/uppity/260807-(광고)👛 당신이 ‘엄미새’라면, 이 글을 꼭 확인하셔야 합니다.md",
-      "accessCount": 2,
-      "lastAccessed": 1786063627013,
-      "type": "file"
-    },
-    {
-      "path": ".claude/settings.local.json",
+      "path": "vault/07-persona/persona-work.md",
       "accessCount": 1,
-      "lastAccessed": 1786000201843,
+      "lastAccessed": 1786082237434,
       "type": "file"
     },
     {
-      "path": "vault/00-overview/vault-rationale.md",
+      "path": "vault/02-modules/research.md",
       "accessCount": 1,
-      "lastAccessed": 1786003900023,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/01-전사본/260731-노션활용강의-전사본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786008286461,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/01-전사본/260710-지호님미팅-전사본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786008311636,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260731-노션활용강의-정리본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786008342002,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/03-결정사항/260731-노션활용강의-결정사항.md",
-      "accessCount": 1,
-      "lastAccessed": 1786008354600,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260710-지호님미팅-정리본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786008384121,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/03-결정사항/260728-준범님원온원-결정사항.md",
-      "accessCount": 1,
-      "lastAccessed": 1786010459936,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260724-준범님원온원이벤트DB-정리본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786010492049,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/03-결정사항/260724-준범님원온원이벤트DB-결정사항.md",
-      "accessCount": 1,
-      "lastAccessed": 1786010522752,
-      "type": "file"
-    },
-    {
-      "path": "vault/06-docs/02-정리본/260803-이벤트리서치옵시디언방향성논의-정리본.md",
-      "accessCount": 1,
-      "lastAccessed": 1786011384552,
+      "lastAccessed": 1786082244461,
       "type": "file"
     },
     {
       "path": "vault/06-docs/03-결정사항/260803-이벤트리서치옵시디언방향성논의-결정사항.md",
       "accessCount": 1,
-      "lastAccessed": 1786011423777,
+      "lastAccessed": 1786082248173,
       "type": "file"
     },
     {
-      "path": "personal/07-profile/voice-style.md",
+      "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 1,
-      "lastAccessed": 1786012377050,
+      "lastAccessed": 1786082257557,
       "type": "file"
     },
     {
-      "path": ".automation/weekly-newsletter-report.sh",
+      "path": "vault/06-docs/02-정리본/260803-이벤트리서치옵시디언방향성논의-정리본.md",
       "accessCount": 1,
-      "lastAccessed": 1786061579806,
+      "lastAccessed": 1786082258793,
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/_weekly/260807-주간리포트.md",
+      "path": "vault/06-docs/_템플릿-가이드.md",
       "accessCount": 1,
-      "lastAccessed": 1786062116656,
+      "lastAccessed": 1786082443805,
       "type": "file"
     },
     {
-      "path": ".automation/market_snapshot.py",
+      "path": "vault/05-slack/20260806_10.md",
       "accessCount": 1,
-      "lastAccessed": 1786065213622,
+      "lastAccessed": 1786082450384,
       "type": "file"
     },
     {
-      "path": ".automation/market-snapshot.sh",
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
       "accessCount": 1,
-      "lastAccessed": 1786065322633,
+      "lastAccessed": 1786082451109,
       "type": "file"
     },
     {
-      "path": ".automation/.telegram.env",
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
       "accessCount": 1,
-      "lastAccessed": 1786069530405,
+      "lastAccessed": 1786082451839,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
+      "accessCount": 1,
+      "lastAccessed": 1786082452662,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_김규형_1024.md",
+      "accessCount": 1,
+      "lastAccessed": 1786082459472,
+      "type": "file"
+    },
+    {
+      "path": "personal/07-profile/persona-personal.md",
+      "accessCount": 1,
+      "lastAccessed": 1786082850409,
       "type": "file"
     }
   ],

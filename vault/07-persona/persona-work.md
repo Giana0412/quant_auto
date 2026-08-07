@@ -52,5 +52,6 @@ OAO에서 이벤트 리서치 자동화 파이프라인(discover/enrich/adjudica
 
 ## 관련 문서
 - [[persona-shared-core]]
+- [[demo-work-answer]] (실제 답변 데모)
 - [[vault-rationale]]
 - [[research]]

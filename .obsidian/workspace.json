@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "personal/09-newsletters/_digests/260807-일일요약.md",
+                "file": "vault/00-overview/project-summary.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "260807-일일요약"
+              "title": "project-summary"
             }
           }
         ]
@@ -198,12 +198,12 @@
   },
   "active": "ca2921d747120edc",
   "lastOpenFiles": [
+    "personal/09-newsletters/_digests/260807-일일요약.md",
     "personal/09-newsletters/_README.md",
     "personal/10-market/_README.md",
     "personal/10-market/data",
     "personal/10-market/_conclusions",
     "personal/10-market",
-    "personal/09-newsletters/_digests/260807-일일요약.md",
     "personal/09-newsletters/uppity/260807-(광고)👛 당신이 ‘엄미새’라면, 이 글을 꼭 확인하셔야 합니다.md",
     "personal/09-newsletters/_weekly/260807-주간리포트.md",
     "personal/09-newsletters/_weekly",

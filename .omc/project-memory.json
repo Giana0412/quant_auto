@@ -54,38 +54,38 @@
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 22,
-      "lastAccessed": 1786067882502,
+      "accessCount": 23,
+      "lastAccessed": 1786071533455,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 17,
-      "lastAccessed": 1786067889911,
+      "accessCount": 18,
+      "lastAccessed": 1786071540716,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 17,
-      "lastAccessed": 1786067890328,
+      "accessCount": 18,
+      "lastAccessed": 1786071540987,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 17,
-      "lastAccessed": 1786067890928,
+      "accessCount": 18,
+      "lastAccessed": 1786071542310,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 17,
-      "lastAccessed": 1786067891460,
+      "accessCount": 18,
+      "lastAccessed": 1786071542386,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 17,
-      "lastAccessed": 1786067896674,
+      "accessCount": 18,
+      "lastAccessed": 1786071547852,
       "type": "file"
     },
     {
@@ -98,6 +98,12 @@
       "path": "personal/07-profile/person-profile.md",
       "accessCount": 8,
       "lastAccessed": 1786012387582,
+      "type": "file"
+    },
+    {
+      "path": ".automation/daily-conclusion.sh",
+      "accessCount": 8,
+      "lastAccessed": 1786072069441,
       "type": "file"
     },
     {
@@ -119,21 +125,27 @@
       "type": "file"
     },
     {
+      "path": "vault/04-logs/session-log.md",
+      "accessCount": 7,
+      "lastAccessed": 1786071849099,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
+      "accessCount": 7,
+      "lastAccessed": 1786072287894,
+      "type": "file"
+    },
+    {
       "path": "vault/06-docs/02-정리본/260804-상욱현지규형원온원-정리본.md",
       "accessCount": 6,
       "lastAccessed": 1786008195432,
       "type": "file"
     },
     {
-      "path": "vault/04-logs/session-log.md",
+      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
       "accessCount": 6,
-      "lastAccessed": 1786070102074,
-      "type": "file"
-    },
-    {
-      "path": ".automation/daily-conclusion.sh",
-      "accessCount": 6,
-      "lastAccessed": 1786071123255,
+      "lastAccessed": 1786072201577,
       "type": "file"
     },
     {
@@ -149,15 +161,9 @@
       "type": "file"
     },
     {
-      "path": "personal/09-newsletters/_digests/260807-일일요약.md",
+      "path": "personal/10-market/data/260807-시장데이터.md",
       "accessCount": 5,
-      "lastAccessed": 1786071208194,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_conclusions/260807-오늘의결론.md",
-      "accessCount": 5,
-      "lastAccessed": 1786071231239,
+      "lastAccessed": 1786072201666,
       "type": "file"
     },
     {
@@ -170,12 +176,6 @@
       "path": "personal/10-market/_README.md",
       "accessCount": 4,
       "lastAccessed": 1786071143372,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/data/260807-시장데이터.md",
-      "accessCount": 4,
-      "lastAccessed": 1786071208142,
       "type": "file"
     },
     {
@@ -200,6 +200,12 @@
       "path": ".automation/send_telegram.sh",
       "accessCount": 3,
       "lastAccessed": 1786069836153,
+      "type": "file"
+    },
+    {
+      "path": "personal/10-market/_conclusions/260807-오늘의결론-쉬운설명.md",
+      "accessCount": 3,
+      "lastAccessed": 1786072253178,
       "type": "file"
     },
     {
@@ -326,12 +332,6 @@
       "path": ".automation/.telegram.env",
       "accessCount": 1,
       "lastAccessed": 1786069530405,
-      "type": "file"
-    },
-    {
-      "path": "personal/10-market/_conclusions/260807-오늘의결론-쉬운설명.md",
-      "accessCount": 1,
-      "lastAccessed": 1786071261360,
       "type": "file"
     }
   ],

@@ -1,0 +1,328 @@
+{
+  "version": 1,
+  "jobId": "7b6ada2b-2d74-477b-92a5-021aac63a280",
+  "sessionId": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+  "scopeKey": "b7209cfe4afe5f744ee8449e4f3f1ba23afbf5967a756b3a0fd60348903805af",
+  "revision": 41,
+  "createdAt": "2026-08-08T17:41:52.805Z",
+  "updatedAt": "2026-08-08T17:41:53.796Z",
+  "producerGraceExpiresAt": "2026-08-08T17:42:22.806Z",
+  "bestEffortDeadlineAt": "2026-08-08T17:43:13.806Z",
+  "producers": {
+    "core": {
+      "state": "sealed",
+      "intentKey": "5ff341eebee1e420992a79ee4ec9d3df647ad289bae1a7cdb8cdb9757f285ae0",
+      "payloadDigest": "5ff341eebee1e420992a79ee4ec9d3df647ad289bae1a7cdb8cdb9757f285ae0",
+      "sealedAt": "2026-08-08T17:41:52.890Z",
+      "sealedBy": "foreground"
+    },
+    "wiki": {
+      "state": "no-op",
+      "sealedAt": "2026-08-08T17:41:52.805Z",
+      "sealedBy": "wiki-producer"
+    }
+  },
+  "actions": {
+    "foreground-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 0,
+      "idempotencyKey": "febf6dba2f2536433960a07f7cedce72e946b43ced0896570df80f017b8914d2",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {},
+        "foregroundResult": {
+          "removedTransientFiles": 1,
+          "completedAt": "2026-08-08T17:41:52.890Z"
+        }
+      },
+      "budgetMs": 9000,
+      "completedAt": "2026-08-08T17:41:52.890Z",
+      "lastOutcomeCode": "completed"
+    },
+    "wiki-capture": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 0,
+      "idempotencyKey": "1719cd1ef5b51e0269b78c4cb8c9308c9c1f7b82fd1c067fc034c060f23863f5",
+      "payload": {},
+      "budgetMs": 9000,
+      "completedAt": "2026-08-08T17:41:52.805Z"
+    },
+    "team-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "cee6ac31df545408e1e822247ac249b3f8182a98a5fe8e448ae3b251e55bdee1",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {}
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-08-08T17:41:52.910Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "1323baa4-e4c6-4764-8e06-20bd32e97f3f",
+        "phase": "terminal",
+        "deadlineAt": "2026-08-08T17:42:02.872Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-08-08T17:41:53.046Z"
+    },
+    "python-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "1f1370c4ac056606059d517e2f106b602d8cbcb04587b3fcc5f3b9f89e649cd0",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {}
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-08-08T17:41:53.062Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "c37a2d93-1508-47bf-b3da-ff874760a7d5",
+        "phase": "terminal",
+        "deadlineAt": "2026-08-08T17:42:02.872Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-08-08T17:41:53.202Z"
+    },
+    "reply-cleanup": {
+      "class": "required",
+      "phase": "deferred-required",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "0b3a8b47c28b26d56aca004d4f572b96c118f16819c0d35162418816f9a5420a",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {}
+      },
+      "budgetMs": 9000,
+      "claimedAt": "2026-08-08T17:41:53.217Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "ccfa3908-7ec6-45fb-bcd3-db0475b5bf49",
+        "phase": "terminal",
+        "deadlineAt": "2026-08-08T17:42:02.872Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-08-08T17:41:53.358Z"
+    },
+    "callback": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "d068ede2655bf89e0c0950e087d0603d7dcf45538e94f20a654d08c6f4841895",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {}
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-08-08T17:41:53.373Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "5c5164ab-f568-453a-b4a6-cde9c6728841",
+        "phase": "terminal",
+        "deadlineAt": "2026-08-08T17:42:02.872Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-08-08T17:41:53.498Z"
+    },
+    "notification": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "89c0438ff63097ce04beb60efb87292ff68a7af350a0ee331f3de9dbf42d62fc",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {}
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-08-08T17:41:53.513Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "dea410df-2bb7-41dc-b12b-07b5800ac46a",
+        "phase": "terminal",
+        "deadlineAt": "2026-08-08T17:42:02.872Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-08-08T17:41:53.633Z"
+    },
+    "openclaw": {
+      "class": "best-effort",
+      "phase": "deferred-best-effort",
+      "status": "completed",
+      "attempts": 1,
+      "idempotencyKey": "31fe8f6e1cf204e27006de511df257326fdd98655122ca437013e8779ffc735b",
+      "payload": {
+        "transcriptPath": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+        "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+        "reason": "other",
+        "input": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "transcript_path": "/Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/53c797e1-7b0f-4166-970d-04c38fac76ea.jsonl",
+          "cwd": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
+          "prompt_id": "0f43b66a-7b33-40b3-afee-2c597c5399d4",
+          "hook_event_name": "SessionEnd",
+          "reason": "other"
+        },
+        "metrics": {
+          "session_id": "53c797e1-7b0f-4166-970d-04c38fac76ea",
+          "ended_at": "2026-08-08T17:41:52.803Z",
+          "reason": "other",
+          "agents_spawned": 0,
+          "agents_completed": 0,
+          "modes_used": []
+        },
+        "initialTeamNames": [],
+        "openClawEnabled": false,
+        "openClawRouting": {}
+      },
+      "budgetMs": 2000,
+      "claimedAt": "2026-08-08T17:41:53.647Z",
+      "runner": {
+        "attempt": 1,
+        "runnerNonce": "df4456fc-2151-4569-ae65-200b73ba132b",
+        "phase": "terminal",
+        "deadlineAt": "2026-08-08T17:42:02.872Z"
+      },
+      "lastOutcomeCode": "completed",
+      "completedAt": "2026-08-08T17:41:53.768Z"
+    }
+  },
+  "owner": null,
+  "phase": "complete",
+  "completion": {
+    "completedAt": "2026-08-08T17:41:53.782Z",
+    "terminalDigest": "8ce9ff868adc484935f954fca2f6bb00e611b22009a644244d522167aa17e28c",
+    "terminalRevision": 40
+  }
+}

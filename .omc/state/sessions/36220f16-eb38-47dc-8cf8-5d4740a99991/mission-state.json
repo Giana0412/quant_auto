@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-07T09:23:08.626Z",
+  "updatedAt": "2026-08-08T15:57:10.730Z",
   "missions": [
     {
       "id": "session:36220f16-eb38-47dc-8cf8-5d4740a99991:none",
@@ -7,7 +7,7 @@
       "name": "none",
       "objective": "Session mission",
       "createdAt": "2026-08-05T06:15:48.923Z",
-      "updatedAt": "2026-08-07T09:23:08.626Z",
+      "updatedAt": "2026-08-08T15:57:10.730Z",
       "status": "done",
       "workerCount": 11,
       "taskCounts": {
@@ -27,7 +27,7 @@
           "currentStep": null,
           "latestUpdate": "completed",
           "completedSummary": null,
-          "updatedAt": "2026-08-07T09:23:08.626Z"
+          "updatedAt": "2026-08-08T15:57:10.730Z"
         },
         {
           "name": "doc-research:adoc-re",
@@ -266,6 +266,14 @@
           "agent": "doc-omx:adoc-om",
           "detail": "completed",
           "sourceKey": "session-stop:a83fe27a2fa865be3"
+        },
+        {
+          "id": "session-stop:a8a0a050b8026a1e5:2026-08-08T15:57:10.730Z",
+          "at": "2026-08-08T15:57:10.730Z",
+          "kind": "completion",
+          "agent": "doc-omx:adoc-om",
+          "detail": "completed",
+          "sourceKey": "session-stop:a8a0a050b8026a1e5"
         }
       ]
     }

@@ -133,3 +133,9 @@ vault/05-slack의 5개 파일을 모두 확인했습니다.
 처리할 새 원본 없음
 === 2026-08-08 17:11:15 [1/2 문서화] 실행 종료 ===
 
+=== 2026-08-08 20:00:00 [뉴스레터 아카이브] 실행 시작 ===
+=== 2026-08-08 20:16:59 [시장봇] 실행 시작 ===
+=== 2026-08-08 20:33:23 [분석봇] 실행 시작 ===
+API Error: Unable to connect to API (ENOTFOUND)
+API Error: Unable to connect to API (ENOTFOUND)
+API Error: Unable to connect to API (ENOTFOUND)

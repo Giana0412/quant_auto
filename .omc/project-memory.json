@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1786082232163,
+  "lastScanned": 1786172919416,
   "projectRoot": "/Users/gyuhyeongkim/orca/projects/obsidian_test",
   "techStack": {
     "languages": [],
@@ -33,65 +33,65 @@
       "path": "company-src",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1786082232144,
+      "lastAccessed": 1786172919405,
       "keyFiles": []
     },
     "personal": {
       "path": "personal",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1786082232148,
+      "lastAccessed": 1786172919405,
       "keyFiles": []
     },
     "vault": {
       "path": "vault",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1786082232149,
+      "lastAccessed": 1786172919405,
       "keyFiles": []
     }
   },
   "hotPaths": [
     {
       "path": "vault/06-docs/_템플릿-가이드.md",
-      "accessCount": 18,
-      "lastAccessed": 1786166044278,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_10.md",
-      "accessCount": 18,
-      "lastAccessed": 1786166049885,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BC06201S5.md",
-      "accessCount": 18,
-      "lastAccessed": 1786166050524,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
-      "accessCount": 18,
-      "lastAccessed": 1786166051270,
-      "type": "file"
-    },
-    {
-      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
-      "accessCount": 18,
-      "lastAccessed": 1786166052006,
+      "accessCount": 19,
+      "lastAccessed": 1786172935575,
       "type": "file"
     },
     {
       "path": "vault/05-slack/20260806_김규형_1024.md",
-      "accessCount": 18,
-      "lastAccessed": 1786166057240,
+      "accessCount": 19,
+      "lastAccessed": 1786173010626,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BP6FXCLHE.md",
+      "accessCount": 19,
+      "lastAccessed": 1786173010677,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_U0BC06201S5.md",
+      "accessCount": 19,
+      "lastAccessed": 1786173011291,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_clipboard_260804_AX.md",
+      "accessCount": 19,
+      "lastAccessed": 1786173012574,
+      "type": "file"
+    },
+    {
+      "path": "vault/05-slack/20260806_10.md",
+      "accessCount": 19,
+      "lastAccessed": 1786173012632,
       "type": "file"
     },
     {
       "path": "vault/06-docs/01-전사본/260804-상욱현지규형원온원-전사본.md",
-      "accessCount": 5,
-      "lastAccessed": 1786155149372,
+      "accessCount": 6,
+      "lastAccessed": 1786173033844,
       "type": "file"
     },
     {

@@ -56,5 +56,6 @@ source_url: https://docs.google.com/document/d/1JXiVZA72NE4m4saeDW9X0lWHsHXAq-aH
 - 여러 AI harness가 공유하는 shared_memory 레이어를 vault 안에 설계한 사례 — "human notes = source, agent notes = 별도 레이어" 원칙, `memory_queue → human 승인 → wiki 승격` 흐름
 
 ## 관련 문서
+- [[oao-wiki-설계문서]] — 이 기획서를 받아 실제 설계로 구체화한 문서 (10개 항목 답변 + 결정 요청)
 - [[project-summary]]
 - [[../06-docs/_템플릿-가이드|06-docs 템플릿 가이드]] (이 기획서의 "회의 직후 3분 요약" 제안을 구현한 것)

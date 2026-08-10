@@ -18,6 +18,12 @@ personal/
 # 스크립트 자체(.automation/*.sh)는 계속 추적한다.
 .automation/logs/
 
+# 모노레포 로컬 참조본 — .gitmodules 없는 gitlink로 잘못 추적되고 있어
+# 클론 시 채울 수 없는 빈 디렉터리만 생겼다. 결정 #11("비개발자는 모노레포를
+# 볼 필요 없이 이 레포만 바라본다")에 따라 아예 추적하지 않는다.
+# 승격(promote) 스킬을 쓰는 사람만 로컬에 직접 clone해두면 된다.
+company-src/
+
 # Obsidian 창 배치 — 사람마다 다르므로 공유하면 상시 충돌한다.
 # 나머지 .obsidian/ 설정(플러그인·core 설정)은 팀 공통이라 계속 추적한다.
 .obsidian/workspace.json

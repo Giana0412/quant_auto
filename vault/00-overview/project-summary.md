@@ -20,5 +20,5 @@ Oursymbol은 스포츠 이벤트 사진 플랫폼으로, AI 기술을 활용하�
 ## 개발 환경 및 도구
 - **개발 환경**: pnpm workspace 기반 모노레포
 - **AI 업무 체계**: Claude Code 기반 스킬 자동화 (반복 업무 처리, 문서 생성, 분석 등)
-- **문서화/관리**: 본 저장소는 Obsidian Vault로 구성되어 지식 문서화 관리 수행 — 도입 배경/의도는 [[vault-rationale]] 참조
+- **문서화/관리**: 본 저장소는 Obsidian Vault로 구성되어 지식 문서화 관리 수행 — 도입 배경/의도는 [[vault-rationale]], 구조·운영 설계는 [[oao-wiki-설계문서]] 참조
 - **배포**: Vercel(Frontend), AWS(Backend)

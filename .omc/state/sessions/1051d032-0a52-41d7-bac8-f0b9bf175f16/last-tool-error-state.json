@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"cd /Users/gyuhyeongkim/.claude/projects/-Users-gyuhyeongkim-orca-projects-obsidian-test/1051d032-0a52-41d7-bac8-f0b9bf175f16/tool-results/ && jq -r '.messages[0] | {date, sender, subject, ...",
-  "error": "Exit code 127\n(eval):1: command not found: jq",
-  "timestamp": "2026-08-07T00:03:07.643Z",
-  "retry_count": 1
-}

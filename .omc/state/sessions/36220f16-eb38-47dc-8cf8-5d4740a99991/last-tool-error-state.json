@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/send_telegram.sh \\\"/Users/gyuhyeongkim/orca/projects/obsidian_test/personal/10-market/_conclusions/260807-오늘의결론.md\\\"\",\"descripti...",
-  "error": "Exit code 1\n텔레그램 발송 실패 (HTTP 400): {\"ok\":false,\"error_code\":400,\"description\":\"Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 900\"}",
-  "timestamp": "2026-08-07T02:29:45.846Z",
-  "retry_count": 1
-}

@@ -27,7 +27,7 @@ ROOT = os.path.join(VAULT_DIR, "vault")
 
 # 자동 수집·자동 생성 영역. 사람이 링크를 걸지 않는 게 정상이므로
 # 고아 문서(L4) 검사에서 제외한다.
-RAW_DIRS = ("vault/raw/slack", "vault/raw/transcripts")
+RAW_DIRS = ("vault/raw/",)   # raw 계층 전체 (slack, transcripts, references)
 
 # 코드블록 안의 예시 표기는 검사 대상이 아니다 (`[[링크]]` 같은 설명용 표기).
 FENCE = re.compile(r"```.*?```", re.S)

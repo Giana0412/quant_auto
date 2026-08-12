@@ -13,6 +13,15 @@ LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 mkdir -p "$LOG_DIR"
 cd "$VAULT_DIR"
 
+# 네트워크 대기·재시도 — 깨어난 직후 Wi-Fi 가 안 올라온 상태에서 죽는 것을 막는다.
+# 대기 기록도 일별 로그에 남긴다 (건너뛴 이유가 어딘가엔 있어야 한다).
+source "$VAULT_DIR/.automation/lib/net.sh"
+if ! wait_for_network >> "$LOG_FILE" 2>&1; then
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') 네트워크 없음 — 이번 실행 건너뜀 ===" >> "$LOG_FILE"
+  exit 0
+fi
+
+
 TODAY_KST=$(TZ=Asia/Seoul date +%y%m%d)
 TODAY_ISO_KST=$(TZ=Asia/Seoul date +%Y-%m-%d)
 CONCLUSION_PATH="personal/10-market/_conclusions/${TODAY_KST}-오늘의결론.md"
@@ -64,7 +73,7 @@ personal/10-market/_conclusions/ 외의 다른 파일은 건드리지 않는다.
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [분석봇] 실행 시작 ==="
-  "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/send_telegram.sh:*)" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/send_telegram.sh:*)" 2>&1
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [분석봇] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"

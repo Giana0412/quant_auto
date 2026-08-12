@@ -16,6 +16,15 @@ LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 mkdir -p "$LOG_DIR"
 cd "$VAULT_DIR"
 
+# 네트워크 대기·재시도 — 깨어난 직후 Wi-Fi 가 안 올라온 상태에서 죽는 것을 막는다.
+# 대기 기록도 일별 로그에 남긴다 (건너뛴 이유가 어딘가엔 있어야 한다).
+source "$VAULT_DIR/.automation/lib/net.sh"
+if ! wait_for_network >> "$LOG_FILE" 2>&1; then
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') 네트워크 없음 — 이번 실행 건너뜀 ===" >> "$LOG_FILE"
+  exit 0
+fi
+
+
 PROMPT='vault/schema/템플릿-가이드.md 파일을 먼저 읽고 그 형식을 그대로 따른다.
 
 작업:
@@ -43,7 +52,7 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/3 문서화] 실행 시작 ==="
-  "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Edit Glob Grep" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Edit Glob Grep" 2>&1
   # 문서가 늘거나 줄었으면 목차를 다시 만든다. 파일에서 유도되는 것만 만들므로
   # 매번 통째로 덮어써도 안전하다 (사람이 손댈 파일이 아니다).
   python3 "$VAULT_DIR/.automation/wiki_index.py" 2>&1 || echo "⚠️ 목차 생성 실패"
@@ -119,7 +128,7 @@ action-items.json 과 Slack API 호출 외의 다른 파일/서비스는 건드�
 
   {
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') [3/3 액션아이템] 실행 시작 ==="
-    "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*) mcp__claude_ai_Google_Calendar__create_event mcp__claude_ai_Google_Calendar__update_event mcp__claude_ai_Google_Calendar__list_events mcp__claude_ai_Google_Calendar__list_calendars" 2>&1
+    retry 3 60 "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*) mcp__claude_ai_Google_Calendar__create_event mcp__claude_ai_Google_Calendar__update_event mcp__claude_ai_Google_Calendar__list_events mcp__claude_ai_Google_Calendar__list_calendars" 2>&1
     echo "=== $(date '+%Y-%m-%d %H:%M:%S') [3/3 액션아이템] 실행 종료 ==="
     echo
   } >> "$LOG_FILE"

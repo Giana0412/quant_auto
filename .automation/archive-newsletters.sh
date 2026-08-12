@@ -19,6 +19,15 @@ SENDERS="whatsup@newneek.co,moneyletter@uppity.co.kr,noreply@news.bloomberg.com"
 mkdir -p "$LOG_DIR"
 cd "$VAULT_DIR"
 
+# 네트워크 대기·재시도 — 깨어난 직후 Wi-Fi 가 안 올라온 상태에서 죽는 것을 막는다.
+# 대기 기록도 일별 로그에 남긴다 (건너뛴 이유가 어딘가엔 있어야 한다).
+source "$VAULT_DIR/.automation/lib/net.sh"
+if ! wait_for_network >> "$LOG_FILE" 2>&1; then
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') 네트워크 없음 — 이번 실행 건너뜀 ===" >> "$LOG_FILE"
+  exit 0
+fi
+
+
 PROMPT="personal/09-newsletters/_README.md 를 먼저 읽는다.
 
 작업:
@@ -47,7 +56,7 @@ personal/09-newsletters/ 외의 다른 파일은 건드리지 않는다. git com
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 아카이브] 실행 시작 ==="
-  "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep mcp__claude_ai_Gmail__search_threads mcp__claude_ai_Gmail__get_thread" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep mcp__claude_ai_Gmail__search_threads mcp__claude_ai_Gmail__get_thread" 2>&1
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 아카이브] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"
@@ -84,7 +93,7 @@ personal/09-newsletters/_digests/ 외의 다른 파일은 건드리지 않는다
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 일일다이제스트] 실행 시작 ==="
-  "$CLAUDE_BIN" -p "$PROMPT_DIGEST" --allowedTools "Read Write Glob Grep" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT_DIGEST" --allowedTools "Read Write Glob Grep" 2>&1
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [뉴스레터 일일다이제스트] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"

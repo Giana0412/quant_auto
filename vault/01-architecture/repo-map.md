@@ -1,3 +1,8 @@
+---
+created: 2026-08-05
+updated: 2026-08-05
+---
+
 # 저장소 구조 (Repo Map)
 
 ## 최상위 디렉터리
@@ -25,3 +30,30 @@ oursymbol/
 
 ## 기타 참고
 - **민감 정보**: .env 파일은 Git에 관리되지 않으며, Git 내부에 인증 토큰, 비밀키, 환경 설정 파일 등을 직접 저장하지 않도록 주의. (예시 파일 `.env.example` 만 존재)
+
+---
+
+## 모듈 문서 (`vault/02-modules/`)
+
+위 코드베이스를 모듈별로 풀어 쓴 문서들이다.
+
+| 모듈 | 문서 |
+|---|---|
+| `backend/` | [[backend]] |
+| `frontend/` | [[frontend]] |
+| `docs/` | [[docs]] |
+| `research/` | [[research]] |
+| `.omx/` | [[omx]] |
+| `.claude/` | [[dot-claude]] |
+
+## 이 vault 자체를 다루는 문서
+
+| | |
+|---|---|
+| 왜 만들었나 | [[vault-rationale]] |
+| 전체 설계 | [[oao-wiki-설계문서]] · [[oao-wiki-설계문서-쉬운설명]] |
+| 서버·폴더·링크·태그 구조 | [[전체-구조도]] |
+| 자동화 동작 | [[자동화-동작구조]] |
+| 미해결 질문 축적소 | [[questions]] |
+| 작업 이력 (append-only) | [[session-log]] |
+| 규칙 위반 자동 점검 (주 1회) | [[lint-report]] |

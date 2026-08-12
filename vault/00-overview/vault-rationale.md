@@ -1,5 +1,6 @@
 ---
 created: 2026-08-06
+updated: 2026-08-10
 source: Google Drive — "옵시디언 리서치 w 아워심볼 구조 PainPoint" (작성일 2026-07-29, 김규형)
 source_url: https://docs.google.com/document/d/1JXiVZA72NE4m4saeDW9X0lWHsHXAq-aHtaQp_Q2i8EM/edit
 ---

@@ -1,3 +1,8 @@
+---
+created: 2026-08-05
+updated: 2026-08-05
+---
+
 # backend — Serverless Lambda 마이크로서비스 군
 
 > 대상 경로: `company-src/oursymbol/backend/` (읽기 전용)

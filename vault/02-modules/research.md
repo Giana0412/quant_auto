@@ -1,3 +1,8 @@
+---
+created: 2026-08-05
+updated: 2026-08-05
+---
+
 # research — 이벤트 리서치 자동화 파이프라인
 
 > 대상 경로: `company-src/oursymbol/research/` (읽기 전용)

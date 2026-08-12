@@ -1,6 +1,9 @@
 #!/bin/bash
-# Slack Sync가 vault/05-slack에 모아둔 원본을 읽어서
-# vault/06-docs/{01-전사본,02-정리본,03-결정사항}에 3종 문서로 정리하는 headless Claude 실행 스크립트.
+# slack-collect.sh 가 vault/raw/slack 에 모아둔 원본을 읽어서
+# 3종 문서로 정리하는 headless Claude 실행 스크립트.
+#   전사본   → vault/raw/transcripts          (원본 보존 계층)
+#   정리본   → vault/wiki/05-meetings/정리본
+#   결정사항 → vault/wiki/05-meetings/결정사항
 # launchd가 1시간마다 호출한다 (com.giana.obsidian-slack-docs-sync.plist).
 
 set -euo pipefail
@@ -13,19 +16,19 @@ LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 mkdir -p "$LOG_DIR"
 cd "$VAULT_DIR"
 
-PROMPT='vault/06-docs/_템플릿-가이드.md 파일을 먼저 읽고 그 형식을 그대로 따른다.
+PROMPT='vault/schema/템플릿-가이드.md 파일을 먼저 읽고 그 형식을 그대로 따른다.
 
 작업:
-1. vault/05-slack/*.md 를 전부 확인한다.
+1. vault/raw/slack/*.md 를 전부 확인한다.
 2. 각 파일에 실질적인 내용(파일 첨부 📎 코드블록, 또는 의미 있는 회의/문서 텍스트)이 있는지 확인한다. "채널에 참여함" 같은 시스템 메시지나 멘션만 있는 빈 메시지는 건너뛴다.
-3. 내용이 있는 파일에 대해, 그 안의 실제 날짜(문서/회의 내용에서 추론, 없으면 slack_url이나 created 필드 사용)와 주제로 파일명을 만들어서 vault/06-docs/01-전사본/, 02-정리본/, 03-결정사항/ 에 이미 같은 이름(YYMMDD-주제-*.md)의 결과물이 있는지 Glob으로 확인한다.
+3. 내용이 있는 파일에 대해, 그 안의 실제 날짜(문서/회의 내용에서 추론, 없으면 slack_url이나 created 필드 사용)와 주제로 파일명을 만들어서 vault/raw/transcripts/, vault/wiki/05-meetings/정리본/, vault/wiki/05-meetings/결정사항/ 에 이미 같은 이름(YYMMDD-주제-*.md)의 결과물이 있는지 Glob으로 확인한다.
 4. 이미 3종 다 있으면 건너뛴다 (중복 생성 금지). 하나라도 없으면 템플릿 가이드 형식대로 전사본/정리본/결정사항 3종을 새로 작성한다.
    - 전사본: 원문 보존, 요약 금지, 오탈자 교정 최소화
    - 정리본: 한줄요약/핵심논의(소주제별)/맥락배경/미결정사항/액션아이템(표) 구조
    - 결정사항: 결정사항/미결정보류/액션아이템 구조 (짧고 명확하게, 공식 결정이 없으면 "없음"으로 명시)
 5. 처리한 원본과 새로 만든 문서 목록을 마지막에 요약해서 출력한다. 처리할 새 원본이 없으면 "처리할 새 원본 없음"이라고만 출력하고 끝낸다.
 
-git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한다). vault/05-slack, vault/06-docs 외의 파일은 건드리지 않는다.'
+git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한다). vault/raw/, vault/wiki/05-meetings/ 외의 파일은 건드리지 않는다.'
 
 # --- 0단계: Slack 원본 수집 ---
 # 예전에는 slack-sync 플러그인이 했으나 Obsidian 앱이 켜져 있어야만 동작해서
@@ -41,6 +44,9 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/3 문서화] 실행 시작 ==="
   "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Edit Glob Grep" 2>&1
+  # 문서가 늘거나 줄었으면 목차를 다시 만든다. 파일에서 유도되는 것만 만들므로
+  # 매번 통째로 덮어써도 안전하다 (사람이 손댈 파일이 아니다).
+  python3 "$VAULT_DIR/.automation/wiki_index.py" 2>&1 || echo "⚠️ 목차 생성 실패"
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/3 문서화] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"
@@ -53,7 +59,7 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 #   --allowedTools 에 정확한 캘린더 MCP 도구 이름을 추가해야 한다 (연결 후 `claude mcp list`로 확인).
 #
 # 캘린더 계정 분리 (중요, 절대 섞이면 안 됨):
-#   - 이 스크립트가 다루는 소스(vault/06-docs/03-결정사항)는 전부 회사 Slack(#test_ob, OAO
+#   - 이 스크립트가 다루는 소스(vault/wiki/05-meetings/결정사항)는 전부 회사 Slack(#test_ob, OAO
 #     워크스페이스)에서 나온 회의 결정사항이다 → 회사 캘린더(gkimam@oao-corp.com, mcp__claude_ai_Google_Calendar__*)에만 등록한다.
 #   - 카카오톡/왓츠앱 등 personal/08-imports발 개인 일정은 절대 이 경로로 만들지 않는다.
 #     개인 일정은 별도 계정 캘린더(kimgyuh04@gmail.com, mcp__google-calendar-personal__* MCP 서버,
@@ -89,7 +95,7 @@ if [ "$STAGE2_ENABLED" = "true" ]; then
 3단계로 처리한다:
 
 [A] 신규 액션 아이템 발견
-- vault/06-docs/03-결정사항/*.md 를 훑어서, action-items.json에 아직 없는(source_doc 기준) 문서의 '## 액션 아이템'을 파싱해 새 항목들을 status=awaiting_due_date로 추가한다.
+- vault/wiki/05-meetings/결정사항/*.md 를 훑어서, action-items.json에 아직 없는(source_doc 기준) 문서의 '## 액션 아이템'을 파싱해 새 항목들을 status=awaiting_due_date로 추가한다.
 - 새로 추가된 항목이 있는 문서마다, curl -K .automation/.slack-auth.curlrc 로 https://slack.com/api/chat.postMessage 를 호출해 #${SLACK_CHANNEL}에 아래 형식으로 게시하고, 응답의 message ts를 그 문서의 모든 신규 항목의 slack_prompt_ts에 저장한다:
   '📋 <문서명> 액션 아이템 기한을 정해주세요:\n1) [담당자] 항목\n2) ...\n\n각 번호에 날짜로 답장해주세요 (예: 1) 8/10  2) 8/8). 스레드 답장이든 채널에 그냥 타이핑이든 상관없습니다.'
 

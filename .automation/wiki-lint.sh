@@ -1,7 +1,7 @@
 #!/bin/bash
 # vault schema 규칙 검사 — 주 1회 실행. 보고만 하고 고치지 않는다.
 #
-# 결과를 vault/04-logs/lint-report.md 에 남긴다. 로그 파일이 아니라 vault 안에
+# 결과를 vault/log/lint-report.md 에 남긴다. 로그 파일이 아니라 vault 안에
 # 두는 이유: 로그는 아무도 안 본다. 2026-08-06~12 사이 STAGE2 가 6일간 죽어 있었는데
 # 아무도 몰랐던 것이 stderr 로그만 쌓였기 때문이다. Obsidian 에서 바로 보이게 둔다.
 
@@ -9,7 +9,7 @@ set -euo pipefail
 
 VAULT_DIR="/Users/gyuhyeongkim/orca/projects/obsidian_test"
 export VAULT_DIR
-REPORT="$VAULT_DIR/vault/04-logs/lint-report.md"
+REPORT="$VAULT_DIR/vault/log/lint-report.md"
 TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
 
 cd "$VAULT_DIR"
@@ -30,7 +30,7 @@ COUNT=$(printf '%s' "$OUT" | sed -n 's/^합계 \([0-9]*\)건.*/\1/p')
   echo "- 위반: **${COUNT:-?}건**"
   echo
   echo "> 이 파일은 \`.automation/wiki-lint.sh\` 가 자동으로 덮어쓴다. 손으로 고치지 말 것."
-  echo "> 규칙 정의는 \`.automation/wiki_lint.py\`, 배경은 [[../01-architecture/전체-구조도|전체 구조도]] §4~§6."
+  echo "> 규칙 정의는 \`.automation/wiki_lint.py\`, 배경은 [[전체-구조도|전체 구조도]] §4~§6."
   echo
   echo '```'
   printf '%s\n' "$OUT"
@@ -49,4 +49,4 @@ COUNT=$(printf '%s' "$OUT" | sed -n 's/^합계 \([0-9]*\)건.*/\1/p')
 } > "$REPORT"
 
 printf '%s\n' "$OUT"
-echo "→ 리포트: vault/04-logs/lint-report.md"
+echo "→ 리포트: vault/log/lint-report.md"

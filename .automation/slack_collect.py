@@ -38,7 +38,7 @@ DRY_RUN = "--dry-run" in sys.argv
 # 채널 : 출력 폴더 (VAULT_DIR 기준 상대경로)
 # 플러그인은 출력 폴더를 하나만 가져서 채널별 분기가 불가능했다.
 CHANNELS = {
-    "test_ob": "vault/05-slack",
+    "test_ob": "vault/raw/slack",
 }
 
 # 사람이 쓴 게 아닌 메시지 subtype — 수집 대상이 아니다

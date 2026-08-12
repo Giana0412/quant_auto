@@ -55,15 +55,12 @@ if [ "$STAGE2_ENABLED" = "true" ]; then
   SLACK_CHANNEL="test_ob"
   TODAY_KST=$(TZ=Asia/Seoul date +%Y-%m-%d)
 
-  # 토큰을 headless 에이전트의 도구 호출(curl 명령 인자)에 절대 노출시키지 않기 위해
-  # curl 설정 파일에 Authorization 헤더를 미리 박아두고, 에이전트는 파일 경로만 참조한다.
-  # (Bash(curl:*) 허용 패턴에서는 $VAR 같은 셸 변수 확장이 정적분석 불가로 차단되므로
-  #  환경변수 전달 방식은 쓸 수 없다 — curl -K 설정파일이 유일한 우회로다.)
-  SLACK_AUTH_RC="$VAULT_DIR/.automation/.slack-auth.curlrc"
-  SLACK_TOKEN=$(python3 -c "import json;print(json.load(open('$VAULT_DIR/.obsidian/plugins/slack-sync/data.json'))['slackToken'])")
-  printf 'header = "Authorization: Bearer %s"\n' "$SLACK_TOKEN" > "$SLACK_AUTH_RC"
-  chmod 600 "$SLACK_AUTH_RC"
-  unset SLACK_TOKEN
+  # 자격증명 처리는 lib/slack-auth.sh 로 일원화했다 (slack-collect.sh 와 공용).
+  # 토큰 출처가 slack-sync 플러그인의 data.json 이었으나 .automation/.slack.env 로 옮겼다 —
+  # 플러그인을 제거해도 STAGE2 가 깨지지 않게 하기 위해서다.
+  # shellcheck source=lib/slack-auth.sh
+  source "$VAULT_DIR/.automation/lib/slack-auth.sh"
+  slack_auth_begin || exit 1
 
   PROMPT2="오늘 날짜(KST): ${TODAY_KST}. Slack 채널: #${SLACK_CHANNEL}.
 
@@ -85,7 +82,7 @@ if [ "$STAGE2_ENABLED" = "true" ]; then
   1) curl -K .automation/.slack-auth.curlrc 로 conversations.replies?channel=<채널ID>&ts=<slack_prompt_ts> (스레드로 답장한 경우)
   2) curl -K .automation/.slack-auth.curlrc 로 conversations.history?channel=<채널ID>&oldest=<slack_prompt_ts> (채널에 그냥 새 메시지로 타이핑한 경우 — ts가 slack_prompt_ts보다 크고 봇이 아닌 사람이 보낸 가장 가까운 메시지)
   (채널ID는 conversations.list?types=public_channel,private_channel 로 이름→ID 변환)
-- 둘 중 어느 쪽이든 사람이 남긴 답장(봇 메시지 제외)을 찾으면 그 텍스트에서 번호별 날짜와 시각을 모두 파싱한다 (자연어 날짜/시각 허용 — 예: "8/10 오후 2시" → 날짜 2026-08-10, 시각 14:00. 연도 없으면 올해로 간주, KST 기준).
+- 둘 중 어느 쪽이든 사람이 남긴 답장(봇 메시지 제외)을 찾으면 그 텍스트에서 번호별 날짜와 시각을 모두 파싱한다 (자연어 날짜/시각 허용 — 예: '8/10 오후 2시' → 날짜 2026-08-10, 시각 14:00. 연도 없으면 올해로 간주, KST 기준).
 - 매칭된 항목은 status=scheduled, due_date(및 시각이 있으면 due_time)를 채우고, curl -K .automation/.slack-auth.curlrc 로 users.list 에서 owner 이름과 매칭되는 사용자를 찾아 Slack user id를 얻는다. 그 다음 사용 가능한 Google Calendar MCP 도구로 일정을 만든다:
   - due_time이 있으면 그 날짜·시각에 시작하는 1시간짜리 일정 (Asia/Seoul 타임존)
   - due_time이 없으면 그 날짜의 종일 일정
@@ -105,7 +102,7 @@ action-items.json 과 Slack API 호출 외의 다른 파일/서비스는 건드�
     echo
   } >> "$LOG_FILE"
 
-  shred -u "$SLACK_AUTH_RC" 2>/dev/null || rm -f "$SLACK_AUTH_RC"
+  slack_auth_cleanup   # trap 으로도 걸려 있으나, 여기서 즉시 지워 노출 시간을 줄인다
 else
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] STAGE2_ENABLED=false, 건너뜀 ===" >> "$LOG_FILE"
 fi

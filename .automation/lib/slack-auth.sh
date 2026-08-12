@@ -24,6 +24,12 @@ slack_auth_cleanup() {
   return 0
 }
 
+# trap 은 반드시 이 파일의 최상위에서 건다 — 함수 안에서 걸면 안 된다.
+# zsh 는 함수 안의 trap...EXIT 를 "함수가 끝날 때"로 해석해서, 파일을 만들자마자
+# 지워버린다 (bash 는 셸 종료 시점으로 해석한다). 최상위에 걸면 양쪽 다 동일하게
+# "이 스크립트가 끝날 때"가 된다.
+trap slack_auth_cleanup EXIT INT TERM
+
 slack_auth_begin() {
   if [ ! -f "$SLACK_ENV_FILE" ]; then
     echo "🔴 Slack 토큰 파일이 없다: $SLACK_ENV_FILE" >&2
@@ -38,8 +44,16 @@ slack_auth_begin() {
     return 1
   fi
 
-  trap slack_auth_cleanup EXIT INT TERM
-  printf 'header = "Authorization: Bearer %s"\n' "$tok" > "$SLACK_AUTH_RC"
+  if ! printf 'header = "Authorization: Bearer %s"\n' "$tok" > "$SLACK_AUTH_RC"; then
+    unset tok
+    echo "🔴 자격증명 파일을 쓰지 못했다: $SLACK_AUTH_RC" >&2
+    return 1
+  fi
   chmod 600 "$SLACK_AUTH_RC"
   unset tok
+
+  if [ ! -s "$SLACK_AUTH_RC" ]; then
+    echo "🔴 자격증명 파일이 비어 있다: $SLACK_AUTH_RC" >&2
+    return 1
+  fi
 }

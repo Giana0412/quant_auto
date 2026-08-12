@@ -28,6 +28,50 @@ KINDS = [
 NAME = re.compile(r"^(\d{6})-(.+)-(전사본|정리본|결정사항)$")
 
 
+FM = re.compile(r"\A---\n(.*?)\n---\n", re.S)
+
+
+def summary_of(path, limit=70):
+    """문서의 한 줄 요약. frontmatter 의 purpose 를 우선 쓰고, 없으면 본문 첫 문장.
+
+    카파시 원문: index 는 "each page listed with a link, **a one-line summary**".
+    요약이 없으면 에이전트가 인덱스만 보고 어느 페이지를 열지 판단할 수 없어
+    결국 전부 열어봐야 한다 — 인덱스를 두는 의미가 사라진다.
+    """
+    try:
+        text = open(path, encoding="utf-8").read()
+    except Exception:
+        return ""
+
+    m = FM.match(text)
+    if m:
+        for line in m.group(1).split("\n"):
+            if line.startswith("purpose:"):
+                return line.split(":", 1)[1].strip().strip('"')[:limit]
+        body = text[m.end():]
+    else:
+        body = text
+
+    def clean(t):
+        t = re.sub(r"\[\[([^\]|]+)(\|[^\]]*)?\]\]", r"\1", t)   # 링크 표기 제거
+        return re.sub(r"\*\*|__|`", "", t).strip()[:limit]
+
+    first_item = ""
+    for line in body.split("\n"):
+        line = line.strip()
+        if not line or line.startswith(("#", ">", "|", "`", "!", "---")):
+            continue
+        # 목록 항목은 차선책으로 남겨둔다 — 결정사항 문서처럼 본문이 전부
+        # 목록인 경우가 있어서, 산문이 하나도 없으면 첫 항목이라도 쓴다
+        m2 = re.match(r"^[-*+]\s+(.*)|^\d+\.\s+(.*)", line)
+        if m2:
+            if not first_item:
+                first_item = clean(m2.group(1) or m2.group(2) or "")
+            continue
+        return clean(line)
+    return first_item
+
+
 def header(title, purpose):
     return (
         f"---\ncreated: 2026-08-12\nupdated: {TODAY}\n"
@@ -96,13 +140,15 @@ def build_layers():
             dirnames[:] = [x for x in dirnames if not x.startswith(".")]
             for fn in sorted(filenames):
                 if fn.endswith(".md"):
-                    docs[os.path.relpath(dirpath, VAULT_DIR)].append(fn[:-3])
+                    docs[os.path.relpath(dirpath, VAULT_DIR)].append(
+                        (fn[:-3], os.path.join(dirpath, fn)))
         total = sum(len(v) for v in docs.values())
         lines.append(f"\n## `{name}/` — {desc}  ({total}건)\n")
         for folder in sorted(docs):
             lines.append(f"**`{folder}/`**\n")
-            for n in docs[folder]:
-                lines.append(f"- [[{n}]]")
+            for n, path in docs[folder]:
+                s = summary_of(path)
+                lines.append(f"- [[{n}]]" + (f" — {s}" if s else ""))
             lines.append("")
     return "\n".join(lines) + "\n"
 

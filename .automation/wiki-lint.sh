@@ -48,5 +48,7 @@ COUNT=$(printf '%s' "$OUT" | sed -n 's/^합계 \([0-9]*\)건.*/\1/p')
   echo "| L7 | \`review_by\` 가 지난 문서 보고 | 오래된 문서 정리 장치 |"
 } > "$REPORT"
 
+python3 "$VAULT_DIR/.automation/wiki_log.py" lint --detail "위반 ${COUNT:-?}건" >/dev/null || true
+
 printf '%s\n' "$OUT"
 echo "→ 리포트: vault/log/lint-report.md"

@@ -60,7 +60,7 @@ gh auth status                  # GitHub 인증
 
 ### Step 1: 대상 확인
 
-승격할 vault 문서를 특정한다. 보통 `vault/06-docs/03-결정사항/` 아래다.
+승격할 vault 문서를 특정한다. 보통 `vault/wiki/05-meetings/결정사항/` 아래다.
 사용자가 지정하지 않았으면 최근 결정사항을 보여주고 고르게 한다.
 
 문서를 Read해서 **확정 항목과 보류 항목을 분리**한다. 보류는 올리지 않는다.
@@ -110,7 +110,7 @@ git checkout -b docs/promote-<주제>-<YYMMDD>
 문서 하단에 출처를 남긴다:
 
 ```md
-> 출처: obsidian-vault `vault/06-docs/03-결정사항/260803-....md` (2026-08-03 회의)
+> 출처: obsidian-vault `vault/wiki/05-meetings/결정사항/260803-....md` (2026-08-03 회의)
 ```
 
 ### Step 5: PR 생성 — 자동 머지하지 않는다
@@ -179,6 +179,6 @@ vault 원문에도 "정식 문서로 올라감" 표시를 남겼습니다.
 
 ## 관련
 
-- 승격 대상 원본: `vault/06-docs/03-결정사항/`
-- 승격하지 말아야 할 것의 근거: `vault/00-overview/vault-rationale.md` (배드 시나리오 1 — vault를 SSOT로 만들지 않는다)
+- 승격 대상 원본: `vault/wiki/05-meetings/결정사항/`
+- 승격하지 말아야 할 것의 근거: `vault/wiki/00-overview/vault-rationale.md` (배드 시나리오 1 — vault를 SSOT로 만들지 않는다)
 - 모노레포 규칙 원문: `company-src/oursymbol/CLAUDE.md` "docs/ 구조 가드"

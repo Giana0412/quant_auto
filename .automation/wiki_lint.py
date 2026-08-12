@@ -6,7 +6,7 @@
 무엇이 어긋났는지 목록만 내고, 고칠지는 사람이 정한다.
 
 규칙은 상상해서 만든 것이 아니라 2026-08-10~12 실측에서 실제로 발견된 것들이다
-(vault/01-architecture/전체-구조도.md §4~§6).
+(vault/wiki/01-architecture/전체-구조도.md §4~§6).
 
 사용법:
   python3 .automation/wiki_lint.py            # 전체 검사
@@ -27,13 +27,15 @@ ROOT = os.path.join(VAULT_DIR, "vault")
 
 # 자동 수집·자동 생성 영역. 사람이 링크를 걸지 않는 게 정상이므로
 # 고아 문서(L4) 검사에서 제외한다.
-RAW_DIRS = ("vault/05-slack", "vault/06-docs/01-전사본")
+RAW_DIRS = ("vault/raw/slack", "vault/raw/transcripts")
 
 # 코드블록 안의 예시 표기는 검사 대상이 아니다 (`[[링크]]` 같은 설명용 표기).
 FENCE = re.compile(r"```.*?```", re.S)
 INLINE_CODE = re.compile(r"`[^`\n]*`")
 
-WIKILINK = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]*)?\]\]")
+# 표 안에서는 별칭 구분자를 `\|` 로 이스케이프해야 한다 (`|` 가 표의 열 구분자이므로).
+# 그래서 대상 이름 끝의 백슬래시는 링크의 일부가 아니라 이스케이프다 — 떼고 본다.
+WIKILINK = re.compile(r"\[\[([^\]|#]+?)\\?(?:[|#][^\]]*)?\]\]")
 # Obsidian 태그: 앞이 줄머리/공백/여는괄호여야 하고, 문자·숫자·_·-·/ 로 이뤄진다.
 TAG = re.compile(r"(?:(?<=^)|(?<=[\s(\[]))#([가-힣A-Za-z0-9_/-]+)", re.M)
 FRONTMATTER = re.compile(r"\A---\n(.*?)\n---\n", re.S)

@@ -58,6 +58,7 @@ oursymbol/
 | 작업 이력 (append-only) | [[session-log]] |
 | 규칙 위반 자동 점검 (주 1회) | [[lint-report]] |
 | 다음 미팅 안건 (준비 메모) | [[260813-준범님미팅-안건]] |
+| start-work 스킬 구상 (미결정) | [[start-work-스킬-구상]] |
 
 ## 목차 (자동 생성)
 

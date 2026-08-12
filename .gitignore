@@ -1,5 +1,5 @@
 # Slack bot token, AI API keys 등 평문 시크릿이 저장되는 파일 — 절대 커밋 금지
-.obsidian/plugins/slack-sync/data.json
+vault/.obsidian/plugins/slack-sync/data.json
 .automation/.slack-auth.curlrc
 .automation/.slack.env
 .automation/.gmail.env
@@ -28,4 +28,4 @@ company-src/
 
 # Obsidian 창 배치 — 사람마다 다르므로 공유하면 상시 충돌한다.
 # 나머지 .obsidian/ 설정(플러그인·core 설정)은 팀 공통이라 계속 추적한다.
-.obsidian/workspace.json
+vault/.obsidian/workspace.json

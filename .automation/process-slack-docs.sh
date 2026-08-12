@@ -27,10 +27,21 @@ PROMPT='vault/06-docs/_템플릿-가이드.md 파일을 먼저 읽고 그 형식
 
 git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한다). vault/05-slack, vault/06-docs 외의 파일은 건드리지 않는다.'
 
+# --- 0단계: Slack 원본 수집 ---
+# 예전에는 slack-sync 플러그인이 했으나 Obsidian 앱이 켜져 있어야만 동작해서
+# 조용히 멈췄다. 이제 스크립트가 직접 한다. 수집이 실패해도 아래 문서화는
+# 계속 진행한다 (이미 들어와 있는 원본은 처리할 수 있어야 하므로).
 {
-  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [1/2 문서화] 실행 시작 ==="
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [1/3 수집] 실행 시작 ==="
+  bash "$VAULT_DIR/.automation/slack-collect.sh" 2>&1 || echo "⚠️ 수집 실패 — 문서화는 계속 진행한다"
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [1/3 수집] 실행 종료 ==="
+  echo
+} >> "$LOG_FILE"
+
+{
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/3 문서화] 실행 시작 ==="
   "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Edit Glob Grep" 2>&1
-  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [1/2 문서화] 실행 종료 ==="
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/3 문서화] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"
 
@@ -48,7 +59,12 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
 #     개인 일정은 별도 계정 캘린더(kimgyuh04@gmail.com, mcp__google-calendar-personal__* MCP 서버,
 #     `~/.config/google-calendar-mcp/`에 로컬 OAuth 토큰)를 쓴다 — 필요해지면 별도 스크립트로 분리할 것.
 #   - allowedTools에 mcp__claude_ai_Google_Calendar__* 외의 캘린더 도구를 추가하지 말 것.
-STAGE2_ENABLED=true
+# 2026-08-12: 일부러 false 로 둔다.
+#   이 단계는 회사 Slack #test_ob 에 "기한을 정해주세요" 메시지를 자동 게시한다.
+#   2026-08-06 16:22 의 따옴표 버그로 6일간 죽어 있다가 오늘 고쳐졌는데, 그 사이
+#   밀린 결정사항이 한꺼번에 처리되면 Slack에 여러 건이 몰려 게시된다.
+#   밖으로 나가는 동작이라 자동 재개하지 않고, 사람이 확인한 뒤 true 로 바꾼다.
+STAGE2_ENABLED=false
 STAGE2_CALENDAR_ID="gkimam@oao-corp.com"  # 회사 캘린더 고정 — "기본/primary"에 의존하지 않는다
 
 if [ "$STAGE2_ENABLED" = "true" ]; then
@@ -96,13 +112,13 @@ if [ "$STAGE2_ENABLED" = "true" ]; then
 action-items.json 과 Slack API 호출 외의 다른 파일/서비스는 건드리지 않는다."
 
   {
-    echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] 실행 시작 ==="
+    echo "=== $(date '+%Y-%m-%d %H:%M:%S') [3/3 액션아이템] 실행 시작 ==="
     "$CLAUDE_BIN" -p "$PROMPT2" --allowedTools "Read Write Edit Glob Grep Bash(curl:*) mcp__claude_ai_Google_Calendar__create_event mcp__claude_ai_Google_Calendar__update_event mcp__claude_ai_Google_Calendar__list_events mcp__claude_ai_Google_Calendar__list_calendars" 2>&1
-    echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] 실행 종료 ==="
+    echo "=== $(date '+%Y-%m-%d %H:%M:%S') [3/3 액션아이템] 실행 종료 ==="
     echo
   } >> "$LOG_FILE"
 
   slack_auth_cleanup   # trap 으로도 걸려 있으나, 여기서 즉시 지워 노출 시간을 줄인다
 else
-  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [2/2 액션아이템] STAGE2_ENABLED=false, 건너뜀 ===" >> "$LOG_FILE"
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [3/3 액션아이템] STAGE2_ENABLED=false, 건너뜀 ===" >> "$LOG_FILE"
 fi

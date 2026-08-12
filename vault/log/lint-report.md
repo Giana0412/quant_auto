@@ -7,7 +7,7 @@ purpose: vault schema 규칙 위반 자동 점검 결과 (주 1회 갱신)
 # Lint 리포트
 
 - 마지막 검사: **2026-08-12**
-- 위반: **2건**
+- 위반: **0건**
 
 > 이 파일은 `.automation/wiki-lint.sh` 가 자동으로 덮어쓴다. 손으로 고치지 말 것.
 > 규칙 정의는 `.automation/wiki_lint.py`, 배경은 [[전체-구조도|전체 구조도]] §4~§6.
@@ -15,9 +15,7 @@ purpose: vault schema 규칙 위반 자동 점검 결과 (주 1회 갱신)
 ```
 vault 문서 62개 검사
 
-⚠️ L1 깨진 위키링크 — 2건
-     vault/wiki/03-notes/start-work-스킬-구상.md:130  [[resolve-conflict]] 대상 없음
-     vault/wiki/03-notes/start-work-스킬-구상.md:169  [[resolve-conflict]] 대상 없음
+✅ L1 깨진 위키링크 — 0건
 
 ✅ L2 번호 표기가 태그로 오인식 — 0건
 
@@ -31,7 +29,7 @@ vault 문서 62개 검사
 
 ✅ L7 검토 기한이 지난 문서 — 0건
 
-합계 2건. 이 도구는 보고만 하고 고치지 않는다.
+합계 0건. 이 도구는 보고만 하고 고치지 않는다.
 ```
 
 ## 규칙

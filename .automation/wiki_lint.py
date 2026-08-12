@@ -193,6 +193,32 @@ def L4_orphans(docs):
     return out
 
 
+def L6_raw_immutable(docs):
+    """raw/ 의 파일은 만들어진 뒤 고쳐지지 않았을 것.
+
+    raw 는 원본 계층이다. 여기를 고치면 '무엇이 실제로 오갔는가'라는 근거가 사라진다.
+    정리·해석은 wiki 계층에서 한다. git 이력에 그 파일을 건드린 커밋이 2개 이상이면
+    누군가 사후에 손댔다는 뜻이다.
+    """
+    import subprocess
+
+    out = []
+    for p in docs:
+        r = rel(p)
+        if not r.startswith("vault/raw/"):
+            continue
+        try:
+            n = len(subprocess.run(
+                ["git", "log", "--format=%h", "--", r],
+                cwd=VAULT_DIR, capture_output=True, text=True, timeout=15,
+            ).stdout.split())
+        except Exception:
+            continue
+        if n > 1:
+            out.append((r, 1, f"원본인데 {n}회 수정됐다 — 정리는 wiki 계층에서 할 것"))
+    return out
+
+
 def L7_stale(docs):
     """review_by 가 지난 문서를 보고한다 (오래된 문서 정리 장치)."""
     today = date.today()
@@ -217,6 +243,7 @@ RULES = [
     ("L3", "프론트매터 created 누락", L3_created),
     ("L4", "고아 문서 (아무도 링크하지 않음)", L4_orphans),
     ("L5", "고쳐졌는데 updated 가 없거나 옛날 값", L5_stale_updated),
+    ("L6", "raw 원본이 사후에 수정됨", L6_raw_immutable),
     ("L7", "검토 기한이 지난 문서", L7_stale),
 ]
 

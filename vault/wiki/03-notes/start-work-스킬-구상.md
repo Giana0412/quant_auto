@@ -127,7 +127,7 @@ review_by: 2026-09-12
 
 | | 무엇 |
 |---|---|
-| **vault pull** | 단, **깨끗할 때만 · fast-forward 만.** 충돌이면 멈추고 [[resolve-conflict]] 스킬로 넘긴다 |
+| **vault pull** | 단, **깨끗할 때만 · fast-forward 만.** 충돌이면 멈추고 `resolve-conflict` 스킬로 넘긴다 |
 | **내 액션아이템 조회** | §4 |
 | **lint 상태 한 줄** | 어제 점검에서 몇 건 나왔는지 |
 
@@ -166,7 +166,7 @@ vault 는 반대로 **전원이 쓰는 저장소**라 읽기 전용 미러를 �
 트리가 깨끗할 때만 pull  →  fast-forward 만  →  그 외엔 멈추고 사람에게
 ```
 
-이건 [[자동화-스크립트개편-설계]] B-3 에 이미 있고, [[resolve-conflict]] 스킬에도
+이건 [[자동화-스크립트개편-설계]] B-3 에 이미 있고, `resolve-conflict` 스킬에도
 `reset --hard` · `checkout --ours/--theirs` · `push --force` 금지가 박혀 있다.
 
 ### 자동 해결 허용 기준은 이미 있다

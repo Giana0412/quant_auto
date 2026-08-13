@@ -73,3 +73,6 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 
 ## [2026-08-13] ingest | 레퍼런스-정밀대조
 - Karpathy·stigmergy·GitLab·PostHog 원문 대조 + cortex/hippocampus 추가 발견
+
+## [2026-08-13] ingest | 사례조사-실사용패턴
+- Clearwater·Eric Ma·46커맨드·야간에이전트·200문서 기준. 실사용 패턴 5종

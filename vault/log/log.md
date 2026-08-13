@@ -85,3 +85,6 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 
 ## [2026-08-14] ingest | 싱크-사례별-장단점
 - 구현체 14개 주소+★ 붙여 장단점 대조. A군2개 즉시, B-4 다음, C군5개 배제
+
+## [2026-08-14] ingest | 구현체-운영구조-비교
+- stigmergy 런북·librarian, hippocampus CLAUDE/lint 원문 대조. 충돌=재시도 발견

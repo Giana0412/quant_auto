@@ -13,7 +13,7 @@ purpose: vault schema 규칙 위반 자동 점검 결과 (주 1회 갱신)
 > 규칙 정의는 `.automation/wiki_lint.py`, 배경은 [[전체-구조도|전체 구조도]] §4~§6.
 
 ```
-vault 문서 69개 검사
+vault 문서 70개 검사
 
 ✅ L1 깨진 위키링크 — 0건
 

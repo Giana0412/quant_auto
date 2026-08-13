@@ -1,6 +1,6 @@
 ---
 created: 2026-08-12
-updated: 2026-08-12
+updated: 2026-08-13
 purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙인다 (append-only)
 ---
 
@@ -42,4 +42,13 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 - 위반 0건
 
 ## [2026-08-12] lint | -
+- 위반 0건
+
+## [2026-08-13] lint | -
+- 위반 0건
+
+## [2026-08-13] lint | -
+- t
+
+## [2026-08-13] lint | -
 - 위반 0건

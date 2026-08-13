@@ -56,6 +56,8 @@ git commit/push는 하지 않는다 (obsidian-git이 별도로 자동 커밋한�
   # 문서가 늘거나 줄었으면 목차를 다시 만든다. 파일에서 유도되는 것만 만들므로
   # 매번 통째로 덮어써도 안전하다 (사람이 손댈 파일이 아니다).
   python3 "$VAULT_DIR/.automation/wiki_index.py" 2>&1 || echo "⚠️ 목차 생성 실패"
+  # 회의 결론이 담당자별 할 일로 이어지는 경로 (260811 싱크 1:05:28)
+  python3 "$VAULT_DIR/.automation/wiki_todo.py" 2>&1 || echo "⚠️ 할일 목차 생성 실패"
   # 무엇이 언제 위키에 들어왔는지 append-only 로 남긴다 (카파시 원문의 log.md)
   # grep 은 결과가 없으면 1을 반환한다. set -euo pipefail 아래에서 그대로 두면
   # "새 문서가 없다"는 정상 상황에 스크립트가 죽는다 — || true 로 막는다.

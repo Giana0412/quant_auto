@@ -1,6 +1,6 @@
 ---
 created: 2026-08-12
-updated: 2026-08-13
+updated: 2026-08-14
 purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙인다 (append-only)
 ---
 
@@ -76,3 +76,6 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 
 ## [2026-08-13] ingest | 사례조사-실사용패턴
 - Clearwater·Eric Ma·46커맨드·야간에이전트·200문서 기준. 실사용 패턴 5종
+
+## [2026-08-14] ingest | 싱크-옵션-5안
+- 싱크 방식 5개 안 + 근거. 준범님 주말 검토용 결정 문서

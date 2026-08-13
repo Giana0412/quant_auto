@@ -70,3 +70,6 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 
 ## [2026-08-13] ingest | 싱크-운영정책-제안
 - 다른 회사 사례+실측으로 싱크 정책 제안. 위키링크 511개가 GitHub 웹에서 깨지는 것 확인
+
+## [2026-08-13] ingest | 레퍼런스-정밀대조
+- Karpathy·stigmergy·GitLab·PostHog 원문 대조 + cortex/hippocampus 추가 발견

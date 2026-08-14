@@ -88,3 +88,6 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 
 ## [2026-08-14] ingest | 구현체-운영구조-비교
 - stigmergy 런북·librarian, hippocampus CLAUDE/lint 원문 대조. 충돌=재시도 발견
+
+## [2026-08-14] ingest | llm위키-git운용-정밀조사
+- 구현체 20여개 git 처리 조사. index gitignore·pre-commit훅·순차체인 발견

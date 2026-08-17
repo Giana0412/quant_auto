@@ -1,6 +1,6 @@
 ---
 created: 2026-08-12
-updated: 2026-08-14
+updated: 2026-08-17
 purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙인다 (append-only)
 ---
 
@@ -91,3 +91,6 @@ purpose: vault 작업 기록 — ingest·query·lint 를 시간순으로 덧붙�
 
 ## [2026-08-14] ingest | llm위키-git운용-정밀조사
 - 구현체 20여개 git 처리 조사. index gitignore·pre-commit훅·순차체인 발견
+
+## [2026-08-17] lint | -
+- 위반 0건

@@ -35,6 +35,12 @@ personal/10-market/_README.md 를 먼저 읽는다.
 3. 고정 세트 + 동적 세트를 합쳐서 다음 명령을 Bash로 실행한다 (중복 제거, 공백으로 구분):
    python3 .automation/market_snapshot.py <티커들...> --threshold 3.0
    이 스크립트가 CSV로 등락률과 ALERT/normal 플래그를 계산해서 출력한다 — 이 숫자를 그대로 옮겨 적는다. 절대 직접 계산하거나 추정하지 않는다. stderr에 에러난 티커가 있으면 결과에서 그 사실만 짧게 언급하고 넘어간다.
+
+   **CSV 열은 ticker,label,last_close,last_date,prev_close,prev_date,pct_change,flag,age_days 다.**
+   \`age_days\` 는 그 종가가 며칠 전 것인지다 (0=오늘). 반드시 이렇게 다룬다:
+   - **age_days 가 0 이 아니면 그 줄은 오늘 수치가 아니다.** 표의 '기준일' 칸에 last_date 를 적고, age_days>=1 이면 상태 칸에 \`⏸ N일 전\` 을 덧붙인다.
+   - 등락률은 last_date 와 prev_date **사이**의 변화다. 휴장이 끼면 '전일비'가 아니라 며칠치일 수 있으니, 두 날짜가 하루 차이가 아니면 그 사실을 표 아래 한 줄로 적는다.
+   - **age_days 가 큰 걸 "오늘 이렇게 움직였다"로 쓰지 않는다.** 묵은 건 묵었다고 쓴다.
 4. personal/10-market/data/${TODAY_KST}-시장데이터.md 를 작성한다. 형식:
    ---
    date: ${TODAY_ISO_KST}
@@ -43,9 +49,9 @@ personal/10-market/_README.md 를 먼저 읽는다.
    # ${TODAY_KST} 시장 스냅샷
 
    ## 고정 지수
-   | 티커 | 이름 | 종가 | 전일비 | 상태 |
-   |---|---|---|---|---|
-   (python 출력 그대로 표로)
+   | 티커 | 이름 | 종가 | 기준일 | 직전 | 변동 | 상태 |
+   |---|---|---|---|---|---|---|
+   (python 출력 그대로 표로 — 기준일=last_date, 직전=prev_date)
 
    ## 뉴스 연계 종목
    (동적 세트가 있으면 같은 형식의 표 + 왜 오늘 뉴스와 연결되는지 한 줄. 없으면 '오늘은 다이제스트에서 뽑을 만한 상장 종목 없음')

@@ -61,9 +61,9 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
 
 원문: \`personal/10-market/data/...\`, \`personal/09-newsletters/_digests/...\`
 
-4. 파일을 다 쓴 뒤, 다음 명령으로 텔레그램에 발송한다:
-   .automation/send_telegram.sh ${CONCLUSION_PATH}
-   (이 스크립트는 텔레그램이 아직 설정 안 됐으면 조용히 건너뛴다 — 실패로 취급하지 않는다. 출력 결과를 그대로 보고해라.)
+4. 파일을 다 쓴 뒤, 다음 명령으로 텔레그램 **팀 그룹**에 발송한다:
+   .automation/send_telegram.sh ${CONCLUSION_PATH} --to group
+   (이 스크립트는 텔레그램이 아직 설정 안 됐으면 조용히 건너뛴다 — 실패로 취급하지 않는다. 출력 결과를 그대로 보고해라. --to group 을 빼먹으면 팀이 아니라 개인방으로 가니 반드시 붙인다.)
 
 5. 이어서 ${EASY_PATH} 를 작성한다 — **같은 사실을 훨씬 쉽고 재밌게 풀어쓴 두 번째 버전**. 3번 버전이 팩트를 압축한 브리핑이라면, 이건 친한 친구가 오늘 있었던 일을 옆에서 조곤조곤 재밌게 설명해주는 버전이다.
    - 숫자·전문용어를 몰라도 이해되게 풀어쓴다 (예: '코스피 -4.58%' → '한국 주식시장 전체가 오늘 꽤 크게 빠졌어요'). 비유·일상적인 표현을 적극 쓴다.
@@ -71,8 +71,8 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
    - **사실을 과장하거나 지어내지 않는다** — 원본(뉴스 다이제스트/시장데이터)에 없는 숫자·사건을 만들지 않는다. 쉽게 풀어쓰는 것과 없는 걸 지어내는 건 다르다.
    - 이모지는 자유롭게 써도 되지만 과하지 않게. 분량은 3번 버전보다 길어도 된다(20줄 정도까지 — 텔레그램에서 편하게 읽히는 선).
    - 마찬가지로 _italic_ 문법은 쓰지 않는다(*bold*, \`code\`만). 파일 경로는 이 버전엔 안 넣어도 된다(원문은 3번 버전에 이미 있음).
-6. ${EASY_PATH} 도 텔레그램에 발송한다:
-   .automation/send_telegram.sh ${EASY_PATH}
+6. ${EASY_PATH} 도 같은 팀 그룹에 발송한다:
+   .automation/send_telegram.sh ${EASY_PATH} --to group
 
 personal/10-market/_conclusions/ 외의 다른 파일은 건드리지 않는다. git commit/push는 하지 않는다."
 

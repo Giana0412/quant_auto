@@ -97,7 +97,17 @@ SLACK_RUNS=${SLACK_RUNS:-0}
 ERRORS=$(grep -c '🔴' "$LOG_FILE" 2>/dev/null || true)
 ERRORS=${ERRORS:-0}
 
+# 프롬프트 문자열이 끊기는 버그 정적 검사.
+# 건강검진은 원래 증상만 본다("시장데이터 파일 없음"). 이걸 같이 돌리면 **원인**까지
+# 알려줄 수 있다 — 실제로 그 사고의 원인이 market-snapshot.sh 43행의 큰따옴표였다.
+PROMPT_BAD=$(python3 "$VAULT_DIR/.automation/check_prompts.py" 2>/dev/null | grep '^🔴' | head -3 || true)
+
 PROBLEMS=()
+if [ -n "$PROMPT_BAD" ]; then
+  while IFS= read -r line; do
+    [ -n "$line" ] && PROBLEMS+=("${line#🔴 }")
+  done <<< "$PROMPT_BAD"
+fi
 # 뉴스레터는 주말·공휴일에 원래 안 온다. 하루 0건으로 매주 알림이 오면 사람이
 # 알림을 무시하게 되고, 그러면 진짜 고장도 같이 묻힌다. **연속 3일 이상**일 때만
 # 문제로 본다 — 11일 장애는 잡고 주말은 안 잡는 선.

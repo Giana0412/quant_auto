@@ -1,86 +1,72 @@
-# OAO Wiki
+# 개인 자동화
 
-회사의 회의·결정·맥락을 모아두는 단일 저장소입니다.
-사람과 AI 에이전트가 **같은 기록을 읽고** 일하는 것이 목적입니다.
+**개인 전용 저장소다.** 2026-08-19 에 회사용 위키·자동화를 전부 걷어냈다
+(회사 정본은 `oursymbol/oao-wiki` 로 옮겨졌다).
 
-> **옵시디언 = 기억 / 헤르메스 = 머리 / 오르카 = 손발** — 260803 결정 13번
-
----
-
-## 처음 오셨다면
-
-| 목적 | 문서 |
-|---|---|
-| **설계 전체를 보고 싶다** | [설계문서](vault/wiki/00-overview/oao-wiki-설계문서.md) ← **여기부터.** 상단에 *바뀐 것 / 미정 / 피드백 요청* 세 가지가 있습니다 |
-| 기술 배경 없이 읽고 싶다 | [쉬운 설명](vault/wiki/00-overview/oao-wiki-설계문서-쉬운설명.md) |
-| 왜 만들었는지 | [vault-rationale](vault/wiki/00-overview/vault-rationale.md) |
-| 어디에 뭐가 있는지 | [문서 지도](vault/index/문서지도.md) · [회의 목차](vault/index/회의.md) |
+> 🔒 이 레포는 **비공개**다. 공개로 바꾸지 말 것 — `personal/` 은 gitignore 되지만
+> 자동화 스크립트에 개인 메일 주소·경로·구독 목록이 들어 있다.
 
 ---
 
-## 폴더 구조
+## 매일 도는 것
 
-층을 가르는 기준은 주제가 아니라 **"누가 고칠 수 있는가"** 입니다.
+| 시각 (KST) | 잡 | 하는 일 | 알림 |
+|---|---|---|---|
+| 20:00 | `newsletter-archive` | Gmail(IMAP)에서 구독 뉴스레터 수집 → 일일 다이제스트 | — |
+| 20:15 | `market-snapshot` | 지수·환율·금 + 뉴스 언급 종목 스냅샷 | — |
+| 20:30 | `daily-conclusion` | 위 둘을 종합 → 오늘의 결론 2종 | 🟢 **텔레그램 그룹** |
+| 20:45 | `health-check` | 위가 다 돌았는지 점검 | 🔵 **개인방** |
+| 월 09:00 | `newsletter-weekly-report` | 주간 리포트 | — |
 
-```
-vault/
-├── raw/      원본.      아무도 고치지 않는다
-├── wiki/     정리된 지식. 에이전트가 갱신한다
-├── schema/   운영 규칙.   사람만 고친다
-├── index/    목차.       자동 생성
-└── log/      이력.       쌓기만 한다
-```
+launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`.
 
-**Obsidian 으로 열 때는 레포 루트가 아니라 `vault/` 폴더를 여세요.**
-
----
-
-## 규칙 (schema)
-
-| | |
-|---|---|
-| 어느 폴더에 둘지 | [폴더 규칙](vault/schema/폴더-규칙.md) |
-| 문서 맨 위 메타데이터 | [프론트매터 규격](vault/schema/프론트매터-규격.md) |
-| 문서끼리 잇는 법 · 태그 | [링크 규칙](vault/schema/링크-규칙.md) |
-| 규칙이 지켜지는지 점검 | [lint 규칙](vault/schema/lint-규칙.md) |
-| 질문에 근거로 답하는 규약 | [query 규칙](vault/schema/query-규칙.md) |
-| 에이전트가 언제 무엇을 하는가 | [에이전트 역할](vault/schema/에이전트-역할.md) |
-| 회의록 3종 형식 | [템플릿 가이드](vault/schema/템플릿-가이드.md) |
-
-> **에이전트가 실제로 로드하는 건 레포 루트의 `CLAUDE.md`** (위 규칙들의 압축판)입니다.
-> Obsidian 에서는 `vault/` 만 보이므로 그 파일은 안 보입니다 — **규칙을 바꾸면 둘 다 고쳐야 합니다.**
+**알림을 나눈 이유**: 시장·뉴스는 팀과 공유할 값이 있지만, 자동화가 고장 났다는
+점검 알림은 팀이 볼 이유가 없다.
 
 ---
 
-## 자동화
-
-| 언제 | 무엇 |
-|---|---|
-| 1시간마다 | Slack 원본 수집 → 회의록 3종 생성 → 목차 갱신 |
-| 매주 월 09:30 | 규칙 위반 점검 → [리포트](vault/log/lint-report.md) |
-| 요청 시 | 스킬 4종 — `handoff`(정리·공유) · `ask`(근거 조회) · `resolve-conflict`(충돌) · `promote`(코드 종속 문서 파생) |
-
-동작 원리: [자동화 동작구조](vault/wiki/01-architecture/자동화-동작구조.md) · [전체 구조도](vault/wiki/01-architecture/전체-구조도.md)
+## 손으로 돌리기
 
 ```bash
-python3 .automation/wiki_lint.py     # 규칙 점검 (보고만, 고치지 않음)
-python3 .automation/wiki_index.py    # 목차 재생성
+.automation/archive-newsletters.sh          # 수집 + 다이제스트
+.automation/market-snapshot.sh              # 시장
+.automation/daily-conclusion.sh             # 종합 + 발송
+.automation/health-check.sh                 # 점검 + 발송
+.automation/health-check.sh 260817 --dry-run   # 과거 날짜 점검, 발송 안 함
+
+python3 .automation/check_prompts.py        # 프롬프트 문자열 끊김 검사
 ```
 
 ---
 
-## 이 레포에 없는 것
+## 데이터는 어디 있나
 
-| | 어디로 |
-|---|---|
-| PDF·이미지·PPT·녹음 | Google Drive (링크만 vault 에) |
-| 코드에 종속된 문서 (기능 명세·API·QA) | 모노레포 `docs/` |
-| 토큰·비밀번호 | `.automation/*.env` — gitignore, 커밋 금지 |
-| 개인 데이터 | 별도 로컬 저장소 |
-
-**판정 기준은 하나입니다** — *"이 문서는 코드가 바뀌면 같이 바뀌어야 하나?"*
-YES 면 모노레포, NO 면 여기입니다. 확정돼도 여기 남습니다.
+```
+personal/          ← 자체 git 을 가진 별도 저장소. 이 레포는 추적하지 않는다
+├── 09-newsletters/{newneek,uppity,bloomberg}/   수집된 발행물
+│   └── _digests/                                일일 요약
+└── 10-market/
+    ├── data/                                    시장 스냅샷
+    └── _conclusions/                            오늘의 결론
+```
 
 ---
 
-> 현재 개인 테스트 저장소입니다. 문의: 김규형
+## 설정 파일 (gitignore, 권한 600)
+
+| 파일 | 내용 |
+|---|---|
+| `.automation/.gmail.env` | `GMAIL_USER` · `GMAIL_APP_PASSWORD` (앱 비밀번호 16자리) |
+| `.automation/.telegram.env` | `TELEGRAM_BOT_TOKEN` · `TELEGRAM_CHAT_ID`(개인) · `TELEGRAM_GROUP_ID`(그룹) |
+
+---
+
+## 겪은 함정 — 다시 밟지 말 것
+
+| | 무엇 | 대책 |
+|---|---|---|
+| 🔴 **큰따옴표** | `PROMPT="…"` 안에 `"` 를 쓰면 문자열이 끊기고 뒤가 명령으로 실행된다 (`exit 127`). **세 번 밟았다.** `bash -n` 은 못 잡는다 — 문법은 정상이라서 | `check_prompts.py` |
+| 🔴 **`set -e` + `pipefail`** | `ls`·`grep` 은 결과가 0건이면 1을 반환해 스크립트를 죽인다. 슬랙 수집이 6일간 이걸로 죽어 있었다 | `{ … \|\| true; }` 로 감쌀 것 |
+| 🔴 **조용한 실패** | launchd 는 스크립트가 실패해도 종료코드 0 으로 "성공"이라 보고한다 | `health-check` 가 **산출물**을 보고 **매일** 알린다 |
+| 🔴 **되먹임** | 점검 스크립트가 자기가 남긴 `🔴` 를 다시 세서 숫자가 불어났다 | 자기 출력은 `문제:` 로 표기 |
+| ⚠️ **묵은 시장 데이터** | 휴장일에 직전 거래일 숫자가 "오늘 전일비"처럼 보고됐다 | `age_days` 로 `⏸ N일 전` 표시 |

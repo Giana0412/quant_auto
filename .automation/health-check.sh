@@ -84,10 +84,8 @@ CONCL_FILE="personal/10-market/_conclusions/${TODAY}-오늘의결론.md"
 [ -f "$MARKET_FILE" ] && MARKET_OK=1 || MARKET_OK=0
 [ -f "$CONCL_FILE" ]  && CONCL_OK=1  || CONCL_OK=0
 
-# 슬랙 수집 파이프라인은 파일이 안 생기는 게 정상(새 메시지가 없으면)이라
-# 산출물 대신 "오늘 한 번이라도 완주했는가"를 본다.
-SLACK_RUNS=$(grep -c '\[1/3 수집\] 실행 종료' "$LOG_FILE" 2>/dev/null || true)
-SLACK_RUNS=${SLACK_RUNS:-0}
+# 슬랙 수집 파이프라인은 2026-08-19 회사용 자동화를 걷어내면서 제거했다.
+# 없어진 잡을 계속 찾으면 매일 오탐이 나므로 점검 항목에서도 뺐다.
 
 # 로그의 오류 표시.
 # **자기가 쓴 줄은 빼야 한다.** 이 스크립트도 문제를 발견하면 로그에 남기는데,
@@ -115,15 +113,14 @@ fi
   && PROBLEMS+=("뉴스레터 ${STREAK_DAYS}일째 0건 (마지막 ${STREAK_LAST})") || true
 [ "$MARKET_OK" -eq 0 ] && PROBLEMS+=("시장데이터 파일 없음")
 [ "$CONCL_OK" -eq 0 ]  && PROBLEMS+=("오늘의결론 파일 없음")
-[ "$SLACK_RUNS" -eq 0 ] && PROBLEMS+=("슬랙 수집이 오늘 한 번도 완주 안 함")
 [ "$ERRORS" -gt 0 ] && PROBLEMS+=("로그에 오류 표시 ${ERRORS}건")
 
 MSG_FILE=$(mktemp -t healthcheck)
 trap 'rm -f "$MSG_FILE"' EXIT INT TERM
 
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
-  printf '✅ *%s 자동화 정상*\n뉴스 %s · 시장 ✓ · 결론 ✓ · 슬랙 %s회\n' \
-    "$MD" "$NEWS_TODAY" "$SLACK_RUNS" > "$MSG_FILE"
+  printf '✅ *%s 자동화 정상*\n뉴스 %s · 시장 ✓ · 결론 ✓\n' \
+    "$MD" "$NEWS_TODAY" > "$MSG_FILE"
 else
   {
     printf '🔴 *%s 자동화 점검*\n' "$MD"
@@ -140,7 +137,7 @@ fi
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [건강검진] 실행 시작 ==="
-  echo "뉴스 ${NEWS_TODAY}건 / 시장 ${MARKET_OK} / 결론 ${CONCL_OK} / 슬랙 ${SLACK_RUNS}회 / 오류 ${ERRORS}건"
+  echo "뉴스 ${NEWS_TODAY}건 / 시장 ${MARKET_OK} / 결론 ${CONCL_OK} / 오류 ${ERRORS}건"
   # 자기 발견은 🔴 이 아니라 '문제:' 로 쓴다 — 위 ERRORS 계산이 이 줄을 다시 세면
   # 되먹임이 생긴다 (2→4건으로 불어났던 실제 버그).
   if [ ${#PROBLEMS[@]} -gt 0 ]; then printf '  문제: %s\n' "${PROBLEMS[@]}"; fi

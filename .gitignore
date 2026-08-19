@@ -1,38 +1,30 @@
-# Slack bot token, AI API keys 등 평문 시크릿이 저장되는 파일 — 절대 커밋 금지
-vault/.obsidian/plugins/slack-sync/data.json
-.automation/.slack-auth.curlrc
-.automation/.slack.env
+# ── 시크릿 — 절대 커밋 금지 ─────────────────────────────────────────────
 .automation/.gmail.env
 .automation/.telegram.env
+.env
+*.env
+*.key
+*.pem
 
-# 개인 프로필/디지털 트윈 데이터 — 별도 로컬 전용 git repo(personal/.git)로 분리됨.
-# 이 회사 지식 vault repo에는 (gitlink로도) 절대 들어가면 안 됨.
+# ── 개인 데이터 ────────────────────────────────────────────────────────
+# personal/ 은 자체 git(personal/.git)을 가진 별도 저장소다.
+# 이 레포에 (gitlink 로도) 들어가면 안 된다.
 personal/
 
-# OMC 런타임 상태 — 세션마다 새 JSON이 생겨 사람 수만큼 폭증한다.
-# vault 본체(md)의 수십 배 크기라 클론 비용·충돌원이 될 뿐 지식 자산이 아니다.
-# 단, .omc/skills/ 는 프로젝트 스코프 스킬을 공유하는 의도된 예외라 추적 대상으로 남긴다.
-# 에이전트가 vault 하위 디렉터리에서 실행되면 거기에도 .omc/가 생기므로 모든 깊이에서 제외한다.
+# ── 회사 자산 — 이 레포는 2026-08-19 부로 개인 전용이다 ──────────────────
+# 모노레포 로컬 참조본. 회사 코드이므로 개인 레포가 추적하지 않는다.
+company-src/
+
+# ── 휘발성 ─────────────────────────────────────────────────────────────
+# 자동화 실행 로그 — 매 실행마다 갱신된다. 스크립트 자체는 계속 추적한다.
+.automation/logs/
+
+# OMC 런타임 상태 — 세션마다 새 JSON 이 생겨 폭증한다.
 **/.omc/*
 !**/.omc/skills/
 
-# launchd 자동화 실행 로그 — 매 실행마다 갱신되는 휘발성 산출물.
-# 스크립트 자체(.automation/*.sh)는 계속 추적한다.
-.automation/logs/
+# Obsidian 창 배치 — 기계마다 다르다
+.obsidian/workspace.json
 
-# 모노레포 로컬 참조본 — .gitmodules 없는 gitlink로 잘못 추적되고 있어
-# 클론 시 채울 수 없는 빈 디렉터리만 생겼다. 결정 #11("비개발자는 모노레포를
-# 볼 필요 없이 이 레포만 바라본다")에 따라 아예 추적하지 않는다.
-# 승격(promote) 스킬을 쓰는 사람만 로컬에 직접 clone해두면 된다.
-company-src/
-
-# Obsidian 창 배치 — 사람마다 다르므로 공유하면 상시 충돌한다.
-# 나머지 .obsidian/ 설정(플러그인·core 설정)은 팀 공통이라 계속 추적한다.
-vault/.obsidian/workspace.json
-
-# 레포 루트를 실수로 vault 로 열면 Obsidian 이 여기에 기본 설정을 새로 만든다.
-# 진짜 설정은 vault/.obsidian/ 이므로 루트 쪽은 통째로 무시한다.
-/.obsidian/
-
-# macOS 파인더가 폴더마다 만드는 파일 — 지식 자산이 아니다
+# macOS 파인더
 .DS_Store

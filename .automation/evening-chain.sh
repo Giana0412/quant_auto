@@ -34,6 +34,16 @@ LOCK="$LOG_DIR/.evening-chain.lock"
 mkdir -p "$LOG_DIR"
 cd "$VAULT_DIR"
 
+# 오늘 하루만 건너뛰기. 손으로 이미 돌렸을 때 저녁에 또 나가는 걸 막는 용도다.
+#   touch .automation/logs/.skip-$(TZ=Asia/Seoul date +%y%m%d)
+# 표시 파일에 날짜가 박혀 있어 **다음 날 자동으로 무효**가 된다 — 끄고 켜는 걸
+# 잊어버려서 며칠씩 안 도는 사고를 막기 위해서다.
+SKIP_FILE="$LOG_DIR/.skip-$(TZ=Asia/Seoul date +%y%m%d)"
+if [ -f "$SKIP_FILE" ]; then
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 오늘은 건너뜀 ($(basename "$SKIP_FILE")) ===" >> "$LOG_FILE"
+  exit 0
+fi
+
 # 중복 실행 방지. mkdir 은 원자적이라 락으로 쓸 수 있다.
 if ! mkdir "$LOCK" 2>/dev/null; then
   # 6시간 넘게 남아 있으면 죽은 락으로 보고 회수한다 (한 번 끼면 영영 못 도는 것 방지)

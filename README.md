@@ -55,6 +55,17 @@ python3 .automation/check_prompts.py        # 프롬프트 문자열 끊김 검�
 체인은 락(`logs/.evening-chain.lock`)으로 중복 실행을 막는다. 6시간 넘게 남은
 락은 죽은 것으로 보고 회수한다.
 
+### 오늘 하루만 건너뛰기
+
+손으로 이미 돌려서 저녁에 또 나가는 걸 막고 싶을 때:
+
+```bash
+touch .automation/logs/.skip-$(TZ=Asia/Seoul date +%y%m%d)
+```
+
+표시 파일에 날짜가 박혀 있어 **다음 날 자동으로 무효**가 된다 — 껐다 켜는 걸
+잊어버려서 며칠씩 안 도는 사고를 막기 위해서다.
+
 ---
 
 ## 데이터는 어디 있나

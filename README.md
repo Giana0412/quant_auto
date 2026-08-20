@@ -10,15 +10,28 @@
 
 ## 매일 도는 것
 
-| 시각 (KST) | 잡 | 하는 일 | 알림 |
+**launchd 잡은 하나뿐이다** — `evening-chain` 이 20:00 에 떠서 네 단계를 순서대로 돌린다.
+
+| 순서 | 단계 | 하는 일 | 알림 |
 |---|---|---|---|
-| 20:00 | `newsletter-archive` | Gmail(IMAP)에서 구독 뉴스레터 수집 → 일일 다이제스트 | — |
-| 20:15 | `market-snapshot` | 지수·환율·금 + 뉴스 언급 종목 스냅샷 | — |
-| 20:30 | `daily-conclusion` | 위 둘을 종합 → 오늘의 결론 2종 | 🟢 **텔레그램 그룹** |
-| 20:45 | `health-check` | 위가 다 돌았는지 점검 | 🔵 **개인방** |
-| 월 09:00 | `newsletter-weekly-report` | 주간 리포트 | — |
+| ① | `archive-newsletters` | Gmail(IMAP)에서 구독 뉴스레터 수집 → 일일 다이제스트 | — |
+| ② | `market-snapshot` | 지수·환율·금 + 뉴스 언급 종목 스냅샷 | — |
+| ③ | `daily-conclusion` | 위 둘을 종합 → 오늘의 결론 2종 | 🟢 **텔레그램 그룹** |
+| ④ | `health-check` | 위가 다 돌았는지 점검 | 🔵 **개인방** |
+
+| 시각 (KST) | 잡 |
+|---|---|
+| 매일 20:00 | `evening-chain` |
+| 월 09:00 | `newsletter-weekly-report` |
 
 launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`.
+
+> 🔴 **왜 하나로 합쳤나** — 예전엔 잡 4개를 15분 간격으로 따로 걸었다.
+> **노트북이 자고 있으면 그 전제가 무너진다.** macOS 는 잠든 사이 지나간
+> `StartCalendarInterval` 잡을 **깨어날 때 한꺼번에** 실행하므로, 네 개가 같은 순간에
+> 뜨고 순서가 사라진다. 2026-08-19 에 실제로 그래서 결론이 한 통도 안 갔다 —
+> 분석봇이 재료가 준비되기 **전에** 돌아 "종합할 자료 없음" 하고 끝냈다.
+> 잡을 하나로 줄이면 밀려도 순서는 지켜진다.
 
 **알림을 나눈 이유**: 시장·뉴스는 팀과 공유할 값이 있지만, 자동화가 고장 났다는
 점검 알림은 팀이 볼 이유가 없다.
@@ -28,6 +41,8 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`.
 ## 손으로 돌리기
 
 ```bash
+.automation/evening-chain.sh                # 네 단계 전부 (평소엔 이것만)
+
 .automation/archive-newsletters.sh          # 수집 + 다이제스트
 .automation/market-snapshot.sh              # 시장
 .automation/daily-conclusion.sh             # 종합 + 발송
@@ -36,6 +51,9 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`.
 
 python3 .automation/check_prompts.py        # 프롬프트 문자열 끊김 검사
 ```
+
+체인은 락(`logs/.evening-chain.lock`)으로 중복 실행을 막는다. 6시간 넘게 남은
+락은 죽은 것으로 보고 회수한다.
 
 ---
 

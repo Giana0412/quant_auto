@@ -47,7 +47,8 @@ for a in "$@"; do
   esac
 done
 
-TODAY="${TARGET:-$(TZ=Asia/Seoul date +%y%m%d)}"
+# 체인이 자정을 넘겨도 단계들이 같은 날짜를 쓰도록 CHAIN_DATE 를 우선한다
+TODAY="${TARGET:-${CHAIN_DATE:-$(TZ=Asia/Seoul date +%y%m%d)}}"
 MD=$(TZ=Asia/Seoul date -j -f %y%m%d "$TODAY" +%-m/%-d 2>/dev/null || echo "$TODAY")
 
 # 점검 대상일의 로그 (인자로 과거 날짜를 주면 그날 로그를 본다)

@@ -47,7 +47,8 @@ fi
 # 오늘 새로 아카이브된 뉴스레터가 있으면, 소스 간 공통 주제를 뽑아 한국어로 요약한다.
 # 원본 아카이브(1단계)는 원문 그대로 보존하는 게 원칙이라 요약하지 않지만,
 # 이 다이제스트는 분석 보조용 별도 산출물이라 요약·번역이 목적에 맞다.
-TODAY_KST=$(TZ=Asia/Seoul date +%y%m%d)
+# 체인이 자정을 넘겨도 단계들이 같은 날짜를 쓰도록 CHAIN_DATE 를 우선한다
+TODAY_KST="${CHAIN_DATE:-$(TZ=Asia/Seoul date +%y%m%d)}"
 
 PROMPT_DIGEST="오늘 날짜(KST, YYMMDD): ${TODAY_KST}
 

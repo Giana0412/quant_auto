@@ -73,6 +73,18 @@ trap 'rm -rf "$LOCK" 2>/dev/null || true' EXIT INT TERM
 # 8/21 실행이 다음날 10:19 에 끝났는데, 1단계는 260821 뉴스레터를 저장하고
 # 3단계는 260822 파일을 찾다가 "종합할 자료 없음"으로 끝냈다. 그래서 발송이 0이었다.
 export CHAIN_DATE="${CHAIN_DATE:-$(TZ=Asia/Seoul date +%y%m%d)}"
+CHAIN_LOG="$LOG_DIR/20${CHAIN_DATE}.log"
+
+# 오늘 이미 그룹으로 나갔으면 다시 안 보낸다.
+# 이 레포의 자동화는 **하루 한 번 시도가 전부**여서, 그날 네트워크가 한 번 흔들리면
+# 그대로 끝났다. 실제 실패 원인은 날마다 달랐다 —
+#   08-18 세션 한도 / 08-22 IMAP 무한 대기 / 08-23 DNS 실패(ENOTFOUND)
+# 공통점은 "재시도가 없었다"는 것이라, 저녁에 한 번 더 도는 백업 실행을 붙였다.
+# 이 검사가 그 두 번째 실행이 중복 발송하지 않게 막아준다.
+if grep -q '발송 성공 → 그룹' "$CHAIN_LOG" 2>/dev/null; then
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 오늘 이미 그룹 발송 완료 — 건너뜀 ===" >> "$LOG_FILE"
+  exit 0
+fi
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 시작 ==="

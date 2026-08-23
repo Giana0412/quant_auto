@@ -175,7 +175,11 @@ def fetch(args):
     query = " OR ".join(f"from:{s}" for s in SENDERS)
     query = f"({query}) newer_than:{args.days}d"
 
-    M = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+    # 🔴 timeout 을 반드시 준다. imaplib 은 기본값이 무한 대기라서, 연결이 멎으면
+    # 스크립트가 영영 안 끝난다. 2026-08-22 20:10 에 시작한 실행이 **23시간** 동안
+    # 여기 매달려 있었고, 그게 저녁 체인의 락을 붙잡아 그 뒤 사흘간 텔레그램이
+    # 한 통도 안 나갔다. 멈추는 것보다 실패하는 게 낫다 — 실패는 건강검진이 잡는다.
+    M = imaplib.IMAP4_SSL("imap.gmail.com", 993, timeout=60)
     try:
         try:
             M.login(env["GMAIL_USER"], env["GMAIL_APP_PASSWORD"])

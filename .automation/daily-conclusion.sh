@@ -22,8 +22,9 @@ if ! wait_for_network >> "$LOG_FILE" 2>&1; then
 fi
 
 
-TODAY_KST=$(TZ=Asia/Seoul date +%y%m%d)
-TODAY_ISO_KST=$(TZ=Asia/Seoul date +%Y-%m-%d)
+# 체인이 자정을 넘겨도 단계들이 같은 날짜를 쓰도록 CHAIN_DATE 를 우선한다
+TODAY_KST="${CHAIN_DATE:-$(TZ=Asia/Seoul date +%y%m%d)}"
+TODAY_ISO_KST=$(TZ=Asia/Seoul date -j -f %y%m%d "$TODAY_KST" +%Y-%m-%d)
 CONCLUSION_PATH="personal/10-market/_conclusions/${TODAY_KST}-오늘의결론.md"
 EASY_PATH="personal/10-market/_conclusions/${TODAY_KST}-오늘의결론-쉬운설명.md"
 

@@ -92,7 +92,11 @@ declare -a STEPS=(
 for entry in "${STEPS[@]}"; do
   step="${entry%%:*}"; limit="${entry##*:}"
   start=$(date '+%H:%M:%S')
-  timeout "$limit" bash "$VAULT_DIR/.automation/${step}.sh" >/dev/null 2>&1
+  # 🔴 -k 가 반드시 있어야 한다. timeout 은 상한에서 TERM 을 보낸 뒤 **자식이
+  # 실제로 죽을 때까지 기다린다.** claude 가 TERM 에 안 죽는 바람에 420초 상한이
+  # 86분이 된 적이 있다 (2026-08-23 daily-conclusion: 19:24:36→20:51:14).
+  # -k 60 이면 TERM 후 60초 안에 안 죽을 때 KILL 로 확실히 끊는다.
+  timeout -k 60 "$limit" bash "$VAULT_DIR/.automation/${step}.sh" >/dev/null 2>&1
   rc=$?
   case $rc in
     0)   msg="✅" ;;

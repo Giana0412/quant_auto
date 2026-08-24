@@ -74,6 +74,101 @@ def fetch(extra_tickers=()):
     return pd.DataFrame(out).reindex(out[BENCH].index).ffill(), failed
 
 
+def screen_universe():
+    """섹터·스타일 ETF 의 상위 보유종목을 모아 스크리닝 유니버스를 만든다.
+
+    대회는 섹터가 아니라 **종목**을 산다. 로테이션 표는 어디가 이기는지까지만
+    알려주고 "그래서 뭘 사나"가 비어 있어서, 그 간극을 메우려는 것이다.
+    목록을 하드코딩하지 않고 ETF 보유종목에서 끌어오므로 알아서 최신이 된다.
+    """
+    src = {}
+    for etf, label in (("XLK", "기술"), ("XLF", "금융"), ("XLE", "에너지"),
+                       ("XLV", "헬스케어"), ("XLI", "산업재"),
+                       ("IWF", "성장"), ("IWD", "가치"), ("IWM", "소형")):
+        try:
+            for sym in yf.Ticker(etf).funds_data.top_holdings.index:
+                src.setdefault(sym, []).append(label)
+        except Exception:
+            continue
+    return src
+
+
+def screen(bench, src, top=5):
+    """유니버스를 벤치마크 대비 1개월 초과수익으로 줄 세운다."""
+    syms = sorted(src)
+    if not syms:
+        return [], []
+    px = yf.download(syms, period="6mo", interval="1d",
+                     progress=False, auto_adjust=True)["Close"]
+    # 지역·섹터 표와 같은 이유로 벤치마크 달력에 맞춘다 (§fetch 주석 참조)
+    px = px.reindex(bench.index).ffill().dropna(axis=1, how="all")
+
+    rows = []
+    for s in px.columns:
+        ser = px[s].dropna()
+        if len(ser) < 70:
+            continue
+        e1 = excess(ser, bench, LOOKBACKS[0])
+        if e1 is None:
+            continue
+        idx = ser.index.intersection(bench.index)
+        rel = (returns(ser[idx]).dropna() - returns(bench[idx]).dropna()).dropna()
+        z = zscores(rel, 60).dropna()
+        try:
+            bt = float(beta(ser[idx], bench[idx], Window(63, 0)).dropna().iloc[-1])
+        except Exception:
+            bt = float("nan")
+        rows.append((e1, float(z.iloc[-1]) if len(z) else 0.0, bt, s,
+                     "/".join(src.get(s, []))))
+    rows.sort(reverse=True)
+    # 전체 rows 도 돌려준다 — 브레드스(몇 %가 벤치를 이기나)를 세야 하기 때문
+    return rows[:top], rows[-top:], rows
+
+
+def earnings_soon(syms, within=14):
+    """가까운 실적발표일. 며칠 뒤에 이벤트가 있으면 진입 타이밍이 달라진다.
+
+    상대강도가 좋아도 이틀 뒤 실적이면 그건 베팅이지 추세추종이 아니다.
+    그래서 후보 종목의 발표일을 같이 낸다.
+    """
+    from datetime import date
+    today, out = date.today(), []
+    for t in syms:
+        try:
+            c = yf.Ticker(t).calendar
+            eds = c.get("Earnings Date") if isinstance(c, dict) else None
+            if not eds:
+                continue
+            d = min(eds)
+            n = (d - today).days
+            if 0 <= n <= within:
+                out.append((n, t, d))
+        except Exception:
+            continue
+    return sorted(out)
+
+
+def rs_days(s, b, ma=20):
+    """상대강도(자산/벤치마크)가 자기 20일선 위/아래로 며칠째인지.
+
+    1개월·3개월 초과수익은 "얼마나 이겼나"만 말하고 **"언제부터"** 를 말해주지 않는다.
+    갓 뒤집힌 것과 두 달째 이기는 것은 확신도가 다르므로 지속일을 같이 낸다.
+    """
+    i = s.index.intersection(b.index)
+    if len(i) < ma + 5:
+        return None, 0
+    ratio = (s[i] / b[i]).dropna()
+    a = (ratio > ratio.rolling(ma).mean()).dropna()
+    if a.empty:
+        return None, 0
+    cur, n = bool(a.iloc[-1]), 0
+    for v in a.iloc[::-1]:
+        if bool(v) != cur:
+            break
+        n += 1
+    return cur, n
+
+
 def excess(s, b, n):
     """n영업일 누적 초과수익(%p). 대회 평가가 상대수익률이므로 이게 본체다."""
     if len(s) <= n or len(b) <= n:
@@ -124,17 +219,19 @@ def main():
                 bt = float(beta(s[idx], b[idx], Window(63, 0)).dropna().iloc[-1])
             except Exception:
                 bt = float("nan")
-            rows.append((e1, e3, zz, bt, name))
+            rs_up, rs_n = rs_days(s, b)
+            rows.append((e1, e3, zz, bt, name, rs_up, rs_n))
             if abs(zz) >= Z_STRETCH:
                 stretched.append((zz, name))
 
         rows.sort(reverse=True)
         print(f"\n[{gname}] 벤치마크 대비 초과수익")
-        print(f"  {'':10}{'1개월':>9}{'3개월':>9}{'z':>7}{'베타':>7}   추세")
-        for e1, e3, zz, bt, name in rows:
+        print(f"  {'':10}{'1개월':>9}{'3개월':>9}{'z':>7}{'베타':>7}{'RS':>8}   추세")
+        for e1, e3, zz, bt, name, rs_up, rs_n in rows:
             # 3개월보다 1개월이 좋으면 가속, 나쁘면 둔화
             trend = "가속 ↑" if e1 > e3 / 3 else ("둔화 ↓" if e1 < 0 < e3 else "")
-            print(f"  {name:10}{e1:>+8.1f}%{e3:>+8.1f}%{zz:>+7.1f}{bt:>7.2f}   {trend}")
+            rs = f"{'승' if rs_up else '패'}{rs_n}일" if rs_up is not None else "-"
+            print(f"  {name:10}{e1:>+8.1f}%{e3:>+8.1f}%{zz:>+7.1f}{bt:>7.2f}{rs:>8}   {trend}")
 
     # ── 뉴스에서 넘어온 개별 종목 ────────────────────────────────────────
     if extras:
@@ -163,6 +260,47 @@ def main():
             print(f"  {name:12}{e1:>+8.1f}%{e3:>+8.1f}%{zz:>+7.1f}{bt:>7.2f}")
         if not srows:
             print("  (조회된 종목 없음)")
+
+    # ── 종목 스크리닝: "그래서 뭘 사나" ─────────────────────────────────
+    if "--no-screen" not in sys.argv:
+        try:
+            src = screen_universe()
+            up, down, allr = screen(b, src)
+            if up:
+                print(f"\n[스크리닝] 유니버스 {len(src)}종목 · 벤치마크 대비 1개월")
+                print(f"  {'':8}{'1개월':>9}{'z':>7}{'베타':>7}   소속")
+                print("  ── 상위 ──")
+                for e1, z, bt, s, tag in up:
+                    print(f"  {s:8}{e1:>+8.1f}%{z:>+7.1f}{bt:>7.2f}   {tag}")
+                print("  ── 하위 ──")
+                for e1, z, bt, s, tag in reversed(down):
+                    print(f"  {s:8}{e1:>+8.1f}%{z:>+7.1f}{bt:>7.2f}   {tag}")
+                # ── 브레드스: 넓은 장인가 좁은 장인가 ──────────────────
+                # 벤치를 이기는 종목 비율. 낮으면 소수 종목이 끌고 가는 좁은 장이라
+                # 종목선택이 크게 먹히고, 높으면 지수만 사도 비슷해진다.
+                win = sum(1 for r in allr if r[0] > 0)
+                pct = win / len(allr) * 100 if allr else 0
+                shape = "좁은 장 — 종목선택이 크게 먹힘" if pct < 40 else (
+                        "넓은 장 — 지수 대비 이기기 어려움" if pct > 60 else "중립")
+                print(f"\n[브레드스]")
+                print(f"  스크리닝 {len(allr)}종목 중 {win}개가 벤치 상회 ({pct:.0f}%) — {shape}")
+                for gname, members in GROUPS.items():
+                    names = [n for n in members.values() if n in df.columns]
+                    w = sum(1 for n in names
+                            if (excess(df[n].dropna(), b, LOOKBACKS[0]) or 0) > 0)
+                    print(f"  {gname}: {w}/{len(names)} 이김")
+
+                # ── 실적발표 임박 ─────────────────────────────────────
+                cand = [r[3] for r in up] + list(extras)
+                ev = earnings_soon(cand)
+                print(f"\n[실적발표 14일 내]")
+                if ev:
+                    for n, t, d in ev:
+                        print(f"  {t} — {d} (D-{n})")
+                else:
+                    print("  없음")
+        except Exception as e:
+            print(f"\n[스크리닝] 실패: {str(e)[:60]}", file=sys.stderr)
 
     # ── 과열·과매도 ─────────────────────────────────────────────────────
     print("\n[스트레치]")

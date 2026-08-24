@@ -28,3 +28,6 @@ company-src/
 
 # macOS 파인더
 .DS_Store
+
+# gs-quant 등 무거운 의존성 — 재설치 가능하므로 추적하지 않는다
+.automation/.venv/

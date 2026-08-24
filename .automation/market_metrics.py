@@ -62,7 +62,16 @@ def fetch(extra_tickers=()):
             out[name] = h
         except Exception as e:
             failed.append(f"{name}({str(e)[:20]})")
-    return pd.DataFrame(out).ffill(), failed
+    if BENCH not in out:
+        return pd.DataFrame(out), failed
+
+    # 🔴 **벤치마크 거래일로 달력을 고정한다.**
+    # pd.DataFrame 은 모든 티커 날짜의 합집합으로 인덱스를 만든다. 한국 종목
+    # (005930.KS 등)을 인자로 넣으면 한국 거래일이 섞여 행 수가 늘어나고,
+    # excess() 가 쓰는 iloc[-1-21] 이 세는 21칸이 **실제로는 다른 날짜**가 된다.
+    # 실측: 같은 시점에 한국 1개월 초과수익이 종목 없이 -1.6%, 종목을 넣으면 +5.2%.
+    # 어떤 종목을 조회하느냐에 따라 지역·섹터 숫자가 바뀌면 안 되므로 ACWI 달력에 맞춘다.
+    return pd.DataFrame(out).reindex(out[BENCH].index).ffill(), failed
 
 
 def excess(s, b, n):

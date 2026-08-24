@@ -32,7 +32,7 @@ from email.header import decode_header, make_header
 from html.parser import HTMLParser
 
 VAULT_DIR = os.environ.get(
-    "VAULT_DIR", "/Users/gyuhyeongkim/orca/projects/obsidian_test"
+    "VAULT_DIR", "/Users/gyuhyeongkim/orca/projects/quant_auto"
 )
 ENV_FILE = os.path.join(VAULT_DIR, ".automation/.gmail.env")
 BASE = os.path.join(VAULT_DIR, "personal/09-newsletters")

@@ -23,7 +23,7 @@
 
 set -euo pipefail
 
-VAULT_DIR="/Users/gyuhyeongkim/orca/projects/obsidian_test"
+VAULT_DIR="/Users/gyuhyeongkim/orca/projects/quant_auto"
 LOG_DIR="$VAULT_DIR/.automation/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 

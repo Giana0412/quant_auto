@@ -97,7 +97,7 @@ def screen(bench, src, top=5):
     """유니버스를 벤치마크 대비 1개월 초과수익으로 줄 세운다."""
     syms = sorted(src)
     if not syms:
-        return [], []
+        return [], [], [], pd.DataFrame()
     px = yf.download(syms, period="6mo", interval="1d",
                      progress=False, auto_adjust=True)["Close"]
     # 지역·섹터 표와 같은 이유로 벤치마크 달력에 맞춘다 (§fetch 주석 참조)
@@ -121,8 +121,67 @@ def screen(bench, src, top=5):
         rows.append((e1, float(z.iloc[-1]) if len(z) else 0.0, bt, s,
                      "/".join(src.get(s, []))))
     rows.sort(reverse=True)
-    # 전체 rows 도 돌려준다 — 브레드스(몇 %가 벤치를 이기나)를 세야 하기 때문
-    return rows[:top], rows[-top:], rows
+    # 전체 rows 도 돌려준다 — 브레드스(몇 %가 벤치를 이기나)를 세야 하기 때문.
+    # px 도 돌려준다 — 포지션 사이징이 같은 가격을 다시 받지 않고 재사용하도록.
+    return rows[:top], rows[-top:], rows, px
+
+
+def build_book(px, bench, ranked, cap=0.20, corr_cap=0.75, n=5):
+    """20% 상한 안에서 상관 낮은 n종목 북을 짠다.
+
+    순위 순서대로 훑되, **이미 고른 종목과 상관이 corr_cap 을 넘으면 건너뛴다.**
+    실측에서 한국↔신흥 +0.95, 기술↔성장 +0.86 처럼 표면적으로 다른 그룹인데
+    상관이 극단적으로 높은 쌍이 나왔다 — 순위만 보고 상위 5개를 그대로 담으면
+    "20% 씩 5종목 분산"이라 쓰고도 실제로는 한두 개짜리 베팅이 될 수 있다.
+    """
+    rets = px.pct_change().dropna()
+    chosen, skipped = [], []
+    for e1, z, bt, sym, tag in ranked:
+        if sym not in rets.columns:
+            continue
+        if len(chosen) >= n:
+            break
+        if not chosen:
+            chosen.append(sym)
+            continue
+        c = rets[chosen].corrwith(rets[sym]).abs().max()
+        if pd.isna(c) or c <= corr_cap:
+            chosen.append(sym)
+        else:
+            skipped.append((sym, float(c)))
+    weights = {s: cap for s in chosen}
+    return weights, skipped
+
+
+def book_stats(px, bench, weights):
+    """북 전체의 벤치마크 대비 실질 위험. 개별 베타의 단순합이 아니라
+    실제 일별 수익률을 합성해서 계산한다 — 상관을 반영하려면 이래야 한다."""
+    names = list(weights)
+    rets = px[names].pct_change().dropna()
+    bret = bench.pct_change().dropna()
+    idx = rets.index.intersection(bret.index)
+    rets, bret = rets.loc[idx], bret.loc[idx]
+    if len(idx) < 40:
+        return None
+    w = pd.Series(weights)
+    port_ret = (rets * w).sum(axis=1)
+
+    cov = float(pd.Series(port_ret).cov(bret))
+    var_b = float(bret.var())
+    pbeta = cov / var_b if var_b > 0 else float("nan")
+
+    excess_ret = port_ret - bret
+    te = float(excess_ret.std()) * (252 ** 0.5) * 100  # 연율화 추적오차(%)
+
+    # 분산비율(DR): 개별 변동성의 가중평균 / 포트폴리오 변동성.
+    # 상관이 없으면 1보다 커지고(분산 효과), 전부 같이 움직이면 1에 가까워진다.
+    vols = rets.std()
+    weighted_avg_vol = float((vols * w).sum())
+    port_vol = float(port_ret.std())
+    dr = weighted_avg_vol / port_vol if port_vol > 0 else float("nan")
+
+    cash = 1 - sum(weights.values())
+    return dict(beta=pbeta, te=te, dr=dr, cash=cash)
 
 
 def earnings_soon(syms, within=14):
@@ -265,7 +324,7 @@ def main():
     if "--no-screen" not in sys.argv:
         try:
             src = screen_universe()
-            up, down, allr = screen(b, src)
+            up, down, allr, px = screen(b, src)
             if up:
                 print(f"\n[스크리닝] 유니버스 {len(src)}종목 · 벤치마크 대비 1개월")
                 print(f"  {'':8}{'1개월':>9}{'z':>7}{'베타':>7}   소속")
@@ -299,6 +358,27 @@ def main():
                         print(f"  {t} — {d} (D-{n})")
                 else:
                     print("  없음")
+
+                # ── 포지션 사이징: 20% 상한 안에서 상관 낮은 5종목 북 ────────
+                # 순위(초과수익) 그대로 상위 5개를 담으면 상관 높은 쌍이 섞여
+                # "5종목 분산"이라 쓰고도 실제로는 한두 개짜리 베팅이 될 수 있다
+                # (§build_book 주석 — 한국↔신흥 +0.95 실측 사례).
+                weights, skipped = build_book(px, b, up)
+                stats = book_stats(px, b, weights) if weights else None
+                print(f"\n[포지션 사이징] 20% 상한 · 상관 {0.75:.0%} 미만만 편입")
+                if weights:
+                    tag_of = {sym: tag for _, _, _, sym, tag in up}
+                    for s, w in weights.items():
+                        print(f"  {s:8}{w:>6.0%}   {tag_of.get(s, '')}")
+                    if skipped:
+                        print("  제외(상관 과다): " +
+                              " · ".join(f"{s}({c:+.2f})" for s, c in skipped))
+                    if stats:
+                        print(f"  북 베타 {stats['beta']:+.2f} · 추적오차(연) {stats['te']:.1f}%p"
+                              f" · 분산비율 {stats['dr']:.2f} · 미배분 {stats['cash']:.0%}")
+                        print("  ※ 베타·추적오차는 과거 60~63일 관측치다. 미래 예측이 아니다.")
+                else:
+                    print("  구성 불가 (후보 부족)")
         except Exception as e:
             print(f"\n[스크리닝] 실패: {str(e)[:60]}", file=sys.stderr)
 

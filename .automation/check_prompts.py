@@ -84,6 +84,29 @@ def check(path):
         if tail.strip() and not OK_AFTER.match(tail):
             lineno = text[:close].count("\n") + 1
             problems.append((var, lineno, f"문자열이 여기서 끊긴다 → 뒤에 남은 것: {tail.strip()[:50]!r}"))
+            continue
+
+        # 살아있는 백틱 = 명령치환. 큰따옴표 안에서 `…` 는 실행된다.
+        # 안전한 형태는 `\`` 뿐이다. `\\`` 는 역슬래시가 먼저 소비되고 백틱이 살아난다 —
+        # 실제로 daily-conclusion.sh 에 이렇게 6곳이 들어갔고 이 검사가 없어서 놓쳤다.
+        body = text[m.end():close]
+        i = 0
+        while i < len(body):
+            c = body[i]
+            if c == "\\":
+                # 어느 쪽이든 두 글자를 소비한다:
+                #   `\\`  → 리터럴 역슬래시. **다음 문자는 보호되지 않는다**
+                #   `\X`  → X 를 이스케이프. X 는 보호된다
+                # 둘 다 i += 2 이고, 차이는 다음 문자를 다시 검사하느냐인데
+                # 전자는 소비 후 곧바로 다음 문자를 보게 되므로 자동으로 처리된다.
+                i += 2
+                continue
+            if c == "`":
+                lineno = text[:m.end() + i].count("\n") + 1
+                problems.append((var, lineno,
+                                 "이스케이프 안 된 백틱 — 셸이 명령으로 실행한다 (\\` 로 쓸 것)"))
+                break
+            i += 1
 
     return problems
 

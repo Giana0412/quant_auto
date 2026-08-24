@@ -14,7 +14,13 @@ Bloomberg Global Trading Challenge 규칙을 확인하고 맞췄다:
 WLS(대형+중형+소형 글로벌)에 가장 가까운 거래 가능 프록시가 ACWI 라 기준으로 썼다.
 WLS 는 소형주를 포함하므로 소형주(IWM) 를 따로 본다.
 
-실행: .automation/.venv/bin/python .automation/market_metrics.py
+실행:
+  .automation/.venv/bin/python .automation/market_metrics.py
+  .automation/.venv/bin/python .automation/market_metrics.py META 005930.KS   # 종목 추가
+
+인자로 티커를 주면 [종목] 절에 벤치마크 대비 성과를 같이 낸다. 종목 고르는
+대회라 뉴스에 나온 이름이 곧 아이디어 후보이므로, 그것들이 실제로 벤치마크를
+이기고 있는지 바로 보이게 하려는 것이다.
 """
 import sys
 import warnings
@@ -38,10 +44,13 @@ Z_STRETCH = 1.5
 LOOKBACKS = (21, 63)   # 1개월, 3개월 (영업일)
 
 
-def fetch():
+def fetch(extra_tickers=()):
     tick = dict(EXTRA)
     for g in GROUPS.values():
         tick.update(g)
+    # 인자로 받은 종목은 티커를 그대로 이름으로 쓴다 (한글 라벨이 없으므로)
+    for t in extra_tickers:
+        tick.setdefault(t, t)
     out, failed = {}, []
     for t, name in tick.items():
         try:
@@ -66,7 +75,8 @@ def excess(s, b, n):
 
 
 def main():
-    df, failed = fetch()
+    extras = [a for a in sys.argv[1:] if not a.startswith("-")]
+    df, failed = fetch(extras)
     if BENCH not in df.columns:
         print("벤치마크(ACWI) 를 못 받았다 — 상대값 계산 불가", file=sys.stderr)
         return 1
@@ -116,6 +126,34 @@ def main():
             # 3개월보다 1개월이 좋으면 가속, 나쁘면 둔화
             trend = "가속 ↑" if e1 > e3 / 3 else ("둔화 ↓" if e1 < 0 < e3 else "")
             print(f"  {name:10}{e1:>+8.1f}%{e3:>+8.1f}%{zz:>+7.1f}{bt:>7.2f}   {trend}")
+
+    # ── 뉴스에서 넘어온 개별 종목 ────────────────────────────────────────
+    if extras:
+        print("\n[종목] 벤치마크 대비 초과수익")
+        print(f"  {'':12}{'1개월':>9}{'3개월':>9}{'z':>7}{'베타':>7}")
+        srows = []
+        for name in extras:
+            if name not in df.columns:
+                continue
+            s = df[name].dropna()
+            e1, e3 = excess(s, b, LOOKBACKS[0]), excess(s, b, LOOKBACKS[1])
+            if e1 is None or e3 is None:
+                continue
+            idx = s.index.intersection(b.index)
+            rel = (returns(s[idx]).dropna() - returns(b[idx]).dropna()).dropna()
+            z = zscores(rel, 60).dropna()
+            zz = float(z.iloc[-1]) if len(z) else 0.0
+            try:
+                bt = float(beta(s[idx], b[idx], Window(63, 0)).dropna().iloc[-1])
+            except Exception:
+                bt = float("nan")
+            srows.append((e1, e3, zz, bt, name))
+            if abs(zz) >= Z_STRETCH:
+                stretched.append((zz, name))
+        for e1, e3, zz, bt, name in sorted(srows, reverse=True):
+            print(f"  {name:12}{e1:>+8.1f}%{e3:>+8.1f}%{zz:>+7.1f}{bt:>7.2f}")
+        if not srows:
+            print("  (조회된 종목 없음)")
 
     # ── 과열·과매도 ─────────────────────────────────────────────────────
     print("\n[스트레치]")

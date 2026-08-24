@@ -41,7 +41,9 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
 작업:
 1. 둘 다 없으면 '오늘 종합할 자료 없음 — 결론 생략'만 출력하고 끝낸다.
 2. 있는 것만 읽어 종합한다. **없는 숫자를 지어내지 않는다.**
-3. ${CONCLUSION_PATH} 를 작성한다. 텔레그램 Markdown 만 쓴다 (*bold*, \`code\`).
+3. ${CONCLUSION_PATH} 를 작성한다. **오늘 날짜로 이미 있어도 Edit 이 아니라 Write 로
+   전체를 새로 써서 덮어쓴다** (allowedTools 에 Edit 이 없어 부분 수정은 헤드리스에서
+   승인 없이 그대로 멈춘다 — market-snapshot.sh 와 같은 이유). 텔레그램 Markdown 만 쓴다 (*bold*, \`code\`).
    **중요**: _italic_ 문법은 쓰지 않는다 — 파일 경로의 언더스코어와 겹치면 짝이 안 맞아
    메시지 전체 발송이 실패한다. 강조는 *bold* 만, 경로는 \`백틱\` 으로 감싼다.
    형식 (없는 절은 통째로 생략, 전체 22줄 이내):

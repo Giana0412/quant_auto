@@ -1,6 +1,6 @@
 #!/bin/bash
-# 자동화 건강검진. launchd가 매일 20:45 KST에 호출한다 (com.giana.health-check.plist)
-# — 뉴스레터(20:00)·시장봇(20:15)·분석봇(20:30) 이 전부 끝난 뒤다.
+# 자동화 건강검진. 독립 launchd 잡이 아니라 evening-chain.sh 의 4단계(마지막)로
+# 순서대로 불린다 — 뉴스레터·시장봇·분석봇이 전부 끝난 뒤다 (§evening-chain.sh 참고).
 #
 # ── 왜 만들었나 ────────────────────────────────────────────────────────────
 # 같은 사고가 두 번 났다.
@@ -23,7 +23,7 @@
 
 set -euo pipefail
 
-VAULT_DIR="/Users/gyuhyeongkim/orca/projects/obsidian_test"
+VAULT_DIR="/Users/gyuhyeongkim/orca/projects/quant_auto"
 LOG_DIR="$VAULT_DIR/.automation/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 
@@ -85,6 +85,28 @@ CONCL_FILE="personal/10-market/_conclusions/${TODAY}-오늘의결론.md"
 [ -f "$MARKET_FILE" ] && MARKET_OK=1 || MARKET_OK=0
 [ -f "$CONCL_FILE" ]  && CONCL_OK=1  || CONCL_OK=0
 
+# 전략백테스트 캐시(주간, strategy-backtest-weekly.sh) 신선도.
+# 로그·산출물만 보는 이 스크립트가 캐시 안쪽 값(as_of)까지 못 보면, 캐시가 며칠째
+# 안 갱신돼도 market-snapshot.sh/daily-conclusion.sh 는 market_metrics.py 가 읽어주는
+# 대로("🔴 캐시가 N일째 안 갱신됨") 그냥 옮겨 적을 뿐이라 아무도 텔레그램 밖에서는
+# 못 알아챈다 — 바로 이 파일 맨 위에 적힌 "건너뛴 잡은 초록색으로 보인다"는 함정을
+# 캐시 파일 하나에 대해서만 다시 만드는 셈이다. market_metrics.backtest_summary() 와
+# 같은 max_age_days=10 을 쓴다(리밸런스 주기 21영업일의 절반 수준 — 週 1회 잡이
+# 한 주 정도 밀리는 건 정상, 그보다 오래 안 갱신되면 잡 자체가 죽은 것).
+# 파일이 아예 없는 것("missing")은 문제로 안 본다 — 이 잡은 주간이라 배포 직후
+# 첫 월요일 전까지는 원래 없는 게 정상이고, market-snapshot.sh 도 "아직 없음"을
+# 에러가 아니라 정상 상태로 다룬다.
+BACKTEST_CACHE="personal/10-market/_backtest/latest.json"
+BACKTEST_AGE=$(python3 -c "
+import json
+from datetime import date
+try:
+    d = json.load(open('$BACKTEST_CACHE'))
+    print((date.today() - date.fromisoformat(d['as_of'])).days)
+except Exception:
+    print('bad')
+" 2>/dev/null || echo bad)
+
 # 슬랙 수집 파이프라인은 2026-08-19 회사용 자동화를 걷어내면서 제거했다.
 # 없어진 잡을 계속 찾으면 매일 오탐이 나므로 점검 항목에서도 뺐다.
 
@@ -115,6 +137,11 @@ fi
 [ "$MARKET_OK" -eq 0 ] && PROBLEMS+=("시장데이터 파일 없음")
 [ "$CONCL_OK" -eq 0 ]  && PROBLEMS+=("오늘의결론 파일 없음")
 [ "$ERRORS" -gt 0 ] && PROBLEMS+=("로그에 오류 표시 ${ERRORS}건")
+if [ "$BACKTEST_AGE" = "bad" ]; then
+  [ -f "$BACKTEST_CACHE" ] && PROBLEMS+=("전략백테스트 캐시 손상(파싱 불가)") || true
+elif [ "$BACKTEST_AGE" -gt 10 ] 2>/dev/null; then
+  PROBLEMS+=("전략백테스트 캐시 ${BACKTEST_AGE}일째 안 갱신")
+fi
 
 MSG_FILE=$(mktemp -t healthcheck)
 trap 'rm -f "$MSG_FILE"' EXIT INT TERM

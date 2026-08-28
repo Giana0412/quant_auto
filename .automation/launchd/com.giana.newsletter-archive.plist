@@ -12,12 +12,12 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/archive-newsletters.sh</string>
+		<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/archive-newsletters.sh</string>
 	</array>
 	<key>StandardErrorPath</key>
-	<string>/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/logs/newsletter-launchd.err.log</string>
+	<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/logs/newsletter-launchd.err.log</string>
 	<key>StandardOutPath</key>
-	<string>/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/logs/newsletter-launchd.out.log</string>
+	<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/logs/newsletter-launchd.out.log</string>
 	<key>StartCalendarInterval</key>
 	<dict>
 		<key>Hour</key>

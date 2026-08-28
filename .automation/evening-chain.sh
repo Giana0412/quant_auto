@@ -1,6 +1,9 @@
 #!/bin/bash
-# 저녁 체인 — 뉴스레터 → 시장 → 결론 → 점검을 **순서대로 하나씩** 돌린다.
-# launchd 가 매일 20:00 KST 에 이것 하나만 부른다 (com.giana.evening-chain.plist).
+# (원래 저녁 체인이었으나 매매대회 아침 브리핑 용도로 스케줄을 옮겼다 —
+# 이름은 남아 있지만 실제로는 "아침 체인"이다.) 뉴스레터 → 시장 → 결론 → 점검을
+# **순서대로 하나씩** 돌린다. launchd 가 매일 06:00 KST 에 이것 하나만 부른다
+# (com.giana.evening-chain.plist) — 그날 그물이 안 걸리면 07:30 에 백업으로 한 번 더.
+# 한국장 개장(09:00) 전에 텔레그램 그룹에 브리핑이 도착하게 하려는 시간이다.
 #
 # ── 왜 하나로 합쳤나 ──────────────────────────────────────────────────────
 # 예전에는 잡 4개를 15분 간격(20:00·20:15·20:30·20:45)으로 따로 걸었다.
@@ -26,7 +29,7 @@
 
 set -uo pipefail   # -e 는 쓰지 않는다 — 한 단계가 실패해도 체인은 계속 가야 한다
 
-VAULT_DIR="/Users/gyuhyeongkim/orca/projects/obsidian_test"
+VAULT_DIR="/Users/gyuhyeongkim/orca/projects/quant_auto"
 LOG_DIR="$VAULT_DIR/.automation/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 LOCK="$LOG_DIR/.evening-chain.lock"

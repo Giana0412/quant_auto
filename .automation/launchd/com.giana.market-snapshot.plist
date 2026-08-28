@@ -12,12 +12,12 @@
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>
-		<string>/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/market-snapshot.sh</string>
+		<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/market-snapshot.sh</string>
 	</array>
 	<key>StandardErrorPath</key>
-	<string>/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/logs/market-snapshot-launchd.err.log</string>
+	<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/logs/market-snapshot-launchd.err.log</string>
 	<key>StandardOutPath</key>
-	<string>/Users/gyuhyeongkim/orca/projects/obsidian_test/.automation/logs/market-snapshot-launchd.out.log</string>
+	<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/logs/market-snapshot-launchd.out.log</string>
 	<key>StartCalendarInterval</key>
 	<dict>
 		<key>Hour</key>

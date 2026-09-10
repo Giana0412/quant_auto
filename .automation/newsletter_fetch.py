@@ -208,11 +208,17 @@ def fetch(args):
         saved = defaultdict(int)
         skipped_known = skipped_notissue = 0
 
+        # 🔴 2026-09-11: 스레드ID+본문(RFC822)을 매 uid 마다 통째로 받다가, 이미 아는
+        # 메일(known)이 대부분인 날에도 전부 다운로드해서 느렸다 — 최근 며칠 "최근
+        # 30일 81통 검색(이미 처리 83건)" 처럼 대부분 이미 아는 메일인데 하나하나
+        # 전체 본문을 받다 IMAP read timeout 으로 아카이브 자체가 매일 실패했다.
+        # 스레드ID만 먼저 가볍게 받아 이미 아는 메일이면 본문을 아예 안 받도록 바꾼다.
         for uid in uids:
-            status, d = M.fetch(uid, "(X-GM-THRID RFC822)")
-            if status != "OK" or not d or not isinstance(d[0], tuple):
+            status, d = M.fetch(uid, "(X-GM-THRID)")
+            if status != "OK" or not d:
                 continue
-            m = re.search(rb"X-GM-THRID (\d+)", d[0][0])
+            raw = d[0] if isinstance(d[0], (bytes, bytearray)) else b""
+            m = re.search(rb"X-GM-THRID (\d+)", raw)
             if not m:
                 continue
             thrid = format(int(m.group(1)), "x")   # Gmail API 의 threadId 와 같은 표기
@@ -220,7 +226,11 @@ def fetch(args):
                 skipped_known += 1
                 continue
 
-            msg = email.message_from_bytes(d[0][1])
+            status, d2 = M.fetch(uid, "(RFC822)")
+            if status != "OK" or not d2 or not isinstance(d2[0], tuple):
+                continue
+
+            msg = email.message_from_bytes(d2[0][1])
             subject = decode(msg.get("Subject"))
             sender = decode(msg.get("From"))
             addr = email.utils.parseaddr(msg.get("From"))[1].lower()

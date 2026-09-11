@@ -63,7 +63,8 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`. 저장소에는 �
     스크리닝, 넓은 장 >60%→로테이션).
 - **`strategy_backtest.py`** — "매달 벤치 대비 1개월 초과수익 상위를 상관필터로
   5개 골라 다음 달 보유" 라는 모델 북 방법론을, 개별종목이 아니라 지역·섹터·스타일
-  ETF(13종, 생존편향 없음)로 walk-forward 재현한다. 리밸런스마다 **그 시점까지의
+  ETF(19종, 생존편향 없음 — 섹터는 GICS 11개 중 5개만 보던 걸 2026-09-11에 전부로
+  넓혔다)로 walk-forward 재현한다. 리밸런스마다 **그 시점까지의
   데이터만** 써서 순위를 매기고 다음 구간 실현수익으로 평가한다(look-ahead 없음).
   결과를 `personal/10-market/_backtest/latest.json` 에 캐시 — 매일 재계산하기엔
   무겁고 결과도 하루 단위로 안 바뀌어서 주간(`strategy-backtest-weekly.sh`)으로 갱신하고

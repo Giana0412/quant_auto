@@ -81,7 +81,13 @@ BENCH = "벤치마크"
 
 GROUPS = {
     "지역": {"SPY": "미국", "EFA": "선진ex미", "EEM": "신흥", "EWY": "한국", "EWJ": "일본"},
-    "섹터": {"XLK": "기술", "XLF": "금융", "XLE": "에너지", "XLV": "헬스케어", "XLI": "산업재"},
+    # 🔴 2026-09-11: GICS 11개 섹터 중 5개만 보고 있었다 — 나머지 6개(소재·자유소비재·
+    # 필수소비재·커뮤니케이션·유틸리티·부동산)가 빠져 있으면 AMZN·TSLA·META·GOOGL·
+    # PG·KO 같은 시총 상위 종목이 [스크리닝](screen_universe() 가 이 dict 를 그대로
+    # 씀)에 아예 뜰 수 없다. 전부 미국 상장 SPDR ETF라 국제 티커 표기 문제는 없다.
+    "섹터": {"XLK": "기술", "XLF": "금융", "XLE": "에너지", "XLV": "헬스케어", "XLI": "산업재",
+            "XLY": "자유소비재", "XLP": "필수소비재", "XLC": "커뮤니케이션",
+            "XLB": "소재", "XLU": "유틸리티", "XLRE": "부동산"},
     "스타일": {"IWF": "성장", "IWD": "가치", "IWM": "미국소형"},
 }
 EXTRA = {"ACWI": BENCH, "^VIX": "VIX"}
@@ -162,16 +168,21 @@ def screen_universe():
     ※ 이게 **오늘 시점** 보유종목이라는 점이 중요하다 — 과거로 돌아가 "그때의
     상위 보유종목"을 구할 방법이 없으므로 이 유니버스 자체는 백테스트가 불가능하다
     (strategy_backtest.py 가 그룹 단위로만 검증하는 이유. 그 스크립트 docstring 참고).
+
+    🔴 2026-09-11: ETF 목록을 여기 따로 하드코딩하지 않고 GROUPS["섹터"]/["스타일"]을
+    그대로 쓴다 — 예전엔 이 함수 안에 별도 튜플로 5개 섹터만 있어서, GROUPS 에
+    섹터를 추가해도 여기는 안 바뀌는 채로 둘이 조용히 어긋날 수 있었다(실제로
+    그래서 6개 섹터가 스크리닝에서 통째로 빠져 있었다). 지역은 개별종목 화면에
+    아직 안 쓴다 — 국제 티커는 yfinance 표기가 검증 전이라서다.
     """
     src = {}
-    for etf, label in (("XLK", "기술"), ("XLF", "금융"), ("XLE", "에너지"),
-                       ("XLV", "헬스케어"), ("XLI", "산업재"),
-                       ("IWF", "성장"), ("IWD", "가치"), ("IWM", "소형")):
-        try:
-            for sym in yf.Ticker(etf).funds_data.top_holdings.index:
-                src.setdefault(sym, []).append(label)
-        except Exception:
-            continue
+    for group in ("섹터", "스타일"):
+        for etf, label in GROUPS[group].items():
+            try:
+                for sym in yf.Ticker(etf).funds_data.top_holdings.index:
+                    src.setdefault(sym, []).append(label)
+            except Exception:
+                continue
     return src
 
 

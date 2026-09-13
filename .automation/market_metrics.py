@@ -92,16 +92,104 @@ GROUPS = {
 }
 EXTRA = {"ACWI": BENCH, "^VIX": "VIX"}
 
+# 🔴 2026-09-11(2차): **스크리닝 유니버스 전용** ETF — 로테이션 표([지역]/[섹터]/
+# [스타일])에는 넣지 않는다. GROUPS 는 "장이 어디로 기우나"를 읽는 신호라 대형
+# 섹터 ETF 로 재는 게 맞고, 여기는 "그래서 뭘 사나"의 후보 풀이라 목적이 다르다.
+#
+# 왜 필요했나 — 1차 미팅(260911)에서 "대형주는 한 달 내 변동성이 부족하므로
+# 중소형·서플라이어(러셀2000 계열) 위주"로 정했는데, screen_universe() 가
+# 실제로 만들던 유니버스는 120종목 중 소형주가 10개(8%)뿐이었다. yfinance
+# top_holdings 가 ETF 당 정확히 10개만 주기 때문에 섹터 11개 × 10 = 110 이
+# 전부 대형주로 채워지고, 소형주 창구는 IWM 하나였다. ETF 를 늘리는 것 외에
+# 10개 한도를 우회할 방법이 없어서 중소형·테마 ETF 를 12개 더 붙인다
+# (실측: 유니버스 120 → 206종목, 중소형 전용 96종목 = 47%).
+#
+# 값은 (표시라벨, GICS섹터) — 섹터는 SECTOR_CAPS/SECTOR_RULES 를 걸기 위한
+# 키다. 소형 코어(IWO·IWN·IJH·IJR)는 섹터가 섞여 있어 None 이고, 그 종목이
+# 섹터 ETF 에도 걸리면 그쪽에서 섹터를 얻는다(§screen_universe).
+#
+# ※ PSCH(소형 헬스케어)는 일부러 뺐다 — 상위 보유가 바이오텍 위주라 회의에서
+#   정한 "바이오텍 제외"와 정면으로 어긋난다. 헬스케어는 "대형 종목 1~2개"로
+#   합의됐고 그건 XLV 가 이미 커버한다.
+UNIVERSE_EXTRA = {
+    # 러셀2000·중소형 코어 (IWM 은 GROUPS["스타일"] 에 이미 있다)
+    "IWO": ("소형성장", None), "IWN": ("소형가치", None),
+    "IJH": ("중형", None), "IJR": ("소형600", None),
+    # 소형 섹터 — 회의에서 정한 4개 섹터 중 헬스케어만 제외(위 ※)
+    "PSCT": ("소형기술", "기술"), "PSCE": ("소형에너지", "에너지"),
+    "PSCF": ("소형금융", "금융"),
+    "PSCD": ("소형자유소비", "자유소비재"), "PSCI": ("소형산업", "산업재"),
+    # 회의에서 종목·테마 이름이 직접 나온 것 (반도체 서플라이어·사이버보안·방산)
+    "XSD": ("반도체", "기술"), "CIBR": ("사이버보안", "기술"), "ITA": ("방산", "산업재"),
+}
+
+# 유니버스에서 통째로 빼는 티커. ETF 보유종목에는 뜨지만 주식이 아니다 —
+# XTSLA 는 블랙록 현금성 펀드로, IWM·IJR 상위 보유에 늘 섞여 들어온다.
+UNIVERSE_DENY = {"XTSLA"}
+
 Z_STRETCH = 1.5
 RSI_HOT, RSI_COLD = 70, 30
 LOOKBACKS = (21, 63)   # 1개월, 3개월 (영업일)
 BREADTH_NARROW, BREADTH_WIDE = 40, 60   # 브레드스 %. [브레드스] 서술과 [전략모드] 권고가 같은 임계값을 쓴다
+
+# 🔴 최근 21거래일(1개월) 고저폭이 이 값 미만이면 후보에서 뺀다.
+# 회의 결론("대형주는 큰 이벤트 없이 한 번에 5% 이상 움직이지 않아 한 달
+# 대회에는 부적합")을 그대로 옮긴 값이다. 두 가지를 동시에 막는다:
+#   1. 한 달 안에 못 움직이는 종목 — 실측 중앙값이 대형 8% / 중소형 14% 라
+#      5%는 "거의 안 움직이는 쪽"만 걸러내는 느슨한 선이다(대형의 14%가 걸린다:
+#      유틸리티 NEE·D·SO·DUK·XEL·AEP, BRK-B, JPM·BAC).
+#   2. 🔴 **인수합병 확정 종목** — 인수가에 주가가 고정돼 변동성이 0 에 가까워진다.
+#      실측(2026-09-11): SLAB 고저폭 1.2%, CZR 0.57%, ACA 0.52%. 데이터 결손이
+#      아니라 실제 시세다. 이게 위험한 건 안 움직여서만이 아니라 info_score 의
+#      **분모(rel_vol)가 0 에 가까워 점수가 폭발**하기 때문이다 — e1 이 조금만
+#      양수여도 1등으로 올라오고, build_book 의 역변동성 가중이 1/vol 을 쓰므로
+#      20% 상한까지 꽉 채운다. 유니버스를 206종목으로 늘리면 이런 종목이 섞일
+#      확률도 같이 올라가서 반드시 막아야 한다.
+MIN_SPAN21 = 5.0
+
+# info_score 의 변동성 벌점 지수 (0=raw 초과수익, 1=완전한 정보비율).
+# 1.0 은 "변동성 낮고 꾸준히 이긴 종목"을 최상위로 올리는데, 회의 전략은
+# 정반대로 **한 달 안에 움직일 종목**을 찾는 것이라 벌점을 반만 준다.
+# ※ 실측으로는 효과가 작다 — 0.0/0.5/1.0 상위 8종목이 거의 같고 1.0 에서만
+#   AAPL·DE 가 들어오고 고변동 중소형(SM·PTEN)이 밀린다. 상대변동성 분포가
+#   대형 32% vs 중소형 41% 로 1.3배 차이뿐이라서다. 랭킹 편향의 주범은
+#   목적함수가 아니라 유니버스(§UNIVERSE_EXTRA)였고 이건 보조 손잡이다.
+VOL_PENALTY = 0.5
+
+# 🔴 섹터별 북 비중 상한 — 1차 미팅(260911) 결정: 테크 50 / 에너지 20 /
+# 헬스케어 20 / 파이낸셜 10. 이게 없으면 build_book 은 상관 0.75 필터만 보므로
+# **북 5종목이 전부 기술주가 될 수 있다** (상관 필터는 같은 섹터라도 0.75 아래면
+# 통과시킨다). 회의에서 안 정한 섹터는 SECTOR_CAP_DEFAULT 를 쓴다.
+# 금융 0.10 은 종목당 20% 상한보다 작다 — 이 경우 종목을 빼는 게 아니라
+# 10% 까지만 담는다(§build_book 의 섹터 비례 축소).
+SECTOR_CAPS = {"기술": 0.50, "에너지": 0.20, "헬스케어": 0.20, "금융": 0.10}
+SECTOR_CAP_DEFAULT = 0.20
+MIN_POSITION = 0.05      # 남은 섹터 예산이 이보다 작으면 새로 담지 않는다 (부스러기 방지)
 
 # 청산 규칙(§trade_followup) 기본값 — "공식 최적값"이 아니라 대회 기간(수개월) 스윙 매매
 # 기준의 출발점이다. 너무 타이트하면 정상 눌림에도 매번 손절 신호가 뜨고, 너무 느슨하면
 # 신호로서 의미가 없다 — 실제 체결 데이터가 쌓이면 이 두 값부터 조정 대상이다.
 STOP_FROM_PEAK = -10.0    # 트레일링 손절: 진입 이후 고점 대비 하락률
 STOP_FROM_ENTRY = -7.0    # 손절: 진입가 대비 하락률 (트레일링보다 먼저 걸릴 수도 나중에 걸릴 수도 있다)
+TAKE_PROFIT = 10.0        # 익절: 진입가 대비 상승률
+
+# 🔴 섹터별 목표수익·손절 — 회의 결론 "섹터별 목표 수익률·손절선을 정해 도달 시
+# 즉시 매도 후 다음 섹터로 순환"을 코드로 옮긴 것이다. 지금까지는 손절(-7%)·
+# 트레일링(-10%)만 있고 **목표수익이 아예 없었다** — 익절 판단이 RSI 과열
+# 하나뿐이라 "3%, 3%, 2% 를 여러 번 누적한다"는 운용 방식이 코드에 없었다.
+#
+# ⚠️ 숫자는 회의에서 확정된 게 아니다. 회의가 남긴 **질적 근거**를 옮긴 출발점이다:
+#   에너지  — "뉴스를 계속 보며 빠르게 진입·이탈" → 가장 타이트
+#   기술    — 메인 섹터, 4주차 실적까지 보유 가정 → 기본값
+#   헬스케어 — "한 달 내 유의미한 이벤트" 대기 → 가장 느슨
+#   금융    — 3주차 실적 이벤트 연계 → 중간
+# 실제 체결이 쌓이면 STOP_FROM_* 와 함께 여기부터 조정한다.
+SECTOR_RULES = {
+    "에너지":   dict(take=6.0,  stop=-5.0),
+    "기술":     dict(take=10.0, stop=-7.0),
+    "헬스케어": dict(take=12.0, stop=-8.0),
+    "금융":     dict(take=8.0,  stop=-6.0),
+}
 
 # personal/ 은 별도 git 저장소(§README "데이터는 어디 있나") — 여기 쓰는 것만 누적된다
 BUILDUP_LOG = Path("personal/10-market/_buildup/regime-log.jsonl")
@@ -174,16 +262,64 @@ def screen_universe():
     섹터를 추가해도 여기는 안 바뀌는 채로 둘이 조용히 어긋날 수 있었다(실제로
     그래서 6개 섹터가 스크리닝에서 통째로 빠져 있었다). 지역은 개별종목 화면에
     아직 안 쓴다 — 국제 티커는 yfinance 표기가 검증 전이라서다.
+
+    🔴 2026-09-11(2차): 여기에 UNIVERSE_EXTRA(중소형·테마 ETF 12종)를 **더한다**.
+    위에서 경계한 "조용한 어긋남"과는 방향이 다르다 — 그때 문제는 이 함수가
+    GROUPS 의 **부분집합**을 몰래 쓰던 것이었고, 지금은 GROUPS 전체에 별도
+    dict 를 명시적으로 더하는 **상위집합**이다. UNIVERSE_EXTRA 를 GROUPS 에
+    합치지 않는 이유는 §UNIVERSE_EXTRA 주석 참고(로테이션 신호와 후보 풀은
+    목적이 다르다).
+
+    반환값은 {티커: {"tags": [표시라벨...], "sector": GICS섹터|None}} 이다.
+    sector 는 SECTOR_CAPS/SECTOR_RULES 를 걸기 위한 키라서 태그와 따로 든다 —
+    한 종목이 여러 ETF 에 걸리면(예: QRVO 가 소형기술·반도체 양쪽) 섹터를 아는
+    첫 소스에서 정하고, 소형 코어(IWO·IWN·IJH·IJR)에서만 온 종목은 None 이
+    된다(섹터 상한을 못 걸고 종목당 20% 상한만 받는다 — §build_book).
     """
     src = {}
+
+    def add(sym, label, sector):
+        rec = src.setdefault(sym, {"tags": [], "sector": None})
+        rec["tags"].append(label)
+        if rec["sector"] is None and sector is not None:
+            rec["sector"] = sector
+
     for group in ("섹터", "스타일"):
         for etf, label in GROUPS[group].items():
+            # GROUPS["섹터"] 의 라벨은 그 자체가 GICS 섹터명이다. 스타일(성장·가치·
+            # 미국소형)은 섹터가 아니므로 None — 같은 종목이 섹터 ETF 에도 걸리면
+            # 거기서 섹터를 얻는다.
+            sector = label if group == "섹터" else None
             try:
                 for sym in yf.Ticker(etf).funds_data.top_holdings.index:
-                    src.setdefault(sym, []).append(label)
+                    add(sym, label, sector)
             except Exception:
                 continue
-    return src
+
+    for etf, (label, sector) in UNIVERSE_EXTRA.items():
+        try:
+            for sym in yf.Ticker(etf).funds_data.top_holdings.index:
+                add(sym, label, sector)
+        except Exception:
+            continue
+
+    # 🔴 비미국 상장을 뺀다. 1차 미팅에서 "미국 시장을 메인으로 운용"으로 정했고,
+    # 실제로 IWN 상위 보유에 SSRM.TO(토론토) 처럼 점 붙은 티커가 섞여 들어온다.
+    # 점이 없는 티커만 남기면 미국 상장만 남는다(BRK-B·MOG-A 처럼 클래스 구분은
+    # yfinance 에서 하이픈이라 걸리지 않는다).
+    return {s: rec for s, rec in src.items()
+            if "." not in s and s not in UNIVERSE_DENY}
+
+
+def span21(s, n=21):
+    """최근 n거래일 고저폭(%). "이 종목이 한 달 안에 얼마나 움직이나"를 가장
+    직접적으로 재는 값이라 MIN_SPAN21 필터의 기준으로 쓴다 — 연율화 변동성보다
+    회의 문장("한 번에 5% 이상 움직이지 않아 부적합")에 그대로 대응한다."""
+    tail = s.tail(n)
+    lo = float(tail.min())
+    if len(tail) < n or lo <= 0:
+        return float("nan")
+    return (float(tail.max()) / lo - 1) * 100
 
 
 def screen(bench, src, top=5):
@@ -193,22 +329,36 @@ def screen(bench, src, top=5):
     🔴 raw e1 로만 줄 세우던 예전 버전은 변동성이 큰 종목이 한 달 반짝 튀면
     바로 상위권(=매수 후보)에 올라왔다 — 고베타 종목을 보상 없이 담는 것과
     같다. info_score 로 바꾸면 "꾸준히 이긴 종목"이 "크게 흔들리며 이긴 종목"
-    보다 앞에 온다."""
+    보다 앞에 온다. (다만 벌점 강도는 VOL_PENALTY 로 반만 준다 — §VOL_PENALTY)
+
+    🔴 2026-09-11(2차): MIN_SPAN21 필터를 건다. 제외된 종목 수와 이유를
+    같이 돌려준다 — 유니버스가 206종목으로 커져서, 몇 개가 왜 빠졌는지 안
+    보이면 "전부 검토했다"로 읽히기 때문이다.
+
+    반환: (상위, 하위, 전체, 가격, 제외목록)
+    """
     syms = sorted(src)
     if not syms:
-        return [], [], [], pd.DataFrame()
+        return [], [], [], pd.DataFrame(), []
     px = yf.download(syms, period="6mo", interval="1d",
                      progress=False, auto_adjust=True)["Close"]
     # 지역·섹터 표와 같은 이유로 벤치마크 달력에 맞춘다 (§fetch 주석 참조)
     px = px.reindex(bench.index).ffill().dropna(axis=1, how="all")
 
-    rows = []
+    rows, dropped = [], []
     for s in px.columns:
         ser = px[s].dropna()
         if len(ser) < 70:
             continue
         e1 = excess(ser, bench, LOOKBACKS[0])
         if e1 is None:
+            continue
+        sp = span21(ser)
+        if pd.isna(sp) or sp < MIN_SPAN21:
+            # 한 달 안에 못 움직이는 종목 · 인수합병으로 주가가 고정된 종목.
+            # 후자는 rel_vol 이 0 에 가까워 info_score 가 폭발하므로 랭킹에
+            # 올리기 전에 빼야 한다 (§MIN_SPAN21).
+            dropped.append((s, sp))
             continue
         idx = ser.index.intersection(bench.index)
         rel = (returns(ser[idx]).dropna() - returns(bench[idx]).dropna()).dropna()
@@ -220,7 +370,7 @@ def screen(bench, src, top=5):
         rsi, mdir = momentum(ser)
         scr = info_score(e1, rel_vol(rel))
         rows.append((e1, float(z.iloc[-1]) if len(z) else 0.0, bt, s,
-                     "/".join(src.get(s, [])), rsi, mdir, scr))
+                     "/".join(src.get(s, {}).get("tags", [])), rsi, mdir, scr))
     # key= 로 정렬한다 — rsi 뒤에 mdir(str|None) 이 붙어 있어 튜플 기본비교가
     # None과 str을 비교하려다 TypeError 를 낼 수 있다. scr 이 NaN(변동성 계산
     # 실패 등)이면 맨 뒤로 보낸다 — NaN 은 정렬 비교 자체가 정의되지 않아
@@ -228,10 +378,11 @@ def screen(bench, src, top=5):
     rows.sort(key=lambda r: r[7] if not pd.isna(r[7]) else float("-inf"), reverse=True)
     # 전체 rows 도 돌려준다 — 브레드스(몇 %가 벤치를 이기나)를 세야 하기 때문.
     # px 도 돌려준다 — 포지션 사이징이 같은 가격을 다시 받지 않고 재사용하도록.
-    return rows[:top], rows[-top:], rows, px
+    return rows[:top], rows[-top:], rows, px, sorted(dropped, key=lambda d: d[1])
 
 
-def build_book(px, bench, ranked, cap=0.20, corr_cap=0.75, n=5, vol_scale=True):
+def build_book(px, bench, ranked, cap=0.20, corr_cap=0.75, n=5, vol_scale=True,
+               sector_caps=None, sector_of=None):
     """20% 상한 안에서 상관 낮은 n종목 북을 짠다.
 
     순위 순서대로 훑되, **이미 고른 종목과 상관이 corr_cap 을 넘으면 건너뛴다.**
@@ -249,38 +400,87 @@ def build_book(px, bench, ranked, cap=0.20, corr_cap=0.75, n=5, vol_scale=True):
     — 대회 규정(포지션당 20%)은 변동성과 무관하게 못 넘는 절대선이라서다.
     상한에 걸려 못 배분한 몫은 재분배하지 않고 미배분(현금)으로 남긴다 —
     재분배를 시도하면 역변동성 로직과 상한 로직이 서로 되먹임을 일으켜
-    수렴을 보장하기 어렵다. vol_scale=False 면 예전처럼 flat cap 을 쓴다."""
+    수렴을 보장하기 어렵다. vol_scale=False 면 예전처럼 flat cap 을 쓴다.
+
+    🔴 2026-09-11(2차) sector_caps/sector_of — 1차 미팅에서 정한 섹터 비중
+    (테크 50 / 에너지 20 / 헬스케어 20 / 파이낸셜 10)을 강제한다. 이게 없으면
+    상관 필터만으로는 **북 5종목이 전부 기술주가 될 수 있다** — 같은 섹터라도
+    상관이 0.75 아래면 필터를 통과하기 때문이다(실제로 반도체 서플라이어끼리도
+    0.75 를 밑도는 쌍이 흔하다).
+      · sector_of: {티커: 섹터|None}. None 이면 섹터 상한을 못 걸고 종목당
+        cap 만 받는다(소형 코어 ETF 에서만 온 종목 — §screen_universe).
+      · 선택 단계에선 남은 섹터 예산이 MIN_POSITION 미만이면 건너뛴다.
+      · 가중 단계에선 역변동성 배분 뒤 섹터 합이 상한을 넘으면 그 섹터 안에서
+        **비례 축소**한다. 금융처럼 상한(10%)이 종목당 cap(20%)보다 작은 경우
+        종목을 빼는 게 아니라 10% 까지만 담기게 하려는 것이다.
+      · 축소로 빈 몫은 다른 섹터에 재분배하지 않고 미배분(현금)으로 남긴다 —
+        위 상한 로직과 같은 이유(되먹임 방지).
+    sector_caps=None 이면 이 블록 전체가 꺼진다 — strategy_backtest.py 는 그룹
+    ETF 로테이션을 검증하는 쪽이라 종목 섹터 개념이 없어서 그대로 호출한다."""
     rets = px.pct_change().dropna()
-    chosen, skipped = [], []
+    sector_of = sector_of or {}
+
+    def cap_for(sym):
+        """이 종목이 속한 섹터의 상한. 섹터를 모르면 None(제약 없음)."""
+        if not sector_caps:
+            return None
+        sec = sector_of.get(sym)
+        return None if sec is None else sector_caps.get(sec, SECTOR_CAP_DEFAULT)
+
+    chosen, skipped, sector_full = [], [], []
+    used = {}          # 섹터별 잠정 소진량 — 선택 단계에선 종목당 cap 을 쓴다고 보고 센다
     for row in ranked:
         e1, z, bt, sym, tag = row[:5]
-        if sym not in rets.columns:
+        if sym not in rets.columns or sym in chosen:
             continue
         if len(chosen) >= n:
             break
-        if not chosen:
-            chosen.append(sym)
-            continue
-        c = rets[chosen].corrwith(rets[sym]).abs().max()
-        if pd.isna(c) or c <= corr_cap:
-            chosen.append(sym)
-        else:
-            skipped.append((sym, float(c)))
+        sec, sec_cap = sector_of.get(sym), cap_for(sym)
+        if sec_cap is not None:
+            room = sec_cap - used.get(sec, 0.0)
+            if room < MIN_POSITION:
+                sector_full.append((sym, sec))
+                continue
+        if chosen:
+            c = rets[chosen].corrwith(rets[sym]).abs().max()
+            if not (pd.isna(c) or c <= corr_cap):
+                skipped.append((sym, float(c)))
+                continue
+        chosen.append(sym)
+        if sec_cap is not None:
+            used[sec] = used.get(sec, 0.0) + min(cap, sec_cap - used.get(sec, 0.0))
 
     if not chosen:
-        return {}, skipped
-    if not vol_scale or len(chosen) < 2:
-        return {s: cap for s in chosen}, skipped
+        return {}, skipped, sector_full
 
-    vol = rets[chosen].std()
-    if (vol <= 0).any() or vol.isna().any():
-        # 변동성이 0/NaN 인 종목(상장 직후 등)이 섞이면 역수가 발산하거나
-        # 정의되지 않는다 — 이럴 땐 안전하게 flat cap 으로 되돌아간다.
-        return {s: cap for s in chosen}, skipped
-    inv = 1 / vol
-    raw_w = inv / inv.sum() * (cap * len(chosen))   # 평균 배분이 cap 근처가 되도록 스케일
-    weights = {s: min(cap, float(raw_w[s])) for s in chosen}
-    return weights, skipped
+    if not vol_scale or len(chosen) < 2:
+        weights = {s: cap for s in chosen}
+    else:
+        vol = rets[chosen].std()
+        if (vol <= 0).any() or vol.isna().any():
+            # 변동성이 0/NaN 인 종목(상장 직후 등)이 섞이면 역수가 발산하거나
+            # 정의되지 않는다 — 이럴 땐 안전하게 flat cap 으로 되돌아간다.
+            weights = {s: cap for s in chosen}
+        else:
+            inv = 1 / vol
+            raw_w = inv / inv.sum() * (cap * len(chosen))   # 평균 배분이 cap 근처가 되도록 스케일
+            weights = {s: min(cap, float(raw_w[s])) for s in chosen}
+
+    # 섹터 상한 비례 축소 — 역변동성 배분이 끝난 뒤에야 섹터별 실제 합을 알 수 있다
+    if sector_caps:
+        by_sector = {}
+        for s in weights:
+            sec = sector_of.get(s)
+            if sec is not None:
+                by_sector.setdefault(sec, []).append(s)
+        for sec, members in by_sector.items():
+            limit = sector_caps.get(sec, SECTOR_CAP_DEFAULT)
+            total = sum(weights[s] for s in members)
+            if total > limit + 1e-9:
+                scale = limit / total
+                for s in members:
+                    weights[s] *= scale
+    return weights, skipped, sector_full
 
 
 def book_stats(px, bench, weights):
@@ -405,10 +605,16 @@ def info_score(e1, rvol):
 
     raw e1 만으로 줄 세우면 그냥 변동성이 큰 종목이 한 달 반짝 튀어 상위로 올라온다 —
     베타 큰데 마이너스면 "위험만 지는 조합"이라고 [지는 쪽] 절에서 이미 걸러내던 것과
-    같은 문제를, 상위권(사는 쪽) 랭킹 단계에서부터 막는 것이다."""
+    같은 문제를, 상위권(사는 쪽) 랭킹 단계에서부터 막는 것이다.
+
+    🔴 2026-09-11(2차): 벌점 강도를 VOL_PENALTY(기본 0.5)로 뺐다. 지수 1.0(완전한
+    정보비율)은 "변동성 낮고 꾸준히 이긴 종목"을 최상위로 올리는데, 1차 미팅에서
+    정한 전략은 정반대로 **한 달 안에 움직일 종목**을 찾는 것이라 방향이 어긋난다.
+    strategy_backtest.py 가 이 함수를 그대로 import 하므로, 값을 바꾸면 백테스트
+    쪽 검증 숫자도 같이 바뀐다 — 두 경로가 갈라지지 않도록 여기 한 곳에서만 정한다."""
     if pd.isna(rvol) or rvol <= 0:
         return float("nan")
-    return e1 / rvol
+    return e1 / (rvol ** VOL_PENALTY)
 
 
 def _read_buildup_records():
@@ -538,7 +744,15 @@ def trade_followup(b):
     [모멘텀])만 있고 "그래서 언제 파나"가 없었다. 진입 후 고점 대비
     STOP_FROM_PEAK% 하락(트레일링 손절), 진입가 대비 STOP_FROM_ENTRY% 하락
     (손절), 또는 수익 중인데 RSI 가 과열로 돌아선 경우(익절 후보) 셋 중 하나면
-    플래그를 붙인다. **매도 지시가 아니라 후보 통지다** — 최종 판단은 사람이 한다."""
+    플래그를 붙인다. **매도 지시가 아니라 후보 통지다** — 최종 판단은 사람이 한다.
+
+    🔴 2026-09-11(2차): **목표수익(익절선)** 을 추가한다. 지금까지 청산 조건은
+    손절 두 개와 "RSI 과열"뿐이라, 1차 미팅에서 정한 "섹터별 목표 수익률에
+    도달하면 즉시 매도하고 다음 섹터로 순환"·"3%, 3%, 2% 를 여러 번 누적"이
+    코드에 아예 없었다 — 목표가에 닿아도 브리핑이 아무 말을 안 했다.
+    log_trade.py --sector 로 섹터를 남긴 포지션은 SECTOR_RULES 의 섹터별
+    목표·손절을 쓰고(에너지는 타이트, 헬스케어는 느슨 — §SECTOR_RULES),
+    안 남겼으면 TAKE_PROFIT/STOP_FROM_ENTRY 기본값을 쓴다."""
     if not TRADE_LOG.exists():
         return []
     recs = []
@@ -579,11 +793,24 @@ def trade_followup(b):
             excess_ret = ret - bench_ret if not pd.isna(bench_ret) else float("nan")
 
             rsi, _ = momentum(h)
+            # 섹터를 남긴 포지션은 그 섹터 룰, 아니면 기본값 (§SECTOR_RULES)
+            sector = last.get("sector")
+            rule = SECTOR_RULES.get(sector) if sector else None
+            take = rule["take"] if rule else TAKE_PROFIT
+            stop = rule["stop"] if rule else STOP_FROM_ENTRY
+            sec_txt = f"{sector} " if rule else ""
+
             exit_flag = None
+            # 손절을 목표수익보다 먼저 본다 — 둘 다 걸릴 수는 없지만(부호가 반대),
+            # 트레일링은 수익 중에도 걸리므로 순서가 결과를 바꾼다. 고점 대비
+            # 급락은 목표 도달보다 급한 신호라 위에 둔다.
             if dd_from_peak <= STOP_FROM_PEAK:
                 exit_flag = f"🔴 트레일링손절 후보(고점 {peak_price:.2f} 대비 {dd_from_peak:+.1f}%)"
-            elif ret <= STOP_FROM_ENTRY:
-                exit_flag = f"🔴 손절 후보(진입가 대비 {ret:+.1f}%)"
+            elif ret <= stop:
+                exit_flag = f"🔴 {sec_txt}손절 후보(진입가 대비 {ret:+.1f}% · 기준 {stop:+.0f}%)"
+            elif ret >= take:
+                exit_flag = (f"🟢 {sec_txt}목표도달(진입가 대비 {ret:+.1f}% · 목표 {take:+.0f}%)"
+                             f" — 회의 룰상 즉시 매도 후 다음 섹터")
             elif ret > 0 and not pd.isna(rsi) and rsi >= RSI_HOT:
                 exit_flag = f"🟡 익절 후보(RSI{rsi:.0f} 과열, 진입가 대비 {ret:+.1f}%)"
 
@@ -591,7 +818,7 @@ def trade_followup(b):
                 ticker=ticker, entry_date=last["date"], entry_price=entry_price,
                 cur_price=cur_price, ret=ret, bench_ret=bench_ret, excess=excess_ret,
                 days=(date.today() - entry_date).days, note=last.get("note") or "",
-                exit_flag=exit_flag,
+                exit_flag=exit_flag, sector=sector,
             ))
         except Exception:
             continue
@@ -724,9 +951,16 @@ def main():
     if "--no-screen" not in sys.argv:
         try:
             src = screen_universe()
-            up, down, allr, px = screen(b, src)
+            up, down, allr, px, dropped = screen(b, src)
             if up:
                 print(f"\n[스크리닝] 유니버스 {len(src)}종목 · 위험조정순(scr=변동성대비 1개월초과수익)")
+                if dropped:
+                    # 몇 개가 왜 빠졌는지 반드시 찍는다 — 안 보이면 "206종목 전부
+                    # 검토했다"로 읽힌다. 고저폭이 가장 작은 쪽(=인수합병 의심)을 예로 든다.
+                    ex = " · ".join(f"{s}({v:.1f}%)" for s, v in dropped[:5])
+                    print(f"  제외 {len(dropped)}종목 — 21일 고저폭 {MIN_SPAN21:.0f}% 미만"
+                          f"(한 달 내 안 움직임·인수합병 고정): {ex}"
+                          f"{' 외' if len(dropped) > 5 else ''}")
                 print(f"  {'':8}{'scr':>7}{'1개월':>9}{'z':>7}{'베타':>7}   소속")
                 print("  ── 상위 ──")
                 for e1, z, bt, s, tag, rsi, mdir, scr in up:
@@ -747,6 +981,10 @@ def main():
                 # ── 브레드스: 넓은 장인가 좁은 장인가 ──────────────────
                 # 벤치를 이기는 종목 비율. 낮으면 소수 종목이 끌고 가는 좁은 장이라
                 # 종목선택이 크게 먹히고, 높으면 지수만 사도 비슷해진다.
+                # ⚠️ 이 %는 유니버스가 그대로일 때만 날짜 간 비교가 된다. 2026-09-11(2차)
+                # 유니버스를 120→206종목으로 넓히자 47.1%→41.4% 로 떨어졌는데 시장이
+                # 바뀐 게 아니라 **분모가 바뀐** 것이다 — [빌드업]의 브레드스 추세를
+                # 그 날짜 전후로 이어서 읽으면 안 된다(§README "겪은 함정").
                 win = sum(1 for r in allr if r[0] > 0)
                 pct = win / len(allr) * 100 if allr else 0
                 shape = "좁은 장 — 종목선택이 크게 먹힘" if pct < BREADTH_NARROW else (
@@ -776,16 +1014,39 @@ def main():
                 # flat 20%가 아니라 역변동성 가중이다(§build_book 주석) — 변동성
                 # 낮은 종목엔 상한 근처까지, 높은 종목엔 그보다 적게 담아 "20%씩
                 # 5종목"이 아니라 "20% 상한 안에서 위험을 맞춘 5종목"이 된다.
-                weights, skipped = build_book(px, b, up)
+                # 🔴 ranked 를 통째로 넘긴다(예전엔 상위 5개 `up` 만 넘겼다).
+                # build_book 은 상관·섹터 제약에 걸린 종목을 건너뛰며 순위를
+                # 내려가도록 설계됐는데, 후보가 5개뿐이면 2개가 걸리는 순간
+                # 3종목 북이 되고 대체 후보를 못 찾는다. strategy_backtest.py 는
+                # 원래 전체 ranked 를 넘기고 있었으므로 실운용과 백테스트가
+                # 서로 다른 경로를 돌고 있었다 — "같은 방법론을 검증한다"는
+                # 그쪽 docstring 의 전제가 깨져 있던 것이라 여기를 맞춘다.
+                sector_of = {s: rec["sector"] for s, rec in src.items()}
+                weights, skipped, sector_full = build_book(
+                    px, b, allr, sector_caps=SECTOR_CAPS, sector_of=sector_of)
                 stats = book_stats(px, b, weights) if weights else None
-                print(f"\n[포지션 사이징] 20% 상한 · 상관 {0.75:.0%} 미만만 편입 · 역변동성 배분")
+                caps_txt = " / ".join(f"{k} {v:.0%}" for k, v in SECTOR_CAPS.items())
+                print(f"\n[포지션 사이징] 20% 상한 · 상관 {0.75:.0%} 미만만 편입 · 역변동성 배분"
+                      f"\n  섹터 상한(1차 미팅 결정): {caps_txt} · 그 외 {SECTOR_CAP_DEFAULT:.0%}")
                 if weights:
-                    tag_of = {r[3]: r[4] for r in up}
+                    tag_of = {r[3]: r[4] for r in allr}
                     for s, w in weights.items():
-                        print(f"  {s:8}{w:>6.0%}   {tag_of.get(s, '')}")
+                        sec = sector_of.get(s)
+                        print(f"  {s:8}{w:>6.1%}   {tag_of.get(s, '')}"
+                              f"{f'  [{sec}]' if sec else '  [섹터미상]'}")
+                    # 섹터별 합계 — 회의 비중대로 담겼는지 한 눈에 보이게 한다
+                    by_sec = {}
+                    for s, w in weights.items():
+                        by_sec[sector_of.get(s) or "섹터미상"] = by_sec.get(
+                            sector_of.get(s) or "섹터미상", 0.0) + w
+                    print("  섹터 합계: " + " · ".join(
+                        f"{k} {v:.0%}" for k, v in sorted(by_sec.items(), key=lambda x: -x[1])))
                     if skipped:
                         print("  제외(상관 과다): " +
-                              " · ".join(f"{s}({c:+.2f})" for s, c in skipped))
+                              " · ".join(f"{s}({c:+.2f})" for s, c in skipped[:6]))
+                    if sector_full:
+                        print("  제외(섹터 상한 소진): " +
+                              " · ".join(f"{s}({sec})" for s, sec in sector_full[:6]))
                     if stats:
                         print(f"  북 베타 {stats['beta']:+.2f} · 추적오차(연) {stats['te']:.1f}%p"
                               f" · 분산비율 {stats['dr']:.2f} · 미배분 {stats['cash']:.0%}")

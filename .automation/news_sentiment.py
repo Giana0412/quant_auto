@@ -55,6 +55,7 @@ TJX 는 "barely budge" 다. is_relevant() 가 티커 등장만 보기 때문이�
 """
 import re
 import sys
+import time
 import warnings
 from datetime import datetime, timedelta, timezone
 
@@ -151,6 +152,14 @@ NOISE_RE = re.compile("|".join(NOISE), re.I)
 MAX_AGE_DAYS = 7      # 이보다 오래된 기사는 "지금 상태"를 말해주지 않는다
 MIN_ARTICLES = 2      # 1건짜리 점수는 표본이 아니라 우연이다 — 표시는 하되 약하다고 표기
 MOVE_DAYS = 5         # 가격이 뉴스를 얼마나 따라왔는지 재는 창
+
+# 🔴 자체 시간 상한. 이게 없어서 사고가 났다 — 2026-09-13 23시 실행에서 이 스크립트가
+# 늘어지자 그걸 부른 시장봇 LLM 이 "The sentiment run is in flight; I'll wait for it
+# before writing the file" 라고 하고 **시장데이터 파일을 아예 안 쓴 채 끝났다.**
+# 센티멘트는 보조 절인데 그것 때문에 브리핑 본체가 통째로 날아간 것이다.
+# 종목마다 남은 시간을 확인해 넘기면 거기서 멈추고, **몇 종목을 못 봤는지 반드시
+# 출력한다** — 조용히 잘라내면 "전부 봤다"로 읽힌다.
+DEADLINE_SEC = 120
 
 
 def score_text(text):
@@ -317,8 +326,12 @@ def main():
           f"가격 반응은 {MOVE_DAYS}거래일 벤치 대비 초과수익")
     print(f"  {'티커':<7}{'센티':>7}{'기사':>5}{'5일':>8}{'21일폭':>8}  {'판정':<9} 근거")
 
-    results, unknown = [], []
-    for s in syms:
+    deadline = time.monotonic() + DEADLINE_SEC
+    results, unknown, unseen = [], [], []
+    for i, s in enumerate(syms):
+        if time.monotonic() > deadline:
+            unseen = syms[i:]
+            break
         name = None
         try:
             name = (yf.Ticker(s).info or {}).get("shortName")
@@ -355,6 +368,10 @@ def main():
         # 🔴 뉴스 없음을 '중립'으로 뭉개지 않는다 — 모르는 것과 중립은 다르다
         print(f"\n  판정 불가 {len(unknown)}종목 (최근 {MAX_AGE_DAYS}일 관련 기사 없음 "
               f"— 중립이 아니라 '모름'이다): {' · '.join(unknown)}")
+    if unseen:
+        # 조용히 자르지 않는다 — 안 본 종목을 안 보였다고 하면 "전부 봤다"로 읽힌다
+        print(f"\n  ⏱ 시간 상한({DEADLINE_SEC}초) 도달로 {len(unseen)}종목을 못 봤다: "
+              f"{' · '.join(unseen)}")
     print(f"\n  * 표시는 기사 {MIN_ARTICLES}건 미만이라 점수가 약하다는 뜻이다.")
     print("  ※ 헤드라인 렉시콘 점수라 맥락(이미 알려진 뉴스인지·루머인지)을 모른다 —"
           " 신호 보조지 매매 근거가 아니다.")

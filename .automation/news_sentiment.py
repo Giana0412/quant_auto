@@ -273,11 +273,29 @@ def classify(sent, move):
 
 def main():
     extras = [a.upper() for a in sys.argv[1:] if not a.startswith("-")]
-    df, _ = fetch()
-    if BENCH not in df.columns:
-        print("벤치마크(ACWI) 를 못 받았다 — 상대값 계산 불가", file=sys.stderr)
-        return 1
-    b = df[BENCH].dropna()
+
+    # 🔴 티커를 받았으면 벤치마크만 따로 받는다. fetch() 는 GROUPS 전체(19종)를
+    # 받고, 티커를 안 주면 screen_universe()+screen() 이 206종목을 통째로 다시
+    # 내려받는다 — market_metrics.py 가 방금 한 일을 그대로 반복하는 것이라
+    # 일일 체인에 붙이면 시장 데이터 단계가 두 배로 길어진다. 체인에서는 항상
+    # [스크리닝] 에 뜬 티커를 인자로 넘겨 이 무거운 경로를 건너뛴다
+    # (§market-snapshot.sh 2-b 단계).
+    if extras:
+        try:
+            b = yf.Ticker("ACWI").history(period="6mo", interval="1d")["Close"].dropna()
+            b.index = b.index.tz_localize(None)
+        except Exception as e:
+            print(f"벤치마크(ACWI) 를 못 받았다 — {str(e)[:40]}", file=sys.stderr)
+            return 1
+        if len(b) < 40:
+            print("벤치마크(ACWI) 이력이 모자라다 — 상대값 계산 불가", file=sys.stderr)
+            return 1
+    else:
+        df, _ = fetch()
+        if BENCH not in df.columns:
+            print("벤치마크(ACWI) 를 못 받았다 — 상대값 계산 불가", file=sys.stderr)
+            return 1
+        b = df[BENCH].dropna()
 
     if extras:
         syms, tags = extras, {t: "" for t in extras}

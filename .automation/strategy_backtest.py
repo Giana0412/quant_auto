@@ -108,7 +108,10 @@ def run(df):
         # scr 이 NaN(60거래일 이력이 아직 안 쌓인 초반 리밸런스 등)이면 맨 뒤로
         ranked.sort(key=lambda r: r[0] if not pd.isna(r[0]) else float("-inf"), reverse=True)
 
-        weights, _ = build_book(hist[universe], b_hist, ranked, cap=0.20, corr_cap=0.75, n=5)
+        # sector_caps 는 넘기지 않는다 — 여기서 줄 세우는 건 개별종목이 아니라
+        # 지역·섹터·스타일 ETF 자체라 "종목의 섹터" 개념이 없다. 섹터 상한은
+        # market_metrics.main() 의 개별종목 북에만 걸린다(§build_book).
+        weights, _, _ = build_book(hist[universe], b_hist, ranked, cap=0.20, corr_cap=0.75, n=5)
         if not weights:
             continue
 

@@ -96,11 +96,18 @@ fi
 # 단계마다 상한 시간을 둔다. **무엇도 영원히 매달려선 안 된다.**
 # newsletter_fetch 가 IMAP 에서 23시간 멈춰 락을 붙잡은 사고가 이 규칙이 없어서
 # 났다. 상한을 넘기면 죽이고 다음 단계로 간다 — 멈추는 것보다 실패가 낫다.
-# (timeout 124 = 시간 초과. 체인 전체 상한은 이 합인 30분.)
+# (timeout 124 = 시간 초과. 체인 전체 상한은 이 합인 35분.)
+#
+# 🔴 2026-09-13 market-snapshot 을 420 → 600 으로 올렸다. 스크립트가 느려진 게
+# 아니라 **LLM 작성 단계가 길어졌다** — 실측으로 market_metrics 71초 +
+# news_sentiment 31초 = 102초뿐이고 나머지가 전부 claude -p 다. 그날 하루에만
+# 프롬프트에 절이 셋 늘어(워치리스트·매크로일정·뉴스대조) 마크다운 작성량이
+# 늘었고, 같은 날 13:52 런은 278초에 끝났는데 14:22 런은 420초를 넘겼다.
+# daily-conclusion 도 같은 이유로 420 → 480. 절을 더 붙일 때마다 여기를 같이 봐야 한다.
 declare -a STEPS=(
   "archive-newsletters:900"   # 메일 수집 + 다이제스트 — 제일 오래 걸린다
-  "market-snapshot:420"
-  "daily-conclusion:420"
+  "market-snapshot:600"       # 스크립트 102초 + LLM. 절이 늘면 LLM 쪽이 늘어난다
+  "daily-conclusion:480"
   "health-check:120"
 )
 

@@ -191,10 +191,21 @@ SECTOR_RULES = {
     "금융":     dict(take=8.0,  stop=-6.0),
 }
 
+# 🔴 모델 북 종목 수 — 1차 미팅 결정 "초기 5~7개 종목으로 시작".
+# 예전엔 build_book(n=5) 하드코딩이라 회의 결정의 아래끝만 쓰고 있었다.
+# 섹터 상한과 상호작용한다: 상한에 걸리면 목표 종목 수를 못 채우고 미배분(현금)이
+# 남는다 — 이건 결함이 아니라 의도다(회의가 정한 섹터 비중이 종목 수보다 우선).
+BOOK_N = 6            # 5~7 사이. 6 이면 상한에 한둘 걸려도 5종목은 남는다
+BOOK_N_MIN = 5        # 이보다 적게 나오면 브리핑에 왜 못 채웠는지 적는다
+
 # personal/ 은 별도 git 저장소(§README "데이터는 어디 있나") — 여기 쓰는 것만 누적된다
 BUILDUP_LOG = Path("personal/10-market/_buildup/regime-log.jsonl")
 BACKTEST_CACHE = Path("personal/10-market/_backtest/latest.json")
 TRADE_LOG = Path("personal/10-market/_trades/trade-log.jsonl")
+WATCHLIST_LOG = Path("personal/10-market/_watchlist/watchlist.jsonl")
+# 매크로 일정은 personal/ 이 아니라 저장소에 둔다 — 개인 데이터가 아니라 팀이
+# 같이 고치는 설정이고, 누가 언제 날짜를 확정했는지 git 이력에 남아야 한다.
+MACRO_CALENDAR = Path(".automation/macro-calendar.json")
 
 
 def fetch(extra_tickers=()):
@@ -453,17 +464,29 @@ def build_book(px, bench, ranked, cap=0.20, corr_cap=0.75, n=5, vol_scale=True,
     if not chosen:
         return {}, skipped, sector_full
 
+    # flat 배분도 같은 이유로 100% 를 넘지 않게 자른다 — 6종목 × 20% = 120% 다.
+    # 폴백 경로라 눈에 잘 안 띄지만 넘치는 건 마찬가지다.
+    def flat():
+        return {s: min(cap, 1.0 / len(chosen)) for s in chosen}
+
     if not vol_scale or len(chosen) < 2:
-        weights = {s: cap for s in chosen}
+        weights = flat()
     else:
         vol = rets[chosen].std()
         if (vol <= 0).any() or vol.isna().any():
             # 변동성이 0/NaN 인 종목(상장 직후 등)이 섞이면 역수가 발산하거나
-            # 정의되지 않는다 — 이럴 땐 안전하게 flat cap 으로 되돌아간다.
-            weights = {s: cap for s in chosen}
+            # 정의되지 않는다 — 이럴 땐 안전하게 flat 배분으로 되돌아간다.
+            weights = flat()
         else:
             inv = 1 / vol
-            raw_w = inv / inv.sum() * (cap * len(chosen))   # 평균 배분이 cap 근처가 되도록 스케일
+            # 🔴 2026-09-13: 목표합이 cap × 종목수 였는데, 이건 **종목수 × cap 이
+            # 정확히 100% 일 때만** 맞는 식이다. n=5·cap=20% 에선 우연히 1.0 이라
+            # 문제가 안 보였지만, 회의 결정("5~7종목")에 맞춰 BOOK_N=6 으로 올리자
+            # 목표합이 120% 가 되어 **비중 합계 108%·미배분 -8%** 가 나왔다
+            # (실측 2026-09-13). 현금을 마이너스로 들고 레버리지를 쓰는 셈이라
+            # 대회 규정에도 어긋난다. 목표합을 100% 로 자른다.
+            target = min(1.0, cap * len(chosen))
+            raw_w = inv / inv.sum() * target
             weights = {s: min(cap, float(raw_w[s])) for s in chosen}
 
     # 섹터 상한 비례 축소 — 역변동성 배분이 끝난 뒤에야 섹터별 실제 합을 알 수 있다
@@ -726,6 +749,56 @@ def backtest_summary(max_age_days=10):
     return data
 
 
+def load_watchlist():
+    """팀 워치리스트(watchlist.py 로 사람이 남긴 것)의 active 종목.
+
+    1차 미팅 공통 액션 아이템 "종목 조사 결과는 수시로 김규형 파이프라인으로
+    공유"의 받는 쪽이다. 파일이 없으면 빈 목록 — 아직 아무도 안 넣었다는 뜻이지
+    오류가 아니다. watchlist.py 를 import 하지 않고 여기서 다시 읽는 이유는
+    의존 방향을 한쪽으로만 두기 위해서다(watchlist.py 는 시세를 몰라도 되고,
+    market_metrics.py 는 argparse 를 끌어올 이유가 없다)."""
+    if not WATCHLIST_LOG.exists():
+        return []
+    latest = {}
+    for line in WATCHLIST_LOG.read_text().splitlines():
+        try:
+            r = json.loads(line)
+        except Exception:
+            continue
+        if isinstance(r, dict) and "ticker" in r:
+            latest[r["ticker"]] = r      # 파일이 시간순이므로 마지막 것이 최신 상태
+    return [r for r in latest.values() if r.get("status") == "active"]
+
+
+def macro_events(within=60):
+    """대회에 영향을 주는 매크로 일정을 D-N 으로. 1차 미팅에서 "이벤트 일정에
+    맞춰 섹터를 순차 진입"하기로 했는데 그 '언제'가 코드에 없었다.
+
+    🔴 날짜를 지어내지 않는다. confirmed=false 는 회의록에서 받아적었을 뿐
+    원문 확인이 안 된 것이고(회의록 자체가 그렇게 단서를 달았다), date=null 은
+    아예 언제인지 모르는 것이다. 둘 다 그대로 표시한다 — 미확인 날짜를 확정처럼
+    브리핑에 내면 그게 매매 판단에 그대로 들어간다."""
+    if not MACRO_CALENDAR.exists():
+        return None
+    try:
+        data = json.loads(MACRO_CALENDAR.read_text())
+    except Exception:
+        return None
+    today, out, undated = date.today(), [], []
+    for e in data.get("events", []):
+        if not e.get("date"):
+            undated.append(e)
+            continue
+        try:
+            d = date.fromisoformat(e["date"])
+        except Exception:
+            continue
+        n = (d - today).days
+        if 0 <= n <= within:
+            out.append((n, d, e))
+    return dict(upcoming=sorted(out), undated=undated)
+
+
 def trade_followup(b):
     """실제 체결(사람이 손으로 남긴 기록)이 신호대로 가고 있는지 매일 추적한다.
 
@@ -827,7 +900,13 @@ def trade_followup(b):
 
 def main():
     extras = [a for a in sys.argv[1:] if not a.startswith("-")]
-    df, failed = fetch(extras)
+    # 팀 워치리스트는 인자로 안 줘도 항상 조회한다 — 팀원이 watchlist.py 로
+    # 넣어두면 그날부터 자동으로 브리핑에 뜨게 하려는 것이다(누가 매일 티커를
+    # 손으로 다시 넘겨야 한다면 "수시로 공유"가 성립하지 않는다).
+    watch = load_watchlist()
+    watch_syms = [w["ticker"] for w in watch]
+    fetch_list = list(dict.fromkeys(extras + watch_syms))
+    df, failed = fetch(fetch_list)
     if BENCH not in df.columns:
         print("벤치마크(ACWI) 를 못 받았다 — 상대값 계산 불가", file=sys.stderr)
         return 1
@@ -946,6 +1025,40 @@ def main():
         if not srows:
             print("  (조회된 종목 없음)")
 
+    # ── 워치리스트: 팀원이 조사해 넣은 종목이 실제로 이기고 있나 ──────────
+    # 1차 미팅 공통 액션 아이템("종목 조사 결과는 수시로 파이프라인으로 공유")의
+    # 결과물이다. 담당자를 같이 찍는 게 핵심 — 누구 픽이 되고 있는지가 보여야
+    # 목요일 미팅에서 "왜 넣었나"를 되짚을 수 있다.
+    if watch:
+        print("\n[워치리스트] 팀이 넣은 종목 · 벤치마크 대비")
+        print(f"  {'':8}{'담당':<7}{'1개월':>9}{'3개월':>9}{'21일폭':>8}   사유")
+        wrows = []
+        for w in watch:
+            name = w["ticker"]
+            if name not in df.columns:
+                wrows.append((None, w, None, None, None))
+                continue
+            s = df[name].dropna()
+            e1, e3 = excess(s, b, LOOKBACKS[0]), excess(s, b, LOOKBACKS[1])
+            wrows.append((e1, w, e3, span21(s), None))
+        # 지고 있는 것부터 — 점검이 필요한 쪽이 위로 와야 한다
+        wrows.sort(key=lambda r: (r[0] is None, r[0] if r[0] is not None else 0))
+        for e1, w, e3, sp, _ in wrows:
+            owner = (w.get("owner") or "?")[:6]
+            reason = (w.get("reason") or "")[:34]
+            if e1 is None:
+                print(f"  {w['ticker']:<8}{owner:<7}{'조회 실패 — 티커 확인 필요':>26}   {reason}")
+                continue
+            # MIN_SPAN21 은 스크리닝 필터지 워치리스트 배제 기준이 아니다.
+            # 팀원이 근거를 갖고 넣은 종목을 스크립트가 말없이 빼면 안 되고,
+            # 대신 "한 달 안에 안 움직인다"는 사실만 옆에 붙인다.
+            flag = f"  ⏸안움직임({sp:.0f}%)" if not pd.isna(sp) and sp < MIN_SPAN21 else ""
+            print(f"  {w['ticker']:<8}{owner:<7}{e1:>+8.1f}%{e3:>+8.1f}%{sp:>7.1f}%   {reason}{flag}")
+        wins = sum(1 for e1, *_ in wrows if e1 is not None and e1 > 0)
+        got = sum(1 for e1, *_ in wrows if e1 is not None)
+        if got:
+            print(f"  → {got}종목 중 {wins}개가 벤치 상회")
+
     # ── 종목 스크리닝: "그래서 뭘 사나" ─────────────────────────────────
     pct = None
     if "--no-screen" not in sys.argv:
@@ -998,7 +1111,9 @@ def main():
                     print(f"  {gname}: {w}/{len(names)} 이김")
 
                 # ── 실적발표 임박 ─────────────────────────────────────
-                cand = [r[3] for r in up] + list(extras)
+                # 워치리스트 종목도 넣는다 — 팀원이 넣은 종목의 실적일을 놓치면
+                # "추세추종인 줄 알고 이벤트 베팅을 하는" 상황이 된다
+                cand = [r[3] for r in up] + list(extras) + watch_syms
                 ev = earnings_soon(cand)
                 print(f"\n[실적발표 14일 내]")
                 if ev:
@@ -1023,10 +1138,11 @@ def main():
                 # 그쪽 docstring 의 전제가 깨져 있던 것이라 여기를 맞춘다.
                 sector_of = {s: rec["sector"] for s, rec in src.items()}
                 weights, skipped, sector_full = build_book(
-                    px, b, allr, sector_caps=SECTOR_CAPS, sector_of=sector_of)
+                    px, b, allr, n=BOOK_N, sector_caps=SECTOR_CAPS, sector_of=sector_of)
                 stats = book_stats(px, b, weights) if weights else None
                 caps_txt = " / ".join(f"{k} {v:.0%}" for k, v in SECTOR_CAPS.items())
-                print(f"\n[포지션 사이징] 20% 상한 · 상관 {0.75:.0%} 미만만 편입 · 역변동성 배분"
+                print(f"\n[포지션 사이징] 목표 {BOOK_N}종목(회의: 5~7) · 20% 상한 · "
+                      f"상관 {0.75:.0%} 미만만 편입 · 역변동성 배분"
                       f"\n  섹터 상한(1차 미팅 결정): {caps_txt} · 그 외 {SECTOR_CAP_DEFAULT:.0%}")
                 if weights:
                     tag_of = {r[3]: r[4] for r in allr}
@@ -1047,6 +1163,12 @@ def main():
                     if sector_full:
                         print("  제외(섹터 상한 소진): " +
                               " · ".join(f"{s}({sec})" for s, sec in sector_full[:6]))
+                    if len(weights) < BOOK_N_MIN:
+                        # 목표를 못 채운 건 결함이 아니라 섹터 상한이 종목 수보다
+                        # 우선한다는 설계의 결과다 — 다만 왜 적은지는 말해야 한다
+                        print(f"  ⚠️ 목표 {BOOK_N}종목 중 {len(weights)}종목만 편입됐다"
+                              f"(하한 {BOOK_N_MIN}) — 섹터 상한·상관 필터에 걸린 결과다."
+                              " 회의가 정한 섹터 비중이 종목 수보다 우선한다")
                     if stats:
                         print(f"  북 베타 {stats['beta']:+.2f} · 추적오차(연) {stats['te']:.1f}%p"
                               f" · 분산비율 {stats['dr']:.2f} · 미배분 {stats['cash']:.0%}")
@@ -1077,6 +1199,22 @@ def main():
               f" (매수 자체는 여전히 [스크리닝] 개별종목에서 — 그룹은 ETF라 직접 매수 불가)")
     else:
         print(f"  중립 장(브레드스 {pct:.0f}%) → 로테이션·스크리닝 비중 5:5, 두 랭킹 상위가 겹치는 종목 우선")
+
+    # ── 매크로 일정: 섹터 순환의 "언제" ────────────────────────────────
+    # 1차 미팅에서 "이벤트 일정(FOMC, CPI, 중간선거, 실적 주차)에 맞춰 섹터를
+    # 순차 진입·이탈"하기로 했는데 그 '언제'가 코드에 통째로 없었다.
+    mac = macro_events()
+    if mac and (mac["upcoming"] or mac["undated"]):
+        print("\n[매크로일정] 60일 내")
+        for n, d, e in mac["upcoming"]:
+            warn = "" if e.get("confirmed") else "  ⚠️미확인"
+            note = f" — {e['note']}" if e.get("note") else ""
+            print(f"  D-{n:<3} {d} {e['name']}({e.get('kind', '?')}){warn}{note}")
+        for e in mac["undated"]:
+            print(f"  D-?   날짜미정 {e['name']} — {e.get('source', '')}")
+        if any(not e.get("confirmed") for _, _, e in mac["upcoming"]) or mac["undated"]:
+            print("  ⚠️ 미확인 항목은 회의록에서 받아적은 것이라 원문 확인이 필요하다"
+                  " (.automation/macro-calendar.json 에서 고친다)")
 
     # ── 모멘텀: 과열·과매도가 며칠 뒤가 아니라 지금 꺾이는 중인지 ───────────
     print("\n[모멘텀]")

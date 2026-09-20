@@ -796,7 +796,14 @@ def macro_events(within=60):
         n = (d - today).days
         if 0 <= n <= within:
             out.append((n, d, e))
-    return dict(upcoming=sorted(out), undated=undated)
+    # 🔴 key= 로 정렬한다. 예전엔 sorted(out) 였는데, **같은 날짜 이벤트가 둘이면**
+    # (n, d) 가 같아서 튜플 비교가 세 번째 원소인 dict 까지 내려가고
+    # "'<' not supported between instances of 'dict' and 'dict'" 로 죽었다.
+    # 이 함수는 main() 에서 try 없이 불리므로 죽으면 [매크로일정] 뿐 아니라
+    # 그 뒤 [모멘텀]·[빌드업]·[백테스트]·[체결추적]·[상관] 이 통째로 안 찍히고
+    # 브리핑 자체가 실패한다. 같은 날 두 건(예: 10/4 등록 마감 + 등록 확인)은
+    # 정상적인 상황이라 반드시 막아야 한다. 정렬이 안정적이라 동점은 파일 순서를 따른다.
+    return dict(upcoming=sorted(out, key=lambda x: x[0]), undated=undated)
 
 
 def trade_followup(b):

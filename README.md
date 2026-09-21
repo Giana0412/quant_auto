@@ -1,5 +1,11 @@
 # 개인 자동화
 
+> 📚 **무엇을 알고 어떻게 알았나는 [`wiki/`](wiki/index.md) 에 있다.**
+> 이 README 는 **실행법**, 위키는 **지식**이다 —
+> 대회 규정 · 교수 자문(과 그 충돌) · 실측 결과 · 미확인 사항 · 설계 근거.
+> [Karpathy LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) 패턴.
+> 점검: `python3 .automation/wiki_lint.py`
+
 **개인 전용 저장소다.** 2026-08-19 에 회사용 위키·자동화를 전부 걷어냈다
 (회사 정본은 `oursymbol/oao-wiki` 로 옮겨졌다).
 

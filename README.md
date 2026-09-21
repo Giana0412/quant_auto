@@ -152,6 +152,32 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`. 저장소에는 �
       12회 표본을 늘리거나(`MAX_PERIODS`) 여러 정렬을 평균 내는 게 정공법이지만,
       전자는 대회 기간(수개월)과 무관한 옛 구간을 끌어오고 후자는 실행이 21배
       무거워진다 — 지금은 **경고 문구로 대응**하고 있다.
+- **`lseg_reports.py`** — LSEG Lipper Alpha 정기 리포트 추적기. 일일 체인 2-a 단계.
+  ```bash
+  .automation/.venv/bin/python .automation/lseg_reports.py             # 최근 21일 중 새 것
+  .automation/.venv/bin/python .automation/lseg_reports.py --all       # 캐시 보기(네트워크 X)
+  .automation/.venv/bin/python .automation/lseg_reports.py --backfill  # 과거 소급
+  ```
+  - LSEG(구 Refinitiv)가 lipperalpha.refinitiv.com 에 **매주 목요일 무료 공개**하는
+    애널리스트 리포트(Tajinder Dhillon, CFA). *This Week in Earnings* · *Weekly
+    Aggregates* · *S&P 500 Earnings Dashboard* 등 7개 계열을 추적한다.
+    **섹터별 컨센서스 성장률·추정치 리비전·실적 캘린더**가 매주 갱신돼 대회 기간
+    (26Q3 실적 시즌)에 직접 쓸 값이다 — 실제로 26Q3 컨센서스가 에너지 +109.6% ·
+    반도체 +131.2% 인데 금융은 +5.4% 로 하위권이라, 팀 전략의 금융주 비중을 다시 볼
+    근거가 된다. 학교 블룸버그 터미널이 2대뿐인 것과 달리 아무 때나 볼 수 있다.
+  - 🔴 **robots.txt 를 지킨다 — PDF 를 자동으로 받지 않는다.** 이 사이트는
+    `Disallow: /feed/` 와 `Disallow: /wp-content/`(PDF 가 여기 있다)를 걸어 두었다.
+    그래서 디스커버리를 **sitemap**(금지 목록에 없고 애초에 크롤러용 경로)으로 하고,
+    글 페이지만 읽어 **제목·날짜·PDF 링크**를 뽑아 브리핑에 띄운다. 받는 건 사람이
+    클릭한다 — 사람이 브라우저로 받는 건 robots.txt 와 무관하므로 실질적으로 잃는 건
+    클릭 한 번뿐이다.
+  - **최신 글은 `post-sitemap.xml` 이 아니라 마지막 청크에 있다.** 워드프레스(Yoast)는
+    오래된 글부터 청크를 채워서, 첫 청크를 읽으면 2011년 글이 나온다(한 번 헛짚었다).
+  - 평소 실행은 **최근 21일 창**만 본다. 이게 없으면 과거 344건을 12개씩 거슬러
+    올라가며 29번을 돌아야 한다 — 주 1회 쓰는 도구가 아무도 안 읽을 2011년 글을
+    계속 긁는 셈이다. 소급이 필요하면 `--backfill`.
+  - 본 글은 `personal/10-market/_reports/lseg-seen.jsonl` 에 캐시돼 **다시 요청하지
+    않는다.** 새 게 없으면 sitemap 두 번만 읽고 끝나서 체인에 더하는 비용이 2초 남짓이다.
 - **`momentum_screen.py`** — 공격형 스크리너. **`market_metrics.py` 의 [스크리닝]과
   정반대로 최적화된 두 번째 렌즈**다. 일일 체인에 붙이지 않고 손으로 돌린다.
   ```bash

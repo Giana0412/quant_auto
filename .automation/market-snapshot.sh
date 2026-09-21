@@ -102,6 +102,14 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
      후 다음 섹터로 순환'을 룰로 정했으므로 경고가 아니라 **예정된 순환 시점**이다.
      손절 후보와 같은 톤으로 묶어 적지 말고 그 사실을 짚는다
    **이 숫자를 그대로 옮겨 적는다. 직접 계산하거나 추정하지 않는다.**
+2-a. LSEG 정기 리포트에 새로 올라온 게 있는지 본다 (주 1회만 새 게 나오므로 보통 비어 있다):
+   .automation/.venv/bin/python .automation/lseg_reports.py
+   - 매주 목요일 LSEG 가 무료 공개하는 실적 리포트들이다. **섹터별 컨센서스 성장률·
+     추정치 리비전·실적 캘린더**가 들어 있어 대회 기간(26Q3 실적 시즌)에 특히 중요하다
+   - 출력이 '없음'이면 이 절을 통째로 생략한다. 새 게 있으면 **제목과 PDF 링크를 그대로**
+     옮긴다 — 내용 요약은 하지 않는다(PDF 를 읽지 않았으므로 지어내면 안 된다)
+   - 이 단계가 실패해도 무시하고 진행한다. 보조 정보다
+
 2-b. 🔴 **여기서 무슨 일이 있어도 3번(파일 작성)에는 반드시 도달한다.** 이 절은
    **보조**다 — 2026-09-13 23시 실행에서 이 스크립트를 기다리다가
    'The sentiment run is in flight; I will wait for it before writing the file'
@@ -211,6 +219,10 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
     같이 옮긴다** — 회의록에서 받아적었을 뿐 원문 확인이 안 된 날짜라, 확정처럼
     적으면 그게 매매 판단에 들어간다. '날짜미정' 항목도 빼지 않는다. 절이 없으면 생략)
 
+   ## 새 리서치 리포트
+   (2-a 에 새 발행물이 있으면: 날짜 · 리포트명 · PDF 링크를 한 줄씩. **내용 요약은 하지
+    않는다** — 제목과 링크만 옮긴다. 없으면 이 절 통째로 생략)
+
    ## 뉴스 대조 (센티멘트 vs 가격)
    (2-b 의 [뉴스 센티멘트 ↔ 가격 반응] 절 그대로. 🟢/🔴 어긋난 종목을 먼저 적고
     **근거 헤드라인(└ 줄)을 반드시 같이 옮긴다** — 오탐을 사람이 걸러야 하기 때문이다.
@@ -239,7 +251,7 @@ personal/10-market/data/ 외의 다른 파일은 건드리지 않는다. git com
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [시장봇] 실행 시작 ==="
-  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/.venv/bin/python .automation/market_metrics.py:*) Bash(.automation/.venv/bin/python .automation/news_sentiment.py:*)" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/.venv/bin/python .automation/market_metrics.py:*) Bash(.automation/.venv/bin/python .automation/news_sentiment.py:*) Bash(.automation/.venv/bin/python .automation/lseg_reports.py:*)" 2>&1
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [시장봇] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"

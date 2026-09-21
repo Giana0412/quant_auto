@@ -178,6 +178,27 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`. 저장소에는 �
     계속 긁는 셈이다. 소급이 필요하면 `--backfill`.
   - 본 글은 `personal/10-market/_reports/lseg-seen.jsonl` 에 캐시돼 **다시 요청하지
     않는다.** 새 게 없으면 sitemap 두 번만 읽고 끝나서 체인에 더하는 비용이 2초 남짓이다.
+- **`research_feeds.py`** — 기관 리서치 추적. 일일 체인 2-a-2 단계.
+  **자동으로 되는 건 긁고, 안 되는 건 링크만 보낸다.**
+  2026-09-20 에 발행처 7곳을 하나씩 실제로 찔러 본 결과 **자동 수집이 되는 곳은
+  BlackRock 하나뿐**이었다:
+  | 발행처 | robots.txt | 정적 HTML 에 PDF | 판정 |
+  |---|---|---|---|
+  | **BlackRock** | 해당 경로 허용 | ✅ 최신호 1건 | 🟢 크롤링 |
+  | JPM · Franklin · MS · Deloitte | 금지 아님 | ❌ 0건 (SPA) | 🟡 링크만 |
+  | Standard Chartered | `/_documents/` 금지 | ❌ | 🟡 링크만 |
+  | **Goldman Sachs** | 🔴 **GPTBot 에게 리서치 금지** | ❌ | 🔴 **긁지 않음** |
+  - **Goldman 은 의도적으로 제외했다.** robots.txt 가 `*` 에게는 열어 두면서
+    **GPTBot·ChatGPT-User 에게만** `/what-we-do/research/` 를 막았다 — "사람은 되고
+    AI 크롤러는 안 된다"를 명시한 것이라, 기술적으로 우리가 GPTBot 이 아니어도
+    의도를 알면서 우회할 이유가 없다.
+  - SPA 쪽은 **금지가 아니라 기술적으로 안 되는** 것이다. 헤드리스 브라우저를 쓰면
+    되지만 주 1회 PDF 하나 받자고 Playwright 를 체인에 넣는 건 배보다 배꼽이다.
+    (여담: Morgan Stanley 는 robots.txt 에 `ClaudeBot`·`anthropic-ai` 를 **명시적으로
+    허용**해 두었는데 정작 페이지가 JS 라 정적으로는 안 잡힌다.)
+  - 링크 목록은 **금요일에만** 출력한다 — 매일 내면 소음이라 아무도 안 읽는다.
+  - 🔴 **패턴이 안 맞거나 사이트가 죽으면 `⚠️` 로 알린다.** 조용히 0건이 되면
+    "새 게 없음"과 구분이 안 돼 몇 주째 놓치고도 모른다. 두 실패 모드 모두 테스트했다.
 - **`momentum_screen.py`** — 공격형 스크리너. **`market_metrics.py` 의 [스크리닝]과
   정반대로 최적화된 두 번째 렌즈**다. 일일 체인에 붙이지 않고 손으로 돌린다.
   ```bash

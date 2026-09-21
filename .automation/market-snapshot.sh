@@ -110,6 +110,16 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
      옮긴다 — 내용 요약은 하지 않는다(PDF 를 읽지 않았으므로 지어내면 안 된다)
    - 이 단계가 실패해도 무시하고 진행한다. 보조 정보다
 
+2-a-2. 기관 리서치도 같이 본다:
+   .automation/.venv/bin/python .automation/research_feeds.py
+   - BlackRock 주간 코멘터리는 자동 수집된다. 새 게 있으면 **제목과 PDF 링크만** 옮긴다
+     (PDF 를 읽지 않았으므로 내용 요약은 하지 않는다)
+   - '손으로 받는 곳' 목록은 **금요일에만** 나온다. 나오면 그대로 옮긴다 — 주 1회
+     받아야 할 곳을 잊지 않게 하는 용도다
+   - ⚠️ 로 시작하는 줄이 있으면 **반드시 옮긴다.** 페이지 구조가 바뀌어 수집이
+     조용히 멈춘 것일 수 있다
+   - 이 단계가 실패해도 무시하고 진행한다
+
 2-b. 🔴 **여기서 무슨 일이 있어도 3번(파일 작성)에는 반드시 도달한다.** 이 절은
    **보조**다 — 2026-09-13 23시 실행에서 이 스크립트를 기다리다가
    'The sentiment run is in flight; I will wait for it before writing the file'
@@ -220,8 +230,10 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
     적으면 그게 매매 판단에 들어간다. '날짜미정' 항목도 빼지 않는다. 절이 없으면 생략)
 
    ## 새 리서치 리포트
-   (2-a 에 새 발행물이 있으면: 날짜 · 리포트명 · PDF 링크를 한 줄씩. **내용 요약은 하지
-    않는다** — 제목과 링크만 옮긴다. 없으면 이 절 통째로 생략)
+   (2-a(LSEG) · 2-a-2(기관) 에 새 발행물이 있으면: 날짜 · 리포트명 · PDF 링크를 한 줄씩.
+    **내용 요약은 하지 않는다** — 제목과 링크만 옮긴다.
+    2-a-2 의 '손으로 받는 곳' 목록(금요일에만 나온다)이 있으면 그 아래 붙인다.
+    ⚠️ 경고 줄이 있으면 반드시 포함한다. 새 것도 경고도 없으면 이 절 통째로 생략)
 
    ## 뉴스 대조 (센티멘트 vs 가격)
    (2-b 의 [뉴스 센티멘트 ↔ 가격 반응] 절 그대로. 🟢/🔴 어긋난 종목을 먼저 적고
@@ -251,7 +263,7 @@ personal/10-market/data/ 외의 다른 파일은 건드리지 않는다. git com
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [시장봇] 실행 시작 ==="
-  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/.venv/bin/python .automation/market_metrics.py:*) Bash(.automation/.venv/bin/python .automation/news_sentiment.py:*) Bash(.automation/.venv/bin/python .automation/lseg_reports.py:*)" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/.venv/bin/python .automation/market_metrics.py:*) Bash(.automation/.venv/bin/python .automation/news_sentiment.py:*) Bash(.automation/.venv/bin/python .automation/lseg_reports.py:*) Bash(.automation/.venv/bin/python .automation/research_feeds.py:*)" 2>&1
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [시장봇] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"

@@ -184,6 +184,23 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`. 저장소에는 �
     계속 긁는 셈이다. 소급이 필요하면 `--backfill`.
   - 본 글은 `personal/10-market/_reports/lseg-seen.jsonl` 에 캐시돼 **다시 요청하지
     않는다.** 새 게 없으면 sitemap 두 번만 읽고 끝나서 체인에 더하는 비용이 2초 남짓이다.
+- **`event_alerts.py`** + `event-alerts.sh` — 이벤트 알림. 일일 체인 4단계.
+  ```bash
+  .automation/.venv/bin/python .automation/event_alerts.py --all      # 감시 중 전부
+  .automation/.venv/bin/python .automation/event_alerts.py --dry-run  # 보낼 내용만
+  ```
+  - 🔴 **D-N 을 그냥 세지 않는다.** "D-30 중간선거"를 매일 알려봐야 아무도 안 본다.
+    캘린더의 각 이벤트에 **`watch_days`(감시 리드타임)** 를 두고 **창 안에 들어온 것만**
+    알린다 — FOMC 14일 · CPI 7일 · 고용 5일 · ECB/BoJ 7일 · 선거 30일 · 대회 일정은 준비기간.
+    이 값들은 **판단이지 측정이 아니다**(근거는 캘린더 `_주석`·wiki timeline).
+  - **상태가 바뀔 때만 보낸다** — 🔔감시 시작 / ⏰D-1 / 🚨D-0. 같은 단계는 한 번만.
+    조용한 날은 아무것도 안 나간다.
+  - 🔴 **발송 실패 시 상태를 저장하지 않는다.** 저장해 버리면 그 알림을 영영 다시
+    못 보낸다 — 다음 실행에서 재시도되게 둔다.
+  - **날짜 미확정 이벤트도 알린다.** 오히려 그게 더 위험하다(9/23 행사처럼 "확인하러
+    가야 하는 일정") — 대신 ⚠️ 를 붙인다.
+  - FOMC 날짜는 **federalreserve.gov 를 직접 파싱해 검증**했다. BLS 는 403 이라
+    고용·CPI 는 제공받은 표 기준이다.
 - **`paper_track.py`** — 파이프라인이 **자기가 한 말을 기록하고 스스로 채점**한다.
   일일 체인 2-a-0 단계(다른 무엇보다 먼저 돈다).
   ```bash

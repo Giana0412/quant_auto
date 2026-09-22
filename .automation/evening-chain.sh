@@ -108,6 +108,7 @@ declare -a STEPS=(
   "archive-newsletters:900"   # 메일 수집 + 다이제스트 — 제일 오래 걸린다
   "market-snapshot:600"       # 스크립트 102초 + LLM. 절이 늘면 LLM 쪽이 늘어난다
   "daily-conclusion:480"
+  "event-alerts:90"        # 감시 창에 새로 들어온 이벤트만 팀 그룹에 알린다(조용한 날은 조용)
   "health-check:120"
 )
 

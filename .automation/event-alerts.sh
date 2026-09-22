@@ -20,6 +20,16 @@ if ! wait_for_network >> "$LOG_FILE" 2>&1; then
   exit 0
 fi
 
+# 월요일엔 관제 사이트에서 지표 일정을 다시 긁고 .ics 를 새로 만든다.
+# 매일 할 이유가 없다 — 발표 일정은 주 단위로도 거의 안 바뀐다.
+if [ "$(date +%u)" = "1" ]; then
+  {
+    echo "=== $(date '+%Y-%m-%d %H:%M:%S') [이벤트알림] 주간 지표 일정 갱신 ==="
+    .automation/.venv/bin/python .automation/econ_calendar.py --merge
+    .automation/.venv/bin/python .automation/calendar_export.py
+  } >> "$LOG_FILE" 2>&1 || true
+fi
+
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [이벤트알림] 실행 시작 ==="
   .automation/.venv/bin/python .automation/event_alerts.py --send

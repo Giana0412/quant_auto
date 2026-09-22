@@ -38,14 +38,22 @@
       "watch": "체결가 기준(시가/종가/중간가) · 장중 주문 가능 여부 · 스프레드·수수료 차감 여부 · 대회 정확한 기간"
     },
     {
-      "date": "2026-10-12",
-      "name": "대회 시작 (추정)",
-      "kind": "대회",
-      "confirmed": false,
-      "watch_days": 21,
-      "source": "팀 추정 10/12~11/13 — 9/23 행사에서 확정 필요",
-      "note": "시작 전까지 전략 확정·터미널 예약·페이퍼 트래킹 누적이 필요하다",
-      "watch": "정확한 시작일 · 초기 포지션 입력 기한"
+      "date": "2026-09-30",
+      "name": "[BEA] GDP (Third Estimate), Industries, Corporate Profits, State G",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "GDP (Third Estimate), Industries, Corporate Profits, State GDP, and State Personal Income, 2nd Quarter 2026; S"
+    },
+    {
+      "date": "2026-09-30",
+      "name": "[BEA] Personal Income and Outlays, August 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "Personal Income and Outlays, August 2026"
     },
     {
       "date": "2026-10-02",
@@ -56,6 +64,25 @@
       "source": "사용자 제공 이벤트 표 — BLS 사이트가 403 이라 자동 검증 불가",
       "watch": "고용 증가 · 실업률 · 임금 상승률 · 과거치 수정",
       "note": "완만한 둔화는 금리 인하 기대를 지지. 급격한 악화는 은행·산업재·소비재에 타격"
+    },
+    {
+      "date": "2026-10-06",
+      "name": "[BEA] U.S. International Trade in Goods and Services, August 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 3,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "U.S. International Trade in Goods and Services, August 2026"
+    },
+    {
+      "date": "2026-10-12",
+      "name": "대회 시작 (추정)",
+      "kind": "대회",
+      "confirmed": false,
+      "watch_days": 21,
+      "source": "팀 추정 10/12~11/13 — 9/23 행사에서 확정 필요",
+      "note": "시작 전까지 전략 확정·터미널 예약·페이퍼 트래킹 누적이 필요하다",
+      "watch": "정확한 시작일 · 초기 포지션 입력 기한"
     },
     {
       "date": "2026-10-14",
@@ -79,16 +106,6 @@
     },
     {
       "date": "2026-10-29",
-      "name": "미국 Q3 GDP 속보치 + PCE",
-      "kind": "지표",
-      "confirmed": false,
-      "watch_days": 5,
-      "source": "사용자 제공 이벤트 표 (BEA)",
-      "watch": "Q3 GDP 첫 추정치 · 개인소비 · PCE 물가",
-      "note": "소비 견조 + 물가 둔화 = 연착륙. 소비 약화 + 물가 고착이면 주식에 어렵다"
-    },
-    {
-      "date": "2026-10-29",
       "name": "ECB 금리 결정",
       "kind": "정책",
       "confirmed": false,
@@ -96,6 +113,34 @@
       "source": "사용자 제공 이벤트 표",
       "watch": "금리 가이던스와 유럽 성장 전망",
       "note": "유럽 은행·부동산·수출주와 유로. 달러 환산 수익률에도 영향"
+    },
+    {
+      "date": "2026-10-29",
+      "name": "[BEA] GDP (Advance Estimate), 3rd Quarter 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "GDP (Advance Estimate), 3rd Quarter 2026"
+    },
+    {
+      "date": "2026-10-29",
+      "name": "[BEA] Personal Income and Outlays, September 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "Personal Income and Outlays, September 2026"
+    },
+    {
+      "date": "2026-10-29",
+      "name": "미국 Q3 GDP 속보치 + PCE",
+      "kind": "지표",
+      "confirmed": false,
+      "watch_days": 5,
+      "source": "사용자 제공 이벤트 표 (BEA)",
+      "watch": "Q3 GDP 첫 추정치 · 개인소비 · PCE 물가",
+      "note": "소비 견조 + 물가 둔화 = 연착륙. 소비 약화 + 물가 고착이면 주식에 어렵다"
     },
     {
       "date": "2026-10-30",
@@ -116,6 +161,15 @@
       "source": "미국 연방법 — 11월 첫 월요일 다음 화요일 · 사용자 표와 일치",
       "watch": "의회 지배권과 세제·지출·규제 함의",
       "note": "헬스케어·에너지·방산·금융을 볼 것. 정당 승리 자체가 섹터 랠리를 보장하지 않는다 — 개별 정책과 통과 가능성을 봐야 한다"
+    },
+    {
+      "date": "2026-11-04",
+      "name": "[BEA] U.S. International Trade in Goods and Services, September 20",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 3,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "U.S. International Trade in Goods and Services, September 2026"
     },
     {
       "date": "2026-11-06",
@@ -159,6 +213,24 @@
     },
     {
       "date": "2026-11-25",
+      "name": "[BEA] GDP (Second Estimate) and Corporate Profits, 3rd Quarter 202",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "GDP (Second Estimate) and Corporate Profits, 3rd Quarter 2026"
+    },
+    {
+      "date": "2026-11-25",
+      "name": "[BEA] Personal Income and Outlays, October 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "Personal Income and Outlays, October 2026"
+    },
+    {
+      "date": "2026-11-25",
       "name": "미국 PCE 물가 + 개인소비",
       "kind": "지표",
       "confirmed": false,
@@ -166,6 +238,51 @@
       "source": "사용자 제공 이벤트 표 (BEA)",
       "watch": "GDP 수정치 · PCE",
       "note": "대회 종료 후"
+    },
+    {
+      "date": "2026-12-02",
+      "name": "[BEA] GDP by County and Personal Income by County, 2025",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "GDP by County and Personal Income by County, 2025"
+    },
+    {
+      "date": "2026-12-08",
+      "name": "[BEA] U.S. International Trade in Goods and Services, October 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 3,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "U.S. International Trade in Goods and Services, October 2026"
+    },
+    {
+      "date": "2026-12-10",
+      "name": "[BEA] Real Personal Consumption Expenditures by State and Real Per",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "Real Personal Consumption Expenditures by State and Real Personal Income by State, 2025"
+    },
+    {
+      "date": "2026-12-23",
+      "name": "[BEA] GDP (Third Estimate), Industries, Corporate Profits, State G",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "GDP (Third Estimate), Industries, Corporate Profits, State GDP, and State Personal Income, 3rd Quarter 2026"
+    },
+    {
+      "date": "2026-12-23",
+      "name": "[BEA] Personal Income and Outlays, November 2026",
+      "kind": "지표",
+      "confirmed": true,
+      "watch_days": 5,
+      "auto_source": "bea.gov/news/schedule",
+      "watch": "Personal Income and Outlays, November 2026"
     },
     {
       "date": null,

@@ -184,6 +184,22 @@ launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`. 저장소에는 �
     계속 긁는 셈이다. 소급이 필요하면 `--backfill`.
   - 본 글은 `personal/10-market/_reports/lseg-seen.jsonl` 에 캐시돼 **다시 요청하지
     않는다.** 새 게 없으면 sitemap 두 번만 읽고 끝나서 체인에 더하는 비용이 2초 남짓이다.
+- **`econ_calendar.py`** — 경제지표 일정을 관제 사이트에서 직접 긁는다(월요일 자동).
+  손으로 적은 날짜는 반드시 틀린다 — 1차 회의록의 "9월 16일 금리 발표"가 뭔지 몰라
+  2주간 미확인으로 떠 있다가 Fed 캘린더를 파싱하고서야 9/15–16 FOMC 임이 확인됐다.
+  | 기관 | 상태 |
+  |---|---|
+  | **Fed** (FOMC) | ✅ 파싱 — 2026년 8회 전부 |
+  | **BEA** (GDP·PCE·무역) | ✅ 파싱 — 13건 |
+  | **Census** | ❌ JS 렌더링 (표 0개) |
+  | **BLS** (고용·CPI) | ❌ **403** — 수동 입력 유지 |
+  🔴 **수동 입력분을 덮어쓰지 않는다**(`auto_source` 유무로 구분). 0건이면 "파서가
+  깨진 것"과 "새 게 없는 것"을 구분해 ⚠️ 로 알린다.
+- **`calendar_export.py`** — `.ics` 내보내기. 구글·애플 캘린더에 그대로 가져온다.
+  구글 캘린더 MCP 가 **OAuth 만료**라(2026-09-22) 그 사이를 메운다. 인증이 풀려도
+  .ics 는 팀원에게 파일로 주는 수단으로 여전히 유효하다.
+  🔴 **감시 시작일에도 이벤트를 하나 더 만든다** — 당일만 찍히면 이미 늦는다.
+  UID 를 고정해 다시 가져오면 **중복이 아니라 갱신**된다.
 - **`event_alerts.py`** + `event-alerts.sh` — 이벤트 알림. 일일 체인 4단계.
   ```bash
   .automation/.venv/bin/python .automation/event_alerts.py --all      # 감시 중 전부

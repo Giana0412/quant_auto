@@ -112,8 +112,17 @@ def cmd_record():
 
     # 진입가 = 오늘 종가. 실제 체결이 아니라 **가정**이라는 걸 필드 이름에 남긴다.
     entry = {s: float(px[s].dropna().iloc[-1]) for s in weights if s in px.columns}
+
+    # 🔴 스냅샷의 날짜는 **어느 종가를 보고 정했나**이지 며칠에 돌렸나가 아니다.
+    # 체인은 06:00 KST 에 도는데 그건 미 동부 전날 17:00 이라, 토·일·월 세 번이
+    # 전부 **금요일 종가**를 받는다. date.today() 로 찍으면 같은 베팅이 세 줄로
+    # 남아 채점에서 세 번 세어진다 — 실제로 9/26 과 9/28 이 소수점까지 같은 값을
+    # 내고 있었다(둘 다 9/25 종가). 표본이 3배로 부풀어 승률이 왜곡된다.
+    # 거래일로 찍으면 셋이 한 줄로 합쳐진다(아래 dedupe 가 덮어쓴다).
+    price_date = b.index[-1].date().isoformat()
     rec = dict(
-        date=date.today().isoformat(),
+        date=price_date,
+        run_date=date.today().isoformat(),   # 언제 돌았는지는 따로 남긴다
         kind="defensive",
         book={s: round(w, 4) for s, w in weights.items()},
         assumed_entry=entry,
@@ -123,6 +132,9 @@ def cmd_record():
     rows = [r for r in _read() if not (r["date"] == rec["date"] and r.get("kind") == "defensive")]
     rows.append(rec)
     _write(rows)
+    if rec["date"] != rec["run_date"]:
+        print(f"[페이퍼 트래킹] 실행 {rec['run_date']} · 기준 종가 {rec['date']} "
+              f"(휴장이라 마지막 거래일로 기록)")
     print(f"[페이퍼 트래킹] {rec['date']} 수비형 북 {len(weights)}종목 기록")
     for s, w in sorted(weights.items(), key=lambda x: -x[1]):
         print(f"  {s:8}{w:>6.1%}  진입가정 {entry.get(s, float('nan')):.2f}")
@@ -131,11 +143,39 @@ def cmd_record():
     return 0
 
 
+def _dedupe(rows):
+    """같은 종가를 두 번 이상 기록한 스냅샷을 하나로 합친다. (남은 것, 합친 수)
+
+    🔴 날짜가 달라도 **내용이 같으면 같은 베팅이다.** 휴장일에 돌면 직전 거래일
+    종가를 그대로 받으므로 토·일·월이 전부 금요일 북이 된다. 그걸 세 건으로 세면
+    표본이 3배로 부풀고 승률·평균이 통째로 왜곡된다.
+
+    cmd_record 는 이제 거래일로 찍어 애초에 중복을 안 만들지만, **이미 달력
+    날짜로 쌓인 과거 기록**이 있어서 채점 쪽에도 그물을 둔다. 지문은
+    (종류, 벤치 종가, 종목별 진입가) — float64 가 소수점까지 같을 확률은 없다.
+
+    로그 원본은 건드리지 않는다. 기록은 기록대로 두고 **셈만 바로잡는다.**
+    """
+    seen, out, merged = {}, [], 0
+    for r in sorted(rows, key=lambda r: r["date"]):
+        fp = (r.get("kind", ""), r.get("bench_price"),
+              tuple(sorted(r.get("assumed_entry", {}).items())))
+        if fp in seen:
+            merged += 1
+            seen[fp].setdefault("_merged_dates", []).append(r["date"])
+            continue
+        seen[fp] = r
+        out.append(r)
+    return out, merged
+
+
 def cmd_score(detail=False):
     rows = _read()
     if not rows:
         print("[페이퍼 트래킹] 기록이 없다 — `record` 를 먼저 돌린다")
         return 0
+    raw_n = len(rows)
+    rows, merged = _dedupe(rows)
 
     syms = sorted({s for r in rows for s in r["book"]})
     px = yf.download(syms + [BENCH_TICKER], period="6mo", interval="1d",
@@ -154,15 +194,25 @@ def cmd_score(detail=False):
         print(f"벤치마크({BENCH_TICKER}) 가격이 비어 있다", file=sys.stderr)
         return 1
     print(f"[페이퍼 트래킹] 스냅샷 {len(rows)}건 · 오늘 기준 재평가")
+    if merged:
+        # 🔴 조용히 버리지 않는다 — 표본 수가 줄어든 이유는 결과의 일부다.
+        print(f"  ⚠️ 기록 {raw_n}건 중 {merged}건은 **같은 종가를 다시 기록한 것**이라 합쳤다.")
+        print(f"     (휴장일에 돌면 직전 거래일 종가를 그대로 받는다 — 같은 베팅이다)")
     print(f"  🔴 종가 진입 가정이라 슬리피지가 빠져 있다 — 낙관 쪽으로 치우친 값이다.")
     print(f"  다만 **종목 선택이 사후에 바뀌지 않아** 표본내 지표와는 질이 다르다.\n")
     print(f"  {'기록일':<12}{'보유일':>6}{'북 수익':>10}{'벤치':>9}{'초과':>10}   종목")
 
+    # 🔴 보유일을 달력으로 세면 안 된다. 기준 종가 날짜가 마지막 종가 날짜와 같으면
+    # **시장 시간이 하나도 안 지났다** — 수익 0, 초과 0 이 나오고, 그게 "이기지 못한
+    # 1건"으로 세어져 승률을 깎는다. 정보가 없는 행은 세지 않는다.
+    last_px_date = px.index[-1].date()
+
     results = []
     for r in sorted(rows, key=lambda r: r["date"]):
-        held = (date.today() - date.fromisoformat(r["date"])).days
-        if held < 1:
-            continue
+        snap = date.fromisoformat(r["date"])
+        if snap >= last_px_date:
+            continue                      # 아직 장이 한 번도 안 지났다
+        held = (date.today() - snap).days
         tot_w = sum(r["book"].values())
         if tot_w <= 0:
             continue

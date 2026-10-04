@@ -28,9 +28,9 @@
 | [sources.md](sources.md) | 원본 문서 대장 — 무엇을 언제 읽었나 |
 | [competition/rules.md](competition/rules.md) | 대회 규정 · **확정/미확정 표시 필수** |
 | [competition/timeline.md](competition/timeline.md) | 일정 |
-| [advice/contradictions.md](advice/contradictions.md) | 🔴 **충돌 대장** — 조언이 서로 다를 때 |
-| [advice/noh-dongwoo.md](advice/noh-dongwoo.md) | 교수 A 자문 |
-| [advice/lee-dongwon.md](advice/lee-dongwon.md) | 교수 B 자문 |
+| `advice/contradictions.md` (로컬 전용) | 🔴 **충돌 대장** — 조언이 서로 다를 때 |
+| `advice/` (로컬 전용) | 교수 A 자문 |
+| `advice/` (로컬 전용) | 교수 B 자문 |
 | [strategy/decisions.md](strategy/decisions.md) | 결정 로그 — **번복 이력 포함** |
 | [strategy/open-questions.md](strategy/open-questions.md) | 🔴 **미확인 사항** |
 | [pipeline/design-rationale.md](pipeline/design-rationale.md) | 파이프라인 설계 근거 |

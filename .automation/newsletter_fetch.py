@@ -32,18 +32,23 @@ from email.header import decode_header, make_header
 from html.parser import HTMLParser
 
 VAULT_DIR = os.environ.get(
-    "VAULT_DIR", "__HOME__/orca/projects/quant_auto"
+    "VAULT_DIR", "${VAULT_DIR:-$HOME/orca/projects/quant_auto}"
 )
 ENV_FILE = os.path.join(VAULT_DIR, ".automation/.gmail.env")
 BASE = os.path.join(VAULT_DIR, "personal/09-newsletters")
 STATE_FILE = os.path.join(BASE, "_state.json")
 
-# 발신자 : 저장 폴더. 새 뉴스레터를 추가하면 여기와 _README.md 둘 다 갱신한다.
-SENDERS = {
-    "newsletter@example.com": "newneek",
-    "newsletter@example.com": "uppity",
-    "noreply@news.bloomberg.com": "bloomberg",
-}
+# 발신자 : 저장 폴더.
+# 구독 목록은 개인 정보이므로 커밋하지 않는다 — `.automation/senders.json` 에 둔다.
+# 없으면 `senders.example.json` 을 복사해 채운다.
+_SENDERS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "senders.json")
+try:
+    with open(_SENDERS_FILE, encoding="utf-8") as _fh:
+        SENDERS = json.load(_fh)
+except FileNotFoundError:
+    raise SystemExit(
+        f"{_SENDERS_FILE} 없음. senders.example.json 을 복사해 구독 발신자를 채울 것."
+    )
 
 # 실제 발행물이 아닌 메일 — 저장하지 않는다. 다만 상태에는 기록해서 매번 다시 보지 않게 한다.
 NOT_AN_ISSUE = re.compile(

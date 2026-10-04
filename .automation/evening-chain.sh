@@ -29,7 +29,7 @@
 
 set -uo pipefail   # -e 는 쓰지 않는다 — 한 단계가 실패해도 체인은 계속 가야 한다
 
-VAULT_DIR="__HOME__/orca/projects/quant_auto"
+VAULT_DIR="${VAULT_DIR:-$HOME/orca/projects/quant_auto}"
 LOG_DIR="$VAULT_DIR/.automation/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 LOCK="$LOG_DIR/.evening-chain.lock"

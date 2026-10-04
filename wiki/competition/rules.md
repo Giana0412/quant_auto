@@ -31,7 +31,7 @@
 > "A single faculty advisor may represent **multiple teams**"
 
 **이 조항으로 후보 한 명이 탈락했다** — 교수 B는 이번 학기 NYU 체류라 거주 요건 미충족.
-→ [advice/lee-dongwon.md](../advice/lee-dongwon.md)
+→ `advice/` (로컬 전용)
 
 **결과**: 교수 A(HKUST Finance) 승낙 · 등록 완료 [2026-09-17 / 09-20 확인]
 

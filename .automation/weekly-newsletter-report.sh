@@ -8,8 +8,8 @@
 
 set -euo pipefail
 
-VAULT_DIR="__HOME__/orca/projects/quant_auto"
-CLAUDE_BIN="__HOME__/.local/bin/claude"
+VAULT_DIR="${VAULT_DIR:-$HOME/orca/projects/quant_auto}"
+CLAUDE_BIN="${CLAUDE_BIN:-$HOME/.local/bin/claude}"
 LOG_DIR="$VAULT_DIR/.automation/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"
 

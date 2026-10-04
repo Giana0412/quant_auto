@@ -33,3 +33,11 @@ company-src/
 .automation/.venv/
 __pycache__/
 *.pyc
+
+# ── 제3자 정보 — 공개 금지 ──────────────────────────────────────────────
+# 교수 자문 노트: 실명·이메일·전화번호와 비공개 미팅 인용이 들어 있다.
+# 로컬에는 남기되 공개 레포에는 올리지 않는다.
+wiki/advice/
+
+# 구독 발신자 목록 — 개인 정보. senders.example.json 만 커밋한다.
+.automation/senders.json

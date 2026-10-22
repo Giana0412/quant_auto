@@ -45,7 +45,16 @@ import pandas as pd
 import yfinance as yf
 
 HERE = Path(__file__).resolve().parent
-DATA = HERE / "data" / "headlines.jsonl"
+# 🔴 데이터는 **한 곳에만** 쌓는다.
+# 체인은 운영 클론(~/orca/projects/quant_auto)에서 돌고 학습은 개발 클론에서
+# 하는데, 스크립트 옆(HERE/data)에 쌓으면 두 벌로 갈라져 서로 다른 걸 본다.
+# 다른 누적 데이터(book-log·regime-log)가 이미 사는 곳에 같이 둔다.
+# 환경변수로 덮어쓸 수 있게 열어 둔다(테스트·다른 머신용).
+import os
+DATA = Path(os.environ.get(
+    "HEADLINES_DATA",
+    "/Users/gyuhyeongkim/orca/projects/quant_auto"
+    "/personal/10-market/_headlines/headlines.jsonl"))
 BENCH = "ACWI"
 DEFAULT_HORIZON = 3        # 거래일. 1일은 잡음이 너무 크고 5일은 뉴스와 무관해진다
 

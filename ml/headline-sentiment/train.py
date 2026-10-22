@@ -145,7 +145,7 @@ def main():
             opt.step()
             sched.step()
 
-            run += float(loss) * len(y)
+            run += loss.item() * len(y)   # float() 은 그래프를 물고 있다는 경고가 난다
             seen += len(y)
             if i % 20 == 0:
                 print(f"\r  ep{ep} {i}/{len(dl_tr)} loss {run/seen:.4f}"

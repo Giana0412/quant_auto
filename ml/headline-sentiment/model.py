@@ -19,7 +19,15 @@ ENCODER = "distilbert-base-uncased"   # 66M. M2/8GB 에서 배치 16이 편하�
 class HeadlineClassifier(nn.Module):
     def __init__(self, encoder=ENCODER, n_classes=3, dropout=0.2, pool="mean"):
         super().__init__()
-        self.encoder = AutoModel.from_pretrained(encoder)
+        # 🔴 MPS 에서는 어텐션을 eager 로 강제한다.
+        # transformers 5.x 는 기본으로 SDPA(scaled_dot_product_attention)를 쓰는데,
+        # MPS 구현이 **드롭아웃을 지원하지 않아** 학습 중에 터진다:
+        #   NotImplementedError: scaled_dot_product_attention for MPS does not support dropout
+        # 어텐션 드롭아웃을 0 으로 꺼도 돌긴 하지만 그건 정규화를 하나 빼는 것이다.
+        # eager 는 조금 느릴 뿐 의미가 같아서 이쪽을 택한다.
+        attn = "eager" if torch.backends.mps.is_available() else None
+        self.encoder = AutoModel.from_pretrained(
+            encoder, **({"attn_implementation": attn} if attn else {}))
         h = self.encoder.config.hidden_size
         self.pool = pool
         self.drop = nn.Dropout(dropout)

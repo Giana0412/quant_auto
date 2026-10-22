@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+"""분류기 — 사전학습 인코더 + 직접 쓴 헤드.
+
+`AutoModelForSequenceClassification` 을 쓰면 한 줄로 끝나지만, 그러면
+**모델 안에서 무슨 일이 일어나는지 안 보인다.** 헤드를 직접 붙인다.
+
+── 왜 [CLS] 가 아니라 평균 풀링인가 ─────────────────────────────────────
+DistilBERT 는 BERT 와 달리 NSP(다음문장예측)로 학습되지 않아서 [CLS] 토큰이
+문장 전체를 대표하도록 훈련된 적이 없다. 짧은 헤드라인에서는 **패딩을 뺀
+토큰 평균**이 경험적으로 더 안정적이다. 둘 다 돌려보고 고를 수 있게 남겨둔다.
+"""
+import torch
+import torch.nn as nn
+from transformers import AutoModel
+
+ENCODER = "distilbert-base-uncased"   # 66M. M2/8GB 에서 배치 16이 편하게 돈다
+
+
+class HeadlineClassifier(nn.Module):
+    def __init__(self, encoder=ENCODER, n_classes=3, dropout=0.2, pool="mean"):
+        super().__init__()
+        self.encoder = AutoModel.from_pretrained(encoder)
+        h = self.encoder.config.hidden_size
+        self.pool = pool
+        self.drop = nn.Dropout(dropout)
+        self.fc = nn.Linear(h, n_classes)
+
+    def forward(self, ids, mask):
+        out = self.encoder(input_ids=ids, attention_mask=mask).last_hidden_state
+        if self.pool == "cls":
+            v = out[:, 0]
+        else:
+            # 🔴 패딩 토큰을 평균에 넣으면 짧은 문장일수록 0 쪽으로 끌려간다.
+            # 마스크를 곱해 **실제 토큰만** 평균낸다.
+            m = mask.unsqueeze(-1).float()
+            v = (out * m).sum(1) / m.sum(1).clamp(min=1e-9)
+        return self.fc(self.drop(v))
+
+    def freeze_encoder(self, upto=None):
+        """인코더를 얼린다. 데이터가 적을 때 과적합을 늦추는 가장 싼 방법이다.
+        upto 를 주면 하위 N개 층만 얼린다(상위 층은 과제에 맞춰 움직이게)."""
+        if upto is None:
+            for p in self.encoder.parameters():
+                p.requires_grad = False
+            return
+        for p in self.encoder.embeddings.parameters():
+            p.requires_grad = False
+        for layer in self.encoder.transformer.layer[:upto]:
+            for p in layer.parameters():
+                p.requires_grad = False

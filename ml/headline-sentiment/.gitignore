@@ -1,0 +1,5 @@
+.venv/
+data/*.jsonl
+data/*.tmp
+runs/
+__pycache__/

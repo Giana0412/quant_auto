@@ -188,14 +188,44 @@ def score_text(text):
 
 
 def fetch_news(ticker, max_age_days=MAX_AGE_DAYS):
-    """티커에 붙은 최근 뉴스. yfinance 스키마가 판올림되며 바뀌어서
-    (예전엔 평평한 dict, 지금은 {'id', 'content'}) 양쪽을 다 받는다."""
+    """티커에 붙은 최근 뉴스.
+
+    🔴 2026-10-23: `Ticker.news` 가 **전 종목 0건**을 돌려주기 시작했다. 야후가
+    엔드포인트를 바꾼 것으로 보이는데, 조용히 빈 리스트라 예외도 안 난다.
+    그래서 이 절이 몇 주째 "판정 불가 20/20" 을 내고 있었다 — 센티멘트 기능이
+    **죽은 줄 모르고 돌고 있었다.** (중립 0 이 아니라 '모름'으로 보고하도록
+    짜여 있어서 거짓 신호를 내지는 않았다. 그 설계가 여기서 값을 했다.)
+
+    `yf.Search(..., news_count=N)` 는 같은 라이브러리인데 정상이고 `relatedTickers`
+    까지 준다. 그쪽을 먼저 쓰고, 혹시 되살아나면 `Ticker.news` 도 받는다.
+    둘 다 0건이면 그대로 0건이다 — 지어내지 않는다.
+    """
+    cutoff = datetime.now(timezone.utc) - timedelta(days=max_age_days)
+    out = []
+
+    try:
+        for a in (yf.Search(ticker, news_count=20).news or []):
+            if not isinstance(a, dict):
+                continue
+            title = (a.get("title") or "").strip()
+            ts = a.get("providerPublishTime")
+            if not title or not isinstance(ts, (int, float)):
+                continue
+            when = datetime.fromtimestamp(ts, tz=timezone.utc)
+            if when < cutoff:
+                continue
+            out.append(dict(title=title, summary="", when=when,
+                            provider=a.get("publisher") or "?",
+                            related=a.get("relatedTickers") or []))
+    except Exception:
+        pass
+    if out:
+        return out
+
     try:
         raw = yf.Ticker(ticker).news or []
     except Exception:
         return []
-    cutoff = datetime.now(timezone.utc) - timedelta(days=max_age_days)
-    out = []
     for item in raw:
         c = item.get("content", item) if isinstance(item, dict) else {}
         title = (c.get("title") or "").strip()
@@ -214,6 +244,7 @@ def fetch_news(ticker, max_age_days=MAX_AGE_DAYS):
         out.append(dict(
             title=title, summary=(c.get("summary") or "")[:400], when=when,
             provider=(prov.get("displayName") if isinstance(prov, dict) else prov) or "?",
+            related=[],
         ))
     return out
 
@@ -222,7 +253,11 @@ def is_relevant(article, ticker, name):
     """그 종목 얘기가 맞는지. yfinance 는 티커에 붙여 주기는 하는데 느슨하다 —
     실측(2026-09-13)에서 MTCH 의 최상위 기사가 Reddit(RDDT) 얘기였다.
     티커나 회사명이 제목·요약에 실제로 나오는 것만 센다."""
-    hay = (article["title"] + " " + article["summary"]).lower()
+    # 🔴 Search 경로는 relatedTickers 를 준다 — 야후가 직접 붙인 귀속이라
+    # 제목 문자열 매칭보다 강한 신호다. 요약이 비어 있는 경로라 더 그렇다.
+    if ticker in (article.get("related") or []):
+        return True
+    hay = (article["title"] + " " + article.get("summary", "")).lower()
     if re.search(rf"\b{re.escape(ticker.lower())}\b", hay):
         return True
     if name:

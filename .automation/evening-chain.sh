@@ -29,6 +29,29 @@
 
 set -uo pipefail   # -e 는 쓰지 않는다 — 한 단계가 실패해도 체인은 계속 가야 한다
 
+# ── 노트북이 자면 체인이 죽는다 ────────────────────────────────────────────
+# 2026-10-23 실제로 벌어진 일:
+#   06:13  시작
+#   07:51  archive-newsletters ✅ (1시간 38분 — 평소 1분 20초)
+#   12:29  market-snapshot 🔴 600초 초과로 중단 (4시간 38분 경과)
+#   12:30  daily-conclusion — 재료가 없어 22초 만에 빈손 종료
+# 로그에 원인이 그대로 찍혀 있었다:
+#   "API Error: Your computer went to sleep mid-response."
+# 그날 그룹에 간 건 이벤트 알림뿐이고 **브리핑은 통째로 날아갔다.**
+#
+# timeout 의 상한은 벽시계 기준이라 **자는 동안에도 시간이 흐른다.** 그래서
+# 600초 상한이 4시간 38분으로 늘어나는 게 아니라, 깨어난 순간 이미 초과 상태다.
+# 상한을 늘려서 해결될 문제가 아니라 **애초에 안 자게 해야** 한다.
+#
+# caffeinate 로 자신을 다시 띄운다. -i 는 유휴 절전, -s 는 전원 연결 시 시스템
+# 절전을 막는다(배터리에선 -s 가 무시된다 — 그건 어쩔 수 없다).
+# CHAIN_CAFFEINATED 로 재귀를 끊는다. 🔴 락을 잡기 **전에** 해야 한다 —
+# 락을 잡고 exec 하면 trap 이 날아가 락이 영영 안 풀린다.
+if [ -z "${CHAIN_CAFFEINATED:-}" ] && command -v caffeinate >/dev/null 2>&1; then
+  export CHAIN_CAFFEINATED=1
+  exec caffeinate -i -s "/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/evening-chain.sh" "$@"
+fi
+
 VAULT_DIR="${VAULT_DIR:-$HOME/orca/projects/quant_auto}"
 LOG_DIR="$VAULT_DIR/.automation/logs"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d).log"

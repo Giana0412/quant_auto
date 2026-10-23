@@ -55,7 +55,8 @@ import pandas as pd
 import yfinance as yf
 
 from market_metrics import (
-    BENCH, BOOK_N, EXTRA, SECTOR_CAPS, build_book, fetch, screen, screen_universe,
+    BENCH, BOOK_N, EXTRA, SECTOR_CAPS, SECTOR_RULES, STOP_FROM_ENTRY,
+    STOP_FROM_PEAK, TAKE_PROFIT, build_book, fetch, screen, screen_universe,
 )
 
 LOG = Path("personal/10-market/_paper/book-log.jsonl")
@@ -169,6 +170,58 @@ def _dedupe(rows):
     return out, merged
 
 
+
+# ── 손절·익절을 반영한 채점 ──────────────────────────────────────────────
+# 🔴 위의 채점은 **사서 오늘까지 안 팔았다**고 가정한다. 그런데 실제 전략엔
+# 청산 규칙이 있다(§market_metrics STOP_FROM_*·TAKE_PROFIT·SECTOR_RULES).
+# 둘을 안 나누면 "스크리너가 종목을 못 고른 건가, 손절이 안 돈 건가"를 구분할 수
+# 없다. 2026-10-23 기준 누적 -7.51%p 가 나왔는데, 9/30 북이 -18.55% 인 건
+# **손절 없이 23일을 들고 있었기 때문**이다. 규칙대로였으면 -7% 에서 잘렸다.
+#
+# 한계를 분명히 적어 둔다:
+# · **종가로만 판정한다.** 장중에 선을 깨고 회복한 날은 안 잡힌다 — 실제보다
+#   덜 잘리므로 이 숫자도 낙관 쪽이다.
+# · **청산 후 현금은 0% 로 둔다.** 실제로는 다음 후보로 재투입하겠지만, 그걸
+#   가정하면 스크리너를 두 번 평가하는 셈이라 여기선 묶어 둔다.
+# · 섹터는 **오늘 기준** 유니버스에서 가져온다. 스냅샷에 섹터를 안 남겼다.
+
+_SECTOR_CACHE = {}
+
+
+def _sector_of(sym):
+    if not _SECTOR_CACHE:
+        try:
+            _SECTOR_CACHE.update(
+                {k: v.get("sector") for k, v in screen_universe().items()})
+        except Exception:
+            _SECTOR_CACHE["_"] = None     # 실패해도 매번 다시 시도하지 않는다
+    return _SECTOR_CACHE.get(sym)
+
+
+def simulate_exit(ser, entry, start):
+    """진입 후 청산 규칙을 날짜순으로 적용. (수익률%, 청산일, 사유)."""
+    rule = SECTOR_RULES.get(_sector_of(ser.name) or "", {})
+    stop_e = rule.get("stop", STOP_FROM_ENTRY)
+    take = rule.get("take", TAKE_PROFIT)
+
+    fwd = ser[ser.index.date > start]     # 산 날 종가로 샀으니 다음 날부터 본다
+    peak = entry
+    for ts, px_ in fwd.items():
+        px_ = float(px_)
+        peak = max(peak, px_)
+        r_entry = (px_ / entry - 1) * 100
+        r_peak = (px_ / peak - 1) * 100
+        if r_entry >= take:
+            return r_entry, ts.date(), "익절"
+        if r_entry <= stop_e:
+            return r_entry, ts.date(), "손절"
+        if r_peak <= STOP_FROM_PEAK:
+            return r_entry, ts.date(), "트레일링"
+    if len(fwd):
+        return (float(fwd.iloc[-1]) / entry - 1) * 100, None, "보유중"
+    return 0.0, None, "보유중"
+
+
 def cmd_score(detail=False):
     rows = _read()
     if not rows:
@@ -200,11 +253,11 @@ def cmd_score(detail=False):
         print(f"     (휴장일에 돌면 직전 거래일 종가를 그대로 받는다 — 같은 베팅이다)")
     print(f"  🔴 종가 진입 가정이라 슬리피지가 빠져 있다 — 낙관 쪽으로 치우친 값이다.")
     print(f"  다만 **종목 선택이 사후에 바뀌지 않아** 표본내 지표와는 질이 다르다.\n")
-    print(f"  {'기록일':<12}{'보유일':>6}{'북 수익':>10}{'벤치':>9}{'초과':>10}   종목")
+    print(f"  {'기록일':<12}{'보유일':>5}{'보유만':>9}{'손절적용':>10}"
+          f"{'벤치':>8}{'초과(손절)':>11}   청산")
 
     # 🔴 보유일을 달력으로 세면 안 된다. 기준 종가 날짜가 마지막 종가 날짜와 같으면
-    # **시장 시간이 하나도 안 지났다** — 수익 0, 초과 0 이 나오고, 그게 "이기지 못한
-    # 1건"으로 세어져 승률을 깎는다. 정보가 없는 행은 세지 않는다.
+    # 시장 시간이 하나도 안 지났다 — 수익 0 이 "이기지 못한 1건"으로 승률을 깎는다.
     last_px_date = px.index[-1].date()
 
     results = []
@@ -216,24 +269,35 @@ def cmd_score(detail=False):
         tot_w = sum(r["book"].values())
         if tot_w <= 0:
             continue
-        port = 0.0
+        hold = stop = 0.0
+        exits = []
         missing = []
-        for s, w in r["book"].items():
-            e = r.get("assumed_entry", {}).get(s)
-            n = last(s)
+        for sym, w in r["book"].items():
+            e = r.get("assumed_entry", {}).get(sym)
+            n = last(sym)
             if not e or not n:
-                missing.append(s)
+                missing.append(sym)
                 continue
-            port += w * (n / e - 1)
-        # 미배분(현금)은 수익 0 으로 둔다 — 북 전체 대비 수익률로 환산
-        port_pct = port * 100
-        bench_ret = (bench_now / r["bench_price"] - 1) * 100 if r.get("bench_price") else float("nan")
-        excess = port_pct - bench_ret
-        results.append(dict(date=r["date"], held=held, port=port_pct,
-                            bench=bench_ret, excess=excess))
-        names = " ".join(sorted(r["book"]))
-        print(f"  {r['date']:<12}{held:>5}일{port_pct:>+9.2f}%{bench_ret:>+8.2f}%"
-              f"{excess:>+9.2f}%p   {names[:44]}")
+            hold += w * (n / e - 1)
+            ser = px[sym].dropna() if sym in px.columns else None
+            if ser is None or not len(ser):
+                stop += w * (n / e - 1)
+                continue
+            ser.name = sym
+            ret, when, why = simulate_exit(ser, e, snap)
+            stop += w * ret / 100
+            if why != "보유중":
+                exits.append(f"{sym}{'↑' if why == '익절' else '↓'}")
+        hold_pct, stop_pct = hold * 100, stop * 100
+        bench_ret = ((bench_now / r["bench_price"] - 1) * 100
+                     if r.get("bench_price") else float("nan"))
+        results.append(dict(date=r["date"], held=held, port=hold_pct,
+                            stop=stop_pct, bench=bench_ret,
+                            excess=hold_pct - bench_ret,
+                            excess_stop=stop_pct - bench_ret))
+        print(f"  {r['date']:<12}{held:>4}일{hold_pct:>+8.2f}%{stop_pct:>+9.2f}%"
+              f"{bench_ret:>+7.2f}%{stop_pct - bench_ret:>+10.2f}%p   "
+              f"{' '.join(exits[:5]) if exits else '—'}")
         if missing:
             print(f"               ⚠️ 가격 없음: {' '.join(missing)}")
 
@@ -242,11 +306,23 @@ def cmd_score(detail=False):
         return 0
 
     d = pd.DataFrame(results)
-    wins = int((d.excess > 0).sum())
-    print(f"\n  ── 누적 ──")
-    print(f"  스냅샷 {len(d)}건 중 **{wins}건**이 벤치마크를 이겼다 ({wins / len(d) * 100:.0f}%)")
-    print(f"  평균 초과수익 {d.excess.mean():+.2f}%p · 중앙값 {d.excess.median():+.2f}%p")
-    print(f"  최고 {d.excess.max():+.2f}%p · 최악 {d.excess.min():+.2f}%p")
+    w_hold = int((d.excess > 0).sum())
+    w_stop = int((d.excess_stop > 0).sum())
+    print(f"\n  ── 누적 ({len(d)}건) ──")
+    print(f"  {'':16}{'보유만':>12}{'손절적용':>12}")
+    print(f"  {'벤치를 이긴 수':16}{f'{w_hold}건 {w_hold/len(d)*100:.0f}%':>12}"
+          f"{f'{w_stop}건 {w_stop/len(d)*100:.0f}%':>12}")
+    print(f"  {'평균 초과수익':16}{f'{d.excess.mean():+.2f}%p':>12}"
+          f"{f'{d.excess_stop.mean():+.2f}%p':>12}")
+    print(f"  {'중앙값':16}{f'{d.excess.median():+.2f}%p':>12}"
+          f"{f'{d.excess_stop.median():+.2f}%p':>12}")
+    print(f"  {'최악':16}{f'{d.excess.min():+.2f}%p':>12}"
+          f"{f'{d.excess_stop.min():+.2f}%p':>12}")
+    gap = d.excess_stop.mean() - d.excess.mean()
+    print(f"\n  → 손절 규칙이 평균 {gap:+.2f}%p 를 바꿨다.")
+    print("    🔴 '보유만' 은 전략이 아니다 — 실제 전략엔 청산 규칙이 있다.")
+    print("    판단은 **손절적용** 쪽으로 해야 한다. 다만 종가 판정이라 이것도 낙관 쪽이고,")
+    print("    청산 후 현금을 0% 로 묶어 둬서 재투입 이익은 빠져 있다.")
     if len(d) < 10:
         print(f"\n  ⚠️ 표본 {len(d)}건이다. **아무 결론도 내리면 안 된다.**")
         print("     대회 시작(10월 중순)까지 매일 쌓으면 3주치가 된다.")

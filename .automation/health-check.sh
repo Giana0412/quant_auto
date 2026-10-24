@@ -135,6 +135,10 @@ HL_STATUS="${STATUS:-missing}"   # STATUS 줄이 없으면 스크립트 자체�
 # 감시견(chain-watchdog.sh)이 살아있나. **서로 감시한다** — 감시견은 체인이 죽은 걸
 # 알리고, 건강검진은 감시견이 죽은 걸 알린다. 한쪽만 있으면 그 한쪽이 죽을 때
 # 다시 조용해지는데, 그게 이 레포가 두 번 겪은 실패 방식이다.
+# 미해결 질문. **알림에 안 뜨면 아무도 안 본다** — Q-1~Q-5 가 9/11 이후 43일째
+# 열려 있는데 레포 어디에도 없어서 물어볼 때마다 사람이 기억으로 꺼내 왔다.
+DECIDE_LINE=$(python3 "$VAULT_DIR/.automation/decision_log.py" --brief 2>/dev/null | head -1 || true)
+
 BEAT_FILE="$LOG_DIR/.watchdog-last"
 if [ -f "$BEAT_FILE" ]; then
   BEAT_AGE=$(( ( $(date +%s) - $(stat -f %m "$BEAT_FILE" 2>/dev/null || date +%s) ) / 86400 ))
@@ -167,6 +171,11 @@ elif [ "$HL_STALE" -gt 2 ] 2>/dev/null; then
 fi
 [ "$BEAT_AGE" -gt 2 ] 2>/dev/null \
   && PROBLEMS+=("체인 감시견이 ${BEAT_AGE}일째 안 돎 — launchctl list | grep watchdog") || true
+# 기한 지난 질문만 문제로 올린다. 열려 있는 것 전부를 올리면 매일 같은 줄이 떠서
+# 사람이 알림을 통째로 무시하게 된다 — 뉴스레터를 3일 기준으로 둔 것과 같은 이유다.
+case "$DECIDE_LINE" in
+  *기한*지남*) PROBLEMS+=("${DECIDE_LINE}") ;;
+esac
 if [ "$BACKTEST_AGE" = "bad" ]; then
   [ -f "$BACKTEST_CACHE" ] && PROBLEMS+=("전략백테스트 캐시 손상(파싱 불가)") || true
 elif [ "$BACKTEST_AGE" -gt 10 ] 2>/dev/null; then
@@ -184,6 +193,7 @@ if [ ${#PROBLEMS[@]} -eq 0 ]; then
     else
       printf '헤드라인 %s건 · 라벨날짜 %s일 · 학습까지 D-%s\n' "$HL_ROWS" "$HL_DATES" "$HL_NEED"
     fi
+    [ -n "$DECIDE_LINE" ] && printf '📋 %s\n' "$DECIDE_LINE"
   } > "$MSG_FILE"
 else
   {

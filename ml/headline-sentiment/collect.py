@@ -171,7 +171,7 @@ def collect(horizon):
                 continue
             seen.add(rid)
             fresh.append(dict(id=rid, ticker=t, date=pub.date().isoformat(),
-                              title=title, label=None, excess=None,
+                              title=title, excess=None,
                               horizon=horizon))
     print(f"[수집] 신규 헤드라인 {len(fresh)}건 (기존 {len(existing)}건)")
     rows = existing + fresh

@@ -38,6 +38,14 @@ DATA = Path(os.environ.get(
     "/personal/10-market/_headlines/headlines.jsonl"))
 LABELS = ["하락", "무반응", "상승"]       # 0, 1, 2
 
+# 🔴 날짜가 모자라면 성적이 "나쁜" 게 아니라 **측정 자체가 불가능**하다.
+# 분할은 날짜 경계에서 자르므로(위 참조) 고유 날짜가 6일이면 검증셋도
+# 테스트셋도 하루짜리가 된다. 하루 = 사실상 표본 하나다. 그날 장이 올랐으면
+# '상승'만 찍어도 40%가 나오고, 그걸 모델 성적으로 착각하게 된다.
+# yfinance 는 최근 1주일 기사만 주므로 소급 수집이 안 된다 — 날짜는
+# 체인이 하루에 하나씩만 늘려 준다. 기다리는 것 말고 방법이 없다.
+MIN_DATES = 20
+
 
 def load(path=DATA, min_rows=50):
     rows = []
@@ -84,6 +92,50 @@ def make_labels(train, others):
         return rs
 
     return tag(train), [tag(o) for o in others], (float(lo), float(hi))
+
+
+def check_dates(rows, min_dates=MIN_DATES, force=False):
+    """학습을 시작하기 전에 날짜가 충분한지 본다. 모자라면 **멈춘다**.
+
+    의미 없는 best.pt 를 만들어 두면 나중에 history.json 의 검증정확도만 보고
+    "83% 나왔네" 로 읽게 된다. 실제로 그 83% 는 검증셋 6건 중 5건이었다.
+    """
+    dates = sorted({r["date"] for r in rows})
+    n = len(dates)
+    i_val, i_test = int(n * 0.70), int(n * 0.85)
+    n_tr, n_va, n_te = i_val, i_test - i_val, n - i_test
+    line = (f"[날짜] 고유 {n}일 ({dates[0]} ~ {dates[-1]})"
+            f" → 훈련 {n_tr}일 · 검증 {n_va}일 · 테스트 {n_te}일")
+    if n >= min_dates:
+        print(line)
+        return
+    msg = (
+        f"\n{line}\n"
+        f"\n🔴 날짜가 {n}일뿐이라 학습 결과를 **측정할 수 없다** (최소 {min_dates}일).\n"
+        f"   테스트셋이 {n_te}일이면 그날 장이 어땠는지가 점수의 전부다.\n"
+        f"   건수(={len(rows)}건)는 문제가 아니다 — 날짜가 문제다.\n"
+        f"\n   체인이 하루에 한 날짜씩 쌓는다. yfinance 는 최근 1주일 기사만\n"
+        f"   주므로 지난 날짜는 소급해서 못 채운다. 기다리는 수밖에 없다.\n"
+        f"   남은 일수: 약 {min_dates - n}거래일.\n"
+        f"\n   진행 상황: python collect.py --stats\n"
+        f"   그래도 돌려보려면: python train.py --force  (성적은 믿지 말 것)\n")
+    if force:
+        print(msg + "\n   --force 가 켜져 있어 그대로 진행한다. "
+              "아래 성적은 **참고용도 아니다**.\n")
+        return
+    raise SystemExit(msg)
+
+
+def majority_baseline(test_rows):
+    """테스트셋에서 '가장 많은 클래스만 찍기'의 정확도.
+
+    🔴 모델 정확도는 **반드시 이것과 비교**해야 한다. 3분류라고 기준선이
+    33.3% 인 게 아니다 — 테스트셋은 훈련셋 경계를 쓰므로 분포가 기운다.
+    """
+    import collections
+    c = collections.Counter(r["y"] for r in test_rows)
+    k, n = c.most_common(1)[0]
+    return LABELS[k], n / len(test_rows)
 
 
 class Headlines(Dataset):

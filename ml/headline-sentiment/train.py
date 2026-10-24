@@ -22,6 +22,7 @@ HuggingFace `Trainer` 를 쓰면 다섯 줄로 끝나지만 **PyTorch 를 배우
   python train.py --epochs 6 --lr 3e-5
   python train.py --freeze 0           # 전체 파인튜닝(과적합 주의)
   python train.py --pool cls
+  python train.py --force             # 날짜가 모자라도 강행(성적 무의미)
 """
 import argparse
 import json
@@ -35,7 +36,8 @@ from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
 
 from baseline import report
-from data import Headlines, describe, load, make_labels, split
+from data import (Headlines, check_dates, describe, load, majority_baseline,
+                  make_labels, split)
 from model import ENCODER, HeadlineClassifier
 
 HERE = Path(__file__).resolve().parent
@@ -84,6 +86,10 @@ def main():
     p.add_argument("--pool", default="mean", choices=["mean", "cls"])
     p.add_argument("--patience", type=int, default=2)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--min-dates", type=int, default=20,
+                   help="이보다 날짜가 적으면 학습을 거부한다")
+    p.add_argument("--force", action="store_true",
+                   help="날짜가 모자라도 강행(성적을 믿지 말 것)")
     a = p.parse_args()
 
     torch.manual_seed(a.seed)
@@ -92,11 +98,15 @@ def main():
     print(f"[환경] device={device} · encoder={ENCODER} · seed={a.seed}")
 
     rows = load()
+    check_dates(rows, a.min_dates, a.force)   # 🔴 날짜가 모자라면 여기서 멈춘다
     tr, va, te = split(rows)
     tr, (va, te), bounds = make_labels(tr, [va, te])
     print(f"[데이터] 라벨 경계(훈련셋 3분위): {bounds[0]:+.2f}% / {bounds[1]:+.2f}%")
     for n_, r in (("훈련", tr), ("검증", va), ("테스트", te)):
         describe(n_, r)
+    maj_lab, maj_acc = majority_baseline(te)
+    print(f"[기준선] 테스트셋에서 '{maj_lab}'만 찍으면 {maj_acc:.1%}"
+          f"  ← 🔴 모델이 이걸 못 넘으면 배운 게 없는 것이다")
 
     tok = AutoTokenizer.from_pretrained(ENCODER)
     dl_tr = DataLoader(Headlines(tr, tok, a.max_len), batch_size=a.batch,
@@ -171,6 +181,10 @@ def main():
     model.load_state_dict(torch.load(CKPT / "best.pt", map_location=device))
     _, ty, tp = evaluate(model, dl_te, device, lossf)
     res = report(f"DistilBERT · 테스트셋 (ep{best_ep})", ty, tp)
+    verdict = ("기준선을 넘었다" if res["acc"] > maj_acc
+               else "🔴 기준선 미달 — 다수 클래스만 찍는 것보다 못하다")
+    print(f"  다수클래스 기준선 {maj_acc:.1%} ('{maj_lab}') 대비: {verdict}")
+    res["majority_acc"], res["majority_label"] = maj_acc, maj_lab
 
     (CKPT / "history.json").write_text(json.dumps(
         dict(args=vars(a), bounds=bounds, history=hist, test=res),

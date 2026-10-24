@@ -80,12 +80,16 @@ TRIES=3; [ "$NOW" -eq 1 ] && TRIES=1
 for ((i = 1; i <= TRIES; i++)); do
   if chain_done "$TODAY" || chain_skipped "$TODAY"; then break; fi
   if [ "$i" -lt "$TRIES" ]; then
-    chain_running && echo "$(date '+%F %T') 체인 실행 중 — ${i}/${TRIES} 대기" >> "$WLOG"
+    chain_running && [ "$DRY" -eq 0 ] \
+      && echo "$(date '+%F %T') 체인 실행 중 — ${i}/${TRIES} 대기" >> "$WLOG"
     sleep 600
   fi
 done
 
-date '+%F %T' > "$BEAT"      # 🔴 살아있다는 표시. 건강검진이 이걸 본다
+# 🔴 살아있다는 표시. 건강검진이 이걸 본다.
+# dry-run 은 쓰지 않는다 — 사람이 손으로 테스트한 게 "감시견이 돌았다"로
+# 둔갑하면, 정작 잡이 죽었을 때 건강검진이 그걸 못 잡는다.
+[ "$DRY" -eq 1 ] || date '+%F %T' > "$BEAT"
 
 PROBLEMS=()
 
@@ -140,8 +144,11 @@ fi
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
   LINE="정상 · 헤드라인 ${LAST_DATE} ${ROWS_LAST}건 · 라벨날짜 ${DATES_LABELED}일"
   [ "$READY" -eq 1 ] && LINE="$LINE · 🎓 학습 가능" || LINE="$LINE (학습까지 D-${NEED})"
-  echo "$(date '+%F %T') $LINE" >> "$WLOG"
-  [ "$DRY" -eq 1 ] && echo "── dry-run (${TODAY}) — 문제 없음, 발송 안 함 ──" && echo "$LINE"
+  if [ "$DRY" -eq 1 ]; then
+    echo "── dry-run (${TODAY}) — 문제 없음, 발송 안 함 ──"; echo "$LINE"
+  else
+    echo "$(date '+%F %T') $LINE" >> "$WLOG"
+  fi
   exit 0
 fi
 

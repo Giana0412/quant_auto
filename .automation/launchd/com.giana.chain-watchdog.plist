@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  체인 감시견. evening-chain.sh 가 **오늘 돌았는지**를 체인 밖에서 확인한다.
+
+  🔴 이것만은 체인에 합치면 안 된다. 다른 잡들은 2026-08-19 사고 이후
+  evening-chain.sh 하나로 합쳤지만(깨어날 때 순서가 사라지는 문제), 이 잡의
+  존재 이유가 **체인이 통째로 안 돌았을 때 알리는 것**이라 체인 안에 넣으면
+  의미가 없다. 체인이 죽으면 같이 죽는다.
+
+  14:00 KST — 체인(06:00, 백업 07:30)이 끝나고도 한참 뒤다. 평소 체인은 10분이면
+  끝난다. 노트북이 꺼져 있었으면 launchd 가 깨어날 때 체인과 이 잡을 한꺼번에
+  띄우는데, 그 경쟁 조건은 스크립트 쪽에서 락 확인 + 10분 간격 3회 재시도로
+  막는다 (§chain-watchdog.sh).
+
+  설치:
+    cp .automation/launchd/com.giana.chain-watchdog.plist ~/Library/LaunchAgents/
+    launchctl unload ~/Library/LaunchAgents/com.giana.chain-watchdog.plist 2>/dev/null
+    launchctl load  ~/Library/LaunchAgents/com.giana.chain-watchdog.plist
+  확인:
+    launchctl list | grep chain-watchdog
+    bash .automation/chain-watchdog.sh --dry-run --now
+-->
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/Users/gyuhyeongkim/.local/bin:/Users/gyuhyeongkim/.nvm/versions/node/v20.20.2/bin:/opt/miniconda3/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.giana.chain-watchdog</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/chain-watchdog.sh</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/logs/chain-watchdog-launchd.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/gyuhyeongkim/orca/projects/quant_auto/.automation/logs/chain-watchdog-launchd.out.log</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<integer>14</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+</dict>
+</plist>

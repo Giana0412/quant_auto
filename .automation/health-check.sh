@@ -121,6 +121,27 @@ ERRORS=${ERRORS:-0}
 # 프롬프트 문자열이 끊기는 버그 정적 검사.
 # 건강검진은 원래 증상만 본다("시장데이터 파일 없음"). 이걸 같이 돌리면 **원인**까지
 # 알려줄 수 있다 — 실제로 그 사고의 원인이 market-snapshot.sh 43행의 큰따옴표였다.
+# 헤드라인 수집 현황. **다른 산출물과 성질이 다르다** — 시장데이터는 하루 빠져도
+# 다음 날 다시 만들면 되지만, 헤드라인은 yfinance 가 티커당 최근 ~20건만 줘서
+# 하루 거르면 그날 기사가 영영 사라진다. 2026-11-14 학습 마감까지 하루도 못 버린다.
+# (§headline_status.py · §chain-watchdog.sh)
+eval "$(python3 "$VAULT_DIR/.automation/headline_status.py" 2>/dev/null \
+        | grep -E '^[A-Z_]+=' || true)"
+HL_LAST="${LAST_DATE:--}"; HL_STALE="${DAYS_STALE:-999}"
+HL_ROWS="${ROWS_LAST:-0}"; HL_DATES="${DATES_LABELED:-0}"
+HL_NEED="${NEED:-20}"; HL_READY="${READY:-0}"
+HL_STATUS="${STATUS:-missing}"   # STATUS 줄이 없으면 스크립트 자체가 안 돈 것
+
+# 감시견(chain-watchdog.sh)이 살아있나. **서로 감시한다** — 감시견은 체인이 죽은 걸
+# 알리고, 건강검진은 감시견이 죽은 걸 알린다. 한쪽만 있으면 그 한쪽이 죽을 때
+# 다시 조용해지는데, 그게 이 레포가 두 번 겪은 실패 방식이다.
+BEAT_FILE="$LOG_DIR/.watchdog-last"
+if [ -f "$BEAT_FILE" ]; then
+  BEAT_AGE=$(( ( $(date +%s) - $(stat -f %m "$BEAT_FILE" 2>/dev/null || date +%s) ) / 86400 ))
+else
+  BEAT_AGE=-1    # 아직 한 번도 안 돈 것 — 배포 직후엔 정상이라 문제로 안 본다
+fi
+
 PROMPT_BAD=$(python3 "$VAULT_DIR/.automation/check_prompts.py" 2>/dev/null | grep '^🔴' | head -3 || true)
 
 PROBLEMS=()
@@ -137,6 +158,15 @@ fi
 [ "$MARKET_OK" -eq 0 ] && PROBLEMS+=("시장데이터 파일 없음")
 [ "$CONCL_OK" -eq 0 ]  && PROBLEMS+=("오늘의결론 파일 없음")
 [ "$ERRORS" -gt 0 ] && PROBLEMS+=("로그에 오류 표시 ${ERRORS}건")
+# 🔴 "조회 실패"와 "데이터 정체"를 섞지 않는다. 섞으면 스크립트가 없을 때
+# "999일째 안 늘어남" 같은 오보가 나가고, 오탐 한 번이면 알림 전체가 무시된다.
+if [ "$HL_STATUS" = "missing" ]; then
+  PROBLEMS+=("헤드라인 상태 조회 실패 — .automation/headline_status.py 확인")
+elif [ "$HL_STALE" -gt 2 ] 2>/dev/null; then
+  PROBLEMS+=("헤드라인 ${HL_STALE}일째 안 늘어남 (마지막 ${HL_LAST}) — 소급 복구 불가")
+fi
+[ "$BEAT_AGE" -gt 2 ] 2>/dev/null \
+  && PROBLEMS+=("체인 감시견이 ${BEAT_AGE}일째 안 돎 — launchctl list | grep watchdog") || true
 if [ "$BACKTEST_AGE" = "bad" ]; then
   [ -f "$BACKTEST_CACHE" ] && PROBLEMS+=("전략백테스트 캐시 손상(파싱 불가)") || true
 elif [ "$BACKTEST_AGE" -gt 10 ] 2>/dev/null; then
@@ -147,8 +177,14 @@ MSG_FILE=$(mktemp -t healthcheck)
 trap 'rm -f "$MSG_FILE"' EXIT INT TERM
 
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
-  printf '✅ *%s 자동화 정상*\n뉴스 %s · 시장 ✓ · 결론 ✓\n' \
-    "$MD" "$NEWS_TODAY" > "$MSG_FILE"
+  {
+    printf '✅ *%s 자동화 정상*\n뉴스 %s · 시장 ✓ · 결론 ✓\n' "$MD" "$NEWS_TODAY"
+    if [ "$HL_READY" -eq 1 ]; then
+      printf '헤드라인 %s건 · 라벨날짜 %s일 · 🎓 학습 가능\n' "$HL_ROWS" "$HL_DATES"
+    else
+      printf '헤드라인 %s건 · 라벨날짜 %s일 · 학습까지 D-%s\n' "$HL_ROWS" "$HL_DATES" "$HL_NEED"
+    fi
+  } > "$MSG_FILE"
 else
   {
     printf '🔴 *%s 자동화 점검*\n' "$MD"
@@ -166,6 +202,7 @@ fi
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [건강검진] 실행 시작 ==="
   echo "뉴스 ${NEWS_TODAY}건 / 시장 ${MARKET_OK} / 결론 ${CONCL_OK} / 오류 ${ERRORS}건"
+  echo "헤드라인 ${HL_LAST} ${HL_ROWS}건 / 라벨날짜 ${HL_DATES}일 / 학습까지 D-${HL_NEED}"
   # 자기 발견은 🔴 이 아니라 '문제:' 로 쓴다 — 위 ERRORS 계산이 이 줄을 다시 세면
   # 되먹임이 생긴다 (2→4건으로 불어났던 실제 버그).
   if [ ${#PROBLEMS[@]} -gt 0 ]; then printf '  문제: %s\n' "${PROBLEMS[@]}"; fi

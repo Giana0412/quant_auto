@@ -73,6 +73,24 @@ chain_running() {
   pid=$(cat "$LOCK/pid" 2>/dev/null || echo "")
   [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
 }
+# 완주한 체인이 **몇 분** 걸렸나. 분 단위로 찍고, 못 재면 아무것도 안 찍는다.
+#
+# 🔴 이게 없어서 구멍이 있었다. 아래 ①의 "느린 체인" 검사는 **검사 시점에
+# 아직 돌고 있을 때만** 작동했다. 그런데 실제 사고는 둘 다 14:00 전에 끝나 있었다 —
+#   10/23  06:13 → 12:33 (6시간 20분)  브리핑 통째로 날아감
+#   10/25  06:00 → 10:52 (4시간 52분)  시장데이터·결론 안 생김
+# 둘 다 chain_done=true 라서 감시견이 "정상" 을 적었다. 이 감시견을 만든
+# 동기가 10/23 인데 **그 사건을 못 잡고 있었다.**
+# 체인이 통째로 안 돈 것과 4시간 걸려 반만 나간 것은 둘 다 실패다.
+chain_minutes() {
+  local f="$LOG_DIR/20${1}.log" s e
+  s=$(grep -m1 '\[저녁체인\] 시작' "$f" 2>/dev/null | sed -n 's/^=== \([0-9-]* [0-9:]*\).*/\1/p')
+  e=$(grep -m1 '\[저녁체인\] 종료' "$f" 2>/dev/null | sed -n 's/^=== \([0-9-]* [0-9:]*\).*/\1/p')
+  [ -n "$s" ] && [ -n "$e" ] || return 1
+  s=$(date -j -f '%Y-%m-%d %H:%M:%S' "$s" +%s 2>/dev/null) || return 1
+  e=$(date -j -f '%Y-%m-%d %H:%M:%S' "$e" +%s 2>/dev/null) || return 1
+  echo $(( (e - s) / 60 ))
+}
 
 # ── 재시도 ────────────────────────────────────────────────────────────────
 # 깨어날 때 체인과 같이 떴을 수 있으니 바로 단정하지 않는다.
@@ -98,7 +116,21 @@ PROBLEMS=()
 if chain_skipped "$TODAY"; then
   :
 elif chain_done "$TODAY"; then
-  :
+  # 완주했다. 그래도 **어떻게** 완주했는지 본다 (§chain_minutes).
+  MINS=$(chain_minutes "$TODAY") || MINS=""
+  if [ -n "$MINS" ] && [ "$MINS" -gt 180 ] 2>/dev/null; then
+    PROBLEMS+=("체인이 완주는 했지만 ${MINS}분 걸렸다 (평소 10분) — 절전 의심, 산출물 확인 필요")
+  fi
+  # 체인이 스스로 적어둔 실패 표시를 읽는다. 2026-10-25 부터 체인은 종료코드가
+  # 0 이어도 산출물이 없거나 상한의 2배를 넘기면 🔴 를 찍는다 (§evening-chain.sh).
+  # 여기서 그걸 주워 올리면 **감시견이 체인의 자기 신고를 전달**하는 셈이 된다 —
+  # 같은 판정을 두 군데서 따로 구현하면 반드시 갈라진다.
+  FAILED=$(grep -c '\[저녁체인\].*🔴' "$LOG_DIR/20${TODAY}.log" 2>/dev/null) || FAILED=0
+  [ "${FAILED:-0}" -gt 0 ] 2>/dev/null \
+    && PROBLEMS+=("체인 단계 ${FAILED}개 실패 — grep 🔴 .automation/logs/20${TODAY}.log")
+  # 배터리로 돌았으면 느렸든 아니든 알린다. 원인이 사람 손에 있는 유일한 고장이다.
+  grep -q '배터리 구동' "$LOG_DIR/20${TODAY}.log" 2>/dev/null \
+    && PROBLEMS+=("체인이 배터리로 돌았다 — 자기 전에 전원을 꽂아야 한다")
 elif chain_running; then
   START=$(grep -m1 '\[저녁체인\] 시작' "$LOG_DIR/20${TODAY}.log" 2>/dev/null \
           | sed -n 's/^=== \([0-9-]* [0-9:]*\) .*/\1/p')

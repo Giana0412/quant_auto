@@ -129,7 +129,7 @@ eval "$(python3 "$VAULT_DIR/.automation/headline_status.py" 2>/dev/null \
         | grep -E '^[A-Z_]+=' || true)"
 HL_LAST="${LAST_DATE:--}"; HL_STALE="${DAYS_STALE:-999}"
 HL_ROWS="${ROWS_LAST:-0}"; HL_DATES="${DATES_LABELED:-0}"
-HL_NEED="${NEED:-20}"; HL_READY="${READY:-0}"
+HL_NEED="${NEED:-20}"; HL_READY="${READY:-0}"; HL_THIN="${DATES_THIN:-0}"
 HL_STATUS="${STATUS:-missing}"   # STATUS 줄이 없으면 스크립트 자체가 안 돈 것
 
 # 감시견(chain-watchdog.sh)이 살아있나. **서로 감시한다** — 감시견은 체인이 죽은 걸
@@ -191,7 +191,15 @@ if [ ${#PROBLEMS[@]} -eq 0 ]; then
     if [ "$HL_READY" -eq 1 ]; then
       printf '헤드라인 %s건 · 라벨날짜 %s일 · 🎓 학습 가능\n' "$HL_ROWS" "$HL_DATES"
     else
-      printf '헤드라인 %s건 · 라벨날짜 %s일 · 학습까지 D-%s\n' "$HL_ROWS" "$HL_DATES" "$HL_NEED"
+      # 얇은 날짜가 몇 개 빠졌는지 같이 적는다. 안 적으면 "어제 6일이었는데
+      # 왜 5일이지" 를 알 수 없고, 그러면 사람이 숫자를 안 믿게 된다.
+      # (3건짜리 일요일을 896건짜리 목요일과 같이 세면 가드가 무력해진다 — §data.py)
+      if [ "$HL_THIN" -gt 0 ] 2>/dev/null; then
+        printf '헤드라인 %s건 · 라벨날짜 %s일(얇은 %s일 제외) · 학습까지 D-%s\n' \
+               "$HL_ROWS" "$HL_DATES" "$HL_THIN" "$HL_NEED"
+      else
+        printf '헤드라인 %s건 · 라벨날짜 %s일 · 학습까지 D-%s\n' "$HL_ROWS" "$HL_DATES" "$HL_NEED"
+      fi
     fi
     [ -n "$DECIDE_LINE" ] && printf '📋 %s\n' "$DECIDE_LINE"
   } > "$MSG_FILE"

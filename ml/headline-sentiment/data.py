@@ -46,8 +46,22 @@ LABELS = ["하락", "무반응", "상승"]       # 0, 1, 2
 # 체인이 하루에 하나씩만 늘려 준다. 기다리는 것 말고 방법이 없다.
 MIN_DATES = 20
 
+# 🔴 **얇은 날짜는 날짜로 세지 않는다.**
+# MIN_DATES 는 "고유 날짜 20일"을 요구하는데, 세는 방식이 틀리면 가드가 통째로
+# 무력해진다. 실측(2026-10-25):
+#   10/22 목  896건        10/18 일  6건
+#   10/23 금  698건        10/25 일  3건
+# 둘 다 카운트에서는 똑같이 **1일**이다. 20일을 채워도 그중 다섯 날이 한 자릿수면
+# 실질은 15일이고, 하필 그 하루가 테스트 폴드로 잡히면 평가가 또 복권이 된다.
+# (6건짜리 검증셋으로 "검증정확도 83%" 를 뽑은 게 2026-10-23 의 실패였다.)
+#
+# 20건이면 정확도가 5% 단위로 끊긴다 — 거칠지만 읽을 수는 있다. 6건(16.7% 단위)은
+# 읽을 수 없다. 그래서 하한을 20건에 둔다. 기준에 못 미치는 날짜는 **빼고 센다.**
+# 빠지는 행이 아깝지 않다 — 3~6건은 학습에 기여하는 게 거의 없고, 평가만 망친다.
+MIN_ROWS_PER_DATE = 20
 
-def load(path=DATA, min_rows=50):
+
+def load(path=DATA, min_rows=50, min_rows_per_date=MIN_ROWS_PER_DATE):
     rows = []
     for line in Path(path).read_text().splitlines():
         try:
@@ -57,6 +71,18 @@ def load(path=DATA, min_rows=50):
         if r.get("excess") is not None and r.get("title"):
             rows.append(r)
     rows.sort(key=lambda r: (r["date"], r["ticker"]))
+
+    # 얇은 날짜를 떨어낸다. **조용히 버리지 않는다** — 날짜가 몇 개 줄었는지
+    # 보여주지 않으면 D-day 계산이 왜 밀렸는지 사람이 알 수 없다.
+    if min_rows_per_date > 1:
+        import collections
+        cnt = collections.Counter(r["date"] for r in rows)
+        thin = sorted(d for d, c in cnt.items() if c < min_rows_per_date)
+        if thin:
+            rows = [r for r in rows if cnt[r["date"]] >= min_rows_per_date]
+            print(f"[날짜] 얇은 날짜 {len(thin)}일 제외 (각 {min_rows_per_date}건 미만): "
+                  + ", ".join(f"{d}({cnt[d]}건)" for d in thin))
+
     if len(rows) < min_rows:
         raise SystemExit(
             f"라벨된 데이터가 {len(rows)}건뿐이다. `python collect.py` 를 며칠 돌려 쌓아야 한다.\n"
@@ -116,7 +142,9 @@ def check_dates(rows, min_dates=MIN_DATES, force=False):
         f"   건수(={len(rows)}건)는 문제가 아니다 — 날짜가 문제다.\n"
         f"\n   체인이 하루에 한 날짜씩 쌓는다. yfinance 는 최근 1주일 기사만\n"
         f"   주므로 지난 날짜는 소급해서 못 채운다. 기다리는 수밖에 없다.\n"
-        f"   남은 일수: 약 {min_dates - n}거래일.\n"
+        f"   남은 날짜: {min_dates - n}일.\n"
+        f"   🔴 {MIN_ROWS_PER_DATE}건 미만인 날짜는 위에서 이미 빠졌다 — 주로 일요일이다.\n"
+        f"   그래서 달력으로 {min_dates - n}일이 아니라 그보다 며칠 더 걸린다.\n"
         f"\n   진행 상황: python collect.py --stats\n"
         f"   그래도 돌려보려면: python train.py --force  (성적은 믿지 말 것)\n")
     if force:

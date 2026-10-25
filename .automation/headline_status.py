@@ -16,8 +16,9 @@
                 **1일 뒤처진 게 정상**이다. 2일을 넘으면 수집이 멈춘 것
   ROWS_TOTAL    전체 행
   ROWS_LAST     LAST_DATE 의 행 수 — 비정상적으로 적으면 반쪽 수집
-  DATES_ALL     헤드라인이 있는 고유 날짜 (라벨 전)
-  DATES_LABELED 라벨(excess)까지 끝난 고유 날짜 — train.py 가 보는 값
+  DATES_ALL     헤드라인이 있는 고유 날짜 (라벨 전, 얇은 날짜 포함)
+  DATES_LABELED 라벨(excess)까지 끝나고 **건수도 충분한** 고유 날짜 — train.py 가 보는 값
+  DATES_THIN    건수가 모자라 빠진 날짜 수 (라벨은 됐지만 카운트에 안 들어간 것)
   NEED          학습까지 남은 날짜 수 (MIN_DATES 기준)
   READY         1 이면 지금 학습 가능
   STATUS        ok | empty — 🔴 이 줄이 **아예 없으면** 조회 자체가 실패한 것이다.
@@ -36,12 +37,16 @@ from pathlib import Path
 DATA = Path("/Users/gyuhyeongkim/orca/projects/quant_auto"
             "/personal/10-market/_headlines/headlines.jsonl")
 MIN_DATES = 20          # ml/headline-sentiment/data.py 의 MIN_DATES 와 같은 값
+# 🔴 data.py 의 MIN_ROWS_PER_DATE 와 **같은 값이어야 한다.** 갈라지면 텔레그램의
+# "학습까지 D-N" 과 train.py 가 실제로 요구하는 날짜 수가 어긋나고, 사람은
+# D-0 인 줄 알고 돌렸다가 가드에 막힌다. 거기 주석에 왜 20건인지 적어 뒀다.
+MIN_ROWS_PER_DATE = 20
 
 
 def main():
     out = dict(LAST_DATE="-", DAYS_STALE=-1, ROWS_TOTAL=0, ROWS_LAST=0,
-               DATES_ALL=0, DATES_LABELED=0, NEED=MIN_DATES, READY=0,
-               STATUS="empty")
+               DATES_ALL=0, DATES_LABELED=0, DATES_THIN=0,
+               NEED=MIN_DATES, READY=0, STATUS="empty")
     try:
         dates, labeled, total = {}, set(), 0
         with DATA.open() as f:
@@ -62,14 +67,18 @@ def main():
                     labeled.add(d)
         if dates:
             last = max(dates)
+            # 라벨까지 끝난 날짜 중 **건수가 충분한 것만** 센다. 3건짜리 일요일을
+            # 896건짜리 목요일과 똑같이 1일로 세면 가드가 무력해진다 (§data.py).
+            usable = {d for d in labeled if dates[d] >= MIN_ROWS_PER_DATE}
             out["LAST_DATE"] = last
             out["ROWS_LAST"] = dates[last]
             out["DAYS_STALE"] = (date.today() - date.fromisoformat(last)).days
             out["ROWS_TOTAL"] = total
             out["DATES_ALL"] = len(dates)
-            out["DATES_LABELED"] = len(labeled)
-            out["NEED"] = max(0, MIN_DATES - len(labeled))
-            out["READY"] = 1 if len(labeled) >= MIN_DATES else 0
+            out["DATES_LABELED"] = len(usable)
+            out["DATES_THIN"] = len(labeled) - len(usable)
+            out["NEED"] = max(0, MIN_DATES - len(usable))
+            out["READY"] = 1 if len(usable) >= MIN_DATES else 0
             out["STATUS"] = "ok"
     except FileNotFoundError:
         pass                          # 아직 한 번도 안 돌았다 — 에러가 아니다

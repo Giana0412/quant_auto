@@ -39,12 +39,22 @@ set -uo pipefail   # -e 는 쓰지 않는다 — 한 단계가 실패해도 체�
 #   "API Error: Your computer went to sleep mid-response."
 # 그날 그룹에 간 건 이벤트 알림뿐이고 **브리핑은 통째로 날아갔다.**
 #
-# timeout 의 상한은 벽시계 기준이라 **자는 동안에도 시간이 흐른다.** 그래서
-# 600초 상한이 4시간 38분으로 늘어나는 게 아니라, 깨어난 순간 이미 초과 상태다.
-# 상한을 늘려서 해결될 문제가 아니라 **애초에 안 자게 해야** 한다.
+# 🔴 2026-10-25 정정. 여기 오래 적혀 있던 "timeout 의 상한은 벽시계 기준이라
+# 자는 동안에도 시간이 흐른다" 는 **틀렸다.** macOS 절전 중에는 timeout 의
+# 타이머가 **멈춘다.** 그날 실측:
+#   06:26:40 → 07:43:25  market-snapshot 77분 걸렸는데 상한은 600초, rc=0
+# 깨어난 순간 초과로 죽는 게 아니라 **아예 안 죽는다.** 즉 단계 상한은
+# 절전에 대해 아무 보호도 못 한다. 보호는 두 가지로만 가능하다 —
+#   ① 안 자게 한다 (전원을 꽂는다. 아래 caffeinate 로는 반쪽만 된다)
+#   ② 자버렸다는 걸 **사후에 알아챈다** (단계마다 소요초를 직접 재서 기록 — §단계)
 #
-# caffeinate 로 자신을 다시 띄운다. -i 는 유휴 절전, -s 는 전원 연결 시 시스템
-# 절전을 막는다(배터리에선 -s 가 무시된다 — 그건 어쩔 수 없다).
+# caffeinate 로 자신을 다시 띄운다. -i 는 유휴 절전을 막는다.
+# 🔴 -s 는 **전원이 연결된 동안에만** 시스템 절전을 막는다. 배터리로 돌면
+# 무력하고, 뚜껑을 닫은 클램셸 절전은 -i 로도 못 막는다. 2026-10-25 에
+# 배터리 15% + 뚜껑 닫힘으로 체인이 4시간 52분을 기어갔다 — 15분마다 2~45초씩
+# DarkWake 하는 동안에만 전진했다. 10/24 에 10분 만에 끝난 건 caffeinate 가
+# 고쳐서가 아니라 그때 전원이 꽂혀 있었기 때문이다.
+# 그래서 코드가 할 수 있는 건 "안 꽂혔으면 알리는 것"까지다 (§전원 확인).
 # CHAIN_CAFFEINATED 로 재귀를 끊는다. 🔴 락을 잡기 **전에** 해야 한다 —
 # 락을 잡고 exec 하면 trap 이 날아가 락이 영영 안 풀린다.
 if [ -z "${CHAIN_CAFFEINATED:-}" ] && command -v caffeinate >/dev/null 2>&1; then
@@ -112,9 +122,20 @@ if grep -q '발송 성공 → 그룹' "$CHAIN_LOG" 2>/dev/null; then
   exit 0
 fi
 
+CHAIN_T0=$(date +%s)
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 시작 ==="
 } >> "$LOG_FILE"
+
+# ── 전원 확인 ─────────────────────────────────────────────────────────────
+# 🔴 배터리로 돌면 체인이 기어간다(위 caffeinate 주석). 막을 방법이 없으니 **알린다.**
+# 체인을 멈추지는 않는다 — 느리게라도 헤드라인은 주워야 한다. 날짜는 소급이
+# 안 되므로 하루 거르면 그날 기사는 영영 못 줍는다 (§headline_status.py).
+# 이 줄을 감시견이 읽는다 (§chain-watchdog.sh) — 그래서 문구를 바꾸면 거기도 봐야 한다.
+if ! pmset -g batt 2>/dev/null | grep -q 'AC Power'; then
+  BATT=$(pmset -g batt 2>/dev/null | sed -n 's/.*[^0-9]\([0-9]\{1,3\}\)%.*/\1/p' | head -1)
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] ⚠️ 배터리 구동 (${BATT:-?}%) — 절전으로 느려질 수 있다 ===" >> "$LOG_FILE"
+fi
 
 # 단계마다 상한 시간을 둔다. **무엇도 영원히 매달려선 안 된다.**
 # newsletter_fetch 가 IMAP 에서 23시간 멈춰 락을 붙잡은 사고가 이 규칙이 없어서
@@ -140,22 +161,63 @@ declare -a STEPS=(
   "headline-collect:600"
 )
 
+# ── 단계가 끝났는지 **무엇으로 판정하는가** ───────────────────────────────
+# 종료코드만 보면 안 된다. 2026-10-25 에 market-snapshot 이 이렇게 끝났다:
+#   claude 가 느려진 백그라운드 작업을 10분 만에 죽이고 **0 으로 종료**
+#   → 261025-시장데이터.md 가 안 생겼는데 로그에는 `✅` 만 남았다
+# 로그에 ✅ 가 찍히면 사람은 거기서 읽기를 멈춘다. **거짓 ✅ 가 침묵보다 나쁘다.**
+# 그래서 단계마다 그 단계가 만들어야 하는 파일을 같이 확인한다.
+step_artifact() {
+  case "$1" in
+    market-snapshot)  echo "$VAULT_DIR/personal/10-market/data/${CHAIN_DATE}-시장데이터.md" ;;
+    daily-conclusion) echo "$VAULT_DIR/personal/10-market/_conclusions/${CHAIN_DATE}-오늘의결론.md" ;;
+    # 나머지는 산출물이 "조용한 게 정상"이다 — 이벤트알림은 새 이벤트가 없으면
+    # 아무것도 안 보내고, 헤드라인은 자기 JSONL 에 append 만 한다(건수는 감시견이 본다).
+    *) echo "" ;;
+  esac
+}
+
 for entry in "${STEPS[@]}"; do
   step="${entry%%:*}"; limit="${entry##*:}"
-  start=$(date '+%H:%M:%S')
+  start=$(date '+%H:%M:%S'); t0=$(date +%s)
   # 🔴 -k 가 반드시 있어야 한다. timeout 은 상한에서 TERM 을 보낸 뒤 **자식이
   # 실제로 죽을 때까지 기다린다.** claude 가 TERM 에 안 죽는 바람에 420초 상한이
   # 86분이 된 적이 있다 (2026-08-23 daily-conclusion: 19:24:36→20:51:14).
   # -k 60 이면 TERM 후 60초 안에 안 죽을 때 KILL 로 확실히 끊는다.
   timeout -k 60 "$limit" bash "$VAULT_DIR/.automation/${step}.sh" >/dev/null 2>&1
   rc=$?
+  # 🔴 소요시간은 **직접 잰다.** timeout 에 맡길 수 없다 — 절전 중에 그 타이머가
+  # 멈추기 때문에 상한이 아무 일도 하지 않는다 (맨 위 정정 주석).
+  took=$(( $(date +%s) - t0 ))
   case $rc in
     0)   msg="✅" ;;
     124) msg="🔴 ${limit}초 초과로 중단" ;;
     *)   msg="🔴 종료코드 $rc" ;;
   esac
-  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] ${step} ${msg} (${start} 시작) ===" >> "$LOG_FILE"
+  if [ "$rc" -eq 0 ]; then
+    # ⓐ 만들어야 할 파일이 없으면 성공이 아니다.
+    art=$(step_artifact "$step")
+    if [ -n "$art" ] && [ ! -s "$art" ]; then
+      if [ "$step" = "daily-conclusion" ] \
+         && [ ! -s "$VAULT_DIR/personal/10-market/data/${CHAIN_DATE}-시장데이터.md" ]; then
+        # 결론은 시장데이터를 재료로 쓴다. 재료가 없어서 못 만든 건 이 단계의
+        # 잘못이 아니다 — 앞 단계가 이미 🔴 로 찍혀 있다. 여기서 또 🔴 를 올리면
+        # 고장 하나가 알림 두 줄이 되고, 사람이 원인을 뒤 단계로 착각한다.
+        msg="⚪ 재료 없음 (시장데이터가 없다)"
+      else
+        msg="🔴 산출물 없음 ($(basename "$art"))"
+      fi
+    fi
+    # ⓑ 상한의 2배를 넘기고도 살아 있었다 = timeout 이 멈춰 있었다 = 절전이다.
+    #    ⓐ **뒤에** 붙인다. 산출물이 없는 건 증상이고 절전은 원인이라, 둘 다
+    #    해당하면 원인이 줄 끝에 남아야 사람이 "왜" 를 먼저 집는다.
+    if [ "$took" -gt $((limit * 2)) ]; then
+      msg="${msg%✅} 🔴 절전 의심 (상한 ${limit}초의 2배 초과, 종료코드는 0)"
+      msg="${msg# }"
+    fi
+  fi
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] ${step} ${msg} (${took}초, ${start} 시작) ===" >> "$LOG_FILE"
 done
 
-echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 종료 ===" >> "$LOG_FILE"
+echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 종료 ($(( ($(date +%s) - CHAIN_T0) / 60 ))분) ===" >> "$LOG_FILE"
 echo >> "$LOG_FILE"

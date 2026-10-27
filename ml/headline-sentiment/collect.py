@@ -93,7 +93,9 @@ def fetch_news(ticker, max_age_days=7):
         pub = datetime.fromtimestamp(ts, timezone.utc)
         if pub < cutoff:
             continue
-        out.append(dict(title=title, published=pub, uid=a.get("uuid")))
+        out.append(dict(title=title, published=pub, uid=a.get("uuid"),
+                        publisher=(a.get("publisher") or "").strip(),
+                        kind=(a.get("type") or "").strip(), rel=list(rel)))
     return out
 
 
@@ -170,7 +172,24 @@ def collect(horizon):
             if rid in seen:
                 continue
             seen.add(rid)
+            # 🔴 `published` 는 **날짜가 아니라 시각까지** 남긴다.
+            # 라벨(forward_excess)은 발행일 **종가 진입**을 가정하는데, 장 마감
+            # 뒤(16:00 ET 이후) 기사는 기사가 나오기 전 가격으로 들어간 것이
+            # 되어 다음날 갭이 공짜 수익으로 들어간다 — **낙관 쪽 편향**이다.
+            # 날짜만 저장하면 어느 행이 그런지 **구분조차 못 한다.** 그리고
+            # yfinance 는 최근 ~1주일만 주므로 지난 행은 영영 복구가 안 된다
+            # (2026-10-27 이전 3,457행이 그렇게 날아갔다).
+            # 세션 구분(장전/장중/장후)은 이 값에서 언제든 다시 뽑을 수 있으니
+            # 여기서는 **가공하지 않고 원본 그대로** 둔다.
             fresh.append(dict(id=rid, ticker=t, date=pub.date().isoformat(),
+                              published=pub.isoformat(),
+                              # 자동생성 매체(Zacks·24/7 Wall St.)와 Reuters 를
+                              # 가르는 가장 싼 잡음 필터다.
+                              publisher=a.get("publisher") or "",
+                              kind=a.get("kind") or "",
+                              # 한 종목 기사인지 5종목에 걸친 매크로 기사인지.
+                              # 개수만 두면 어느 종목이었는지 못 되살린다.
+                              rel=a.get("rel") or [],
                               title=title, excess=None,
                               horizon=horizon))
     print(f"[수집] 신규 헤드라인 {len(fresh)}건 (기존 {len(existing)}건)")
@@ -233,6 +252,37 @@ def stats():
     print("\n  날짜별:")
     for dt, n in d.groupby(d.date.dt.date).size().items():
         print(f"    {dt}  {n:>4}건  {'█' * min(40, n // 3)}")
+
+    # ── 2026-10-27 부터 붙는 필드 ──────────────────────────────────────────
+    # 🔴 **커버리지를 먼저 보여준다.** 그 전 행에는 이 값이 없는데, 그걸 모르고
+    # publisher 로 거르면 "오래된 행이 통째로 빠진 것"을 "그 매체가 적은 것"으로
+    # 읽게 된다. 몇 건에만 있는지가 숫자보다 먼저 보여야 한다.
+    full = [r for r in rows if r.get("published")]
+    print(f"\n  [신규필드] 발행시각 보유 {len(full)}/{len(rows)}건"
+          f" ({len(full) / len(rows) * 100:.0f}%)")
+    if not full:
+        print("    아직 없다 — 다음 수집부터 쌓인다")
+        return 0
+
+    # 미국 동부 기준 세션. 장후 기사는 발행일 종가 진입이 **미래를 보는 것**이라
+    # 라벨이 낙관 쪽으로 샌다(§collect 주석). 몇 건이나 되는지 눈으로 확인한다.
+    f = pd.DataFrame(full)
+    et = pd.to_datetime(f["published"], utc=True, format="mixed") \
+           .dt.tz_convert("America/New_York")
+    mins = et.dt.hour * 60 + et.dt.minute
+    sess = pd.cut(mins, [-1, 569, 959, 1439],
+                  labels=["장전(~9:29)", "장중(9:30~15:59)", "장후(16:00~)"])
+    sess = sess.where(et.dt.dayofweek < 5, "주말")
+    for k, n in sess.value_counts().items():
+        mark = "  🔴 종가진입 가정이 낙관 편향" if k == "장후(16:00~)" else ""
+        print(f"    {k:<18}{n:>5}건{mark}")
+    top = f[f["publisher"].astype(bool)]["publisher"].value_counts()
+    if len(top):
+        print(f"    발행처 {len(top)}곳 · 상위: "
+              + " · ".join(f"{k}({v})" for k, v in top.head(5).items()))
+    nrel = f["rel"].apply(lambda x: len(x) if isinstance(x, list) else 0)
+    print(f"    기사당 관련종목 평균 {nrel.mean():.1f}개"
+          f" · 1종목 전용 {(nrel <= 1).sum()}건 · 3종목 이상 {(nrel >= 3).sum()}건")
     return 0
 
 

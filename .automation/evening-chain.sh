@@ -157,6 +157,7 @@ declare -a STEPS=(
   # 결론보다 앞이어야 결론이 읽는다 — 그만큼 브리핑이 15분 늦어진다.
   "agent-review:2000"
   "daily-conclusion:480"
+  "dashboard-push:60"        # 결론을 팀 대시보드(Streamlit) 브리핑 탭으로 — 구글 시트 경유(§push_briefing.py)
   "event-alerts:90"        # 감시 창에 새로 들어온 이벤트만 팀 그룹에 알린다(조용한 날은 조용)
   "health-check:120"
   # 🔴 아래는 **브리핑 본체가 아니다.** 개인 연구용 데이터 수집이라 맨 뒤에 둔다 —

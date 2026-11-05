@@ -257,6 +257,16 @@ def cmd_run(tickers: list[str] | None, jobs: int, timeout: int, max_age: int) ->
 
 # ── brief: daily-conclusion 이 읽는 파일 ───────────────────────────────────
 
+def _clip(text: str, limit: int = 300) -> str:
+    """문장 중간에서 자르지 않는다 — '50 SMA(' 처럼 끊기면 읽는 사람이 뜻을 놓친다."""
+    text = " ".join(text.split())
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    end = max(cut.rfind("다. "), cut.rfind(". "))
+    return (cut[:end + 1] if end > limit // 2 else cut.rstrip()) + " …"
+
+
 def write_brief(day: str) -> Path | None:
     rows = reviewed(day)
     if not rows:
@@ -275,7 +285,7 @@ def write_brief(day: str) -> Path | None:
         w = f"{r['weight'] * 100:.0f}%" if r.get("weight") else "북 밖"
         flag = " ⚠️북과 반대" if r["rating"] in BEAR and r.get("weight") else ""
         lines.append(f"- **{r['ticker']}** ({w}) — {r['rating']}{flag}")
-        lines.append(f"  - {' '.join(str(r.get('summary', '')).split())[:300]}")
+        lines.append(f"  - {_clip(str(r.get('summary', '')))}")
         if r.get("report"):
             lines.append(f"  - 보고서: `{r['report']}`")
     lines += ["", f"누적 성적: {score_line()}"]

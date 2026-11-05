@@ -151,6 +151,11 @@ fi
 declare -a STEPS=(
   "archive-newsletters:900"   # 메일 수집 + 다이제스트 — 제일 오래 걸린다
   "market-snapshot:600"       # 스크립트 102초 + LLM. 절이 늘면 LLM 쪽이 늘어난다
+  # TradingAgents 세컨드 오피니언(§agent_review.py) — 구독(claude -p)으로 돈다.
+  # 실측 2026-11-06: GILD 1종목 293초(애널리스트 3 + 토론 + 매니저, 호출당 ~5초).
+  # 6종목 ÷ 동시 2 = 3물결 × ~300초 ≈ 15분. 상한은 2배 남짓으로 잡는다.
+  # 결론보다 앞이어야 결론이 읽는다 — 그만큼 브리핑이 15분 늦어진다.
+  "agent-review:2000"
   "daily-conclusion:480"
   "event-alerts:90"        # 감시 창에 새로 들어온 이벤트만 팀 그룹에 알린다(조용한 날은 조용)
   "health-check:120"
@@ -171,6 +176,7 @@ step_artifact() {
   case "$1" in
     market-snapshot)  echo "$VAULT_DIR/personal/10-market/data/${CHAIN_DATE}-시장데이터.md" ;;
     daily-conclusion) echo "$VAULT_DIR/personal/10-market/_conclusions/${CHAIN_DATE}-오늘의결론.md" ;;
+    agent-review)     echo "$VAULT_DIR/personal/10-market/data/${CHAIN_DATE}-에이전트의견.md" ;;
     # 나머지는 산출물이 "조용한 게 정상"이다 — 이벤트알림은 새 이벤트가 없으면
     # 아무것도 안 보내고, 헤드라인은 자기 JSONL 에 append 만 한다(건수는 감시견이 본다).
     *) echo "" ;;

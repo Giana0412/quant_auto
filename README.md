@@ -24,6 +24,7 @@
 |---|---|---|---|
 | ① | `archive-newsletters` | Gmail(IMAP)에서 구독 뉴스레터 수집 → 일일 다이제스트 | — |
 | ② | `market-snapshot` | `market_metrics.py`(gs-quant) 로 지수·로테이션·스크리닝·모멘텀·빌드업·백테스트 스냅샷 | — |
+| ②½ | `agent-review` | 모델 북 종목에 [TradingAgents](https://github.com/TauricResearch/TradingAgents) 등급(세컨드 오피니언) — 북은 안 바꾼다 | — |
 | ③ | `daily-conclusion` | 위 둘을 종합 → 오늘의 결론 2종 | 🟢 **텔레그램 그룹** |
 | ④ | `health-check` | 위가 다 돌았는지 점검 | 🔵 **개인방** |
 
@@ -35,6 +36,26 @@
 
 launchd plist 는 `~/Library/LaunchAgents/com.giana.*.plist`. 저장소에는 템플릿만
 있고(`.automation/launchd/`), 설치는 손으로 `cp` + `launchctl load` 한다.
+
+### 에이전트 리뷰 (TradingAgents · 세컨드 오피니언)
+
+`agent_review.py` 가 그날 모델 북 종목을 TradingAgents v0.7.1 에 넣고 5단계 등급을
+`personal/10-market/_agents/agent-log.jsonl` 에 쌓는다. 결론에는 *에이전트 의견* 절로만
+실린다. 🔴 **북을 바꾸지 않는다**(2026-11-06 결정 — 검증 안 된 신호). 대신 스스로 채점한다:
+`agent_review.py score` → 북 안에서 강세 등급 종목이 약세 등급 종목보다 나았나.
+
+**LLM 은 구독으로 돈다** — `claude_cli_llm.py` 가 TradingAgents 의 LLM 호출을 로그인된
+`claude -p` 로 보낸다(도구 호출·구조화 출력 포함). API 키가 필요 없다. 🔴 구독 OAuth 토큰을
+꺼내 쓰는 방식은 약관 위반이라 쓰지 않는다 — 수정 안 한 claude 바이너리 호출만 허용된다.
+대신 **구독 사용 한도**를 쓴다(종목당 호출 수십 번). 같은 기준일·종목은 다시 돌리지 않는다.
+
+설치(운영 클론에서 한 번):
+```bash
+cd ~/orca/projects/quant_auto/.automation
+uv venv --python 3.13 .venv-ta
+uv pip install --python .venv-ta/bin/python "tradingagents @ git+https://github.com/TauricResearch/TradingAgents@v0.7.1"
+```
+API 키로 돌리려면 `TA_BACKEND=anthropic` + `.automation/.anthropic.env`(`ANTHROPIC_API_KEY=...`).
 
 ### 시장 지표는 gs-quant 로 계산한다
 

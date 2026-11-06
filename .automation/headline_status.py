@@ -31,7 +31,7 @@
 """
 import json
 import sys
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 DATA = Path("/Users/gyuhyeongkim/orca/projects/quant_auto"
@@ -43,12 +43,18 @@ MIN_DATES = 20          # ml/headline-sentiment/data.py 의 MIN_DATES 와 같은
 MIN_ROWS_PER_DATE = 20
 
 
+def session(d):
+    """달력 날짜 → 진입 거래일(토·일 → 월). 미국 공휴일은 무시한다."""
+    x = date.fromisoformat(d)
+    return (x + timedelta(days=(7 - x.weekday()) % 7 if x.weekday() >= 5 else 0)).isoformat()
+
+
 def main():
     out = dict(LAST_DATE="-", DAYS_STALE=-1, ROWS_TOTAL=0, ROWS_LAST=0,
                DATES_ALL=0, DATES_LABELED=0, DATES_THIN=0,
                NEED=MIN_DATES, READY=0, STATUS="empty")
     try:
-        dates, labeled, total = {}, set(), 0
+        dates, labeled_n, total = {}, {}, 0
         with DATA.open() as f:
             for line in f:
                 line = line.strip()
@@ -64,19 +70,23 @@ def main():
                 total += 1
                 dates[d] = dates.get(d, 0) + 1
                 if r.get("excess") is not None:
-                    labeled.add(d)
+                    s_ = session(d)
+                    labeled_n[s_] = labeled_n.get(s_, 0) + 1
         if dates:
             last = max(dates)
             # 라벨까지 끝난 날짜 중 **건수가 충분한 것만** 센다. 3건짜리 일요일을
             # 896건짜리 목요일과 똑같이 1일로 세면 가드가 무력해진다 (§data.py).
-            usable = {d for d in labeled if dates[d] >= MIN_ROWS_PER_DATE}
+            # 🔴 **거래일**로 센다(§data.py load) — 주말 기사는 월요일 종가로 진입해
+            # 같은 가격창을 쓰므로 독립 날짜가 아니다. 2026-11-06 까지 달력으로 세서
+            # '19일'이라 했지만 실제로는 13거래일이었다.
+            usable = {d for d, n in labeled_n.items() if n >= MIN_ROWS_PER_DATE}
             out["LAST_DATE"] = last
             out["ROWS_LAST"] = dates[last]
             out["DAYS_STALE"] = (date.today() - date.fromisoformat(last)).days
             out["ROWS_TOTAL"] = total
             out["DATES_ALL"] = len(dates)
             out["DATES_LABELED"] = len(usable)
-            out["DATES_THIN"] = len(labeled) - len(usable)
+            out["DATES_THIN"] = len(labeled_n) - len(usable)
             out["NEED"] = max(0, MIN_DATES - len(usable))
             out["READY"] = 1 if len(usable) >= MIN_DATES else 0
             out["STATUS"] = "ok"

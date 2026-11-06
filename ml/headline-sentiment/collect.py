@@ -147,6 +147,13 @@ def collect(horizon):
     noise_re = re.compile("|".join(bridge.noise_patterns()), re.I)
     tickers = sorted(src)
     print(f"[수집] 유니버스 {len(tickers)}종목에서 헤드라인을 긁는다")
+    # 🔴 screen_universe 는 네트워크가 죽으면 예외 없이 {} 를 준다. 2026-11-01·11-04
+    #   (배터리·절전으로 체인이 몇 시간 늘어진 날) 0종목을 긁고도 rc=0 → 체인 ✅ 였다.
+    #   7일치를 다시 긁는 다음 날이 메웠지만, 이틀 넘게 이어지면 조용히 날짜가 빈다.
+    #   라벨 단계도 같은 네트워크를 쓰니 건너뛰고 실패로 끝낸다 — 체인에 🔴 가 찍힌다.
+    if not tickers:
+        print("[수집] 🔴 유니버스 0종목 — 네트워크/절전 의심, 수집·라벨 건너뜀")
+        return 2
 
     existing = read_rows()
     seen = {r["id"] for r in existing}
@@ -272,7 +279,10 @@ def stats():
     mins = et.dt.hour * 60 + et.dt.minute
     sess = pd.cut(mins, [-1, 569, 959, 1439],
                   labels=["장전(~9:29)", "장중(9:30~15:59)", "장후(16:00~)"])
-    sess = sess.where(et.dt.dayofweek < 5, "주말")
+    # 🔴 pd.cut 은 위 3개만 범주로 가진 Categorical 을 준다 — "주말" 을 미리
+    #   범주에 넣지 않고 where 로 채우면 TypeError 로 --stats 가 통째로 죽는다.
+    #   주말 발행 기사가 처음 들어온 2026-11-01 에 실제로 터졌다.
+    sess = sess.cat.add_categories("주말").where(et.dt.dayofweek < 5, "주말")
     for k, n in sess.value_counts().items():
         mark = "  🔴 종가진입 가정이 낙관 편향" if k == "장후(16:00~)" else ""
         print(f"    {k:<18}{n:>5}건{mark}")

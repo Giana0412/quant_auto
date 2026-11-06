@@ -70,6 +70,14 @@ def load(path=DATA, min_rows=50, min_rows_per_date=MIN_ROWS_PER_DATE):
             continue
         if r.get("excess") is not None and r.get("title"):
             rows.append(r)
+    # 🔴 **분할 단위는 달력 날짜가 아니라 진입 거래일이다.** 라벨은 그 날짜 이후 첫
+    # 세션 종가로 진입하므로 토·일 기사는 월요일 기사와 **같은 가격창**을 쓴다 —
+    # 독립 표본이 아니다. 달력으로 세면 19일이 실제로는 13거래일이었다(2026-11-06).
+    # 주말·월요일이 훈련/테스트로 갈리면 같은 정답을 양쪽에서 보는 누수이기도 하다.
+    # 원래 날짜는 date_cal 에 남긴다. (미국 공휴일은 무시 — 드물고, 틀려도 하루 차이)
+    for r in rows:
+        r["date_cal"] = r["date"]
+        r["date"] = str(np.busday_offset(np.datetime64(r["date"]), 0, roll="forward"))
     rows.sort(key=lambda r: (r["date"], r["ticker"]))
 
     # 얇은 날짜를 떨어낸다. **조용히 버리지 않는다** — 날짜가 몇 개 줄었는지
@@ -90,9 +98,24 @@ def load(path=DATA, min_rows=50, min_rows_per_date=MIN_ROWS_PER_DATE):
     return rows
 
 
+def label_end(r):
+    """라벨이 확정되는 거래일(진입 + horizon). experiments.py --export 행은 `end` 를
+    갖고, 수집기 원본 행은 없으니 영업일로 계산한다(공휴일 무시 — 하루 길게 잡혀
+    purge 가 보수적인 쪽으로 틀린다)."""
+    if r.get("end"):
+        return r["end"]
+    return str(np.busday_offset(np.datetime64(r["date"]), int(r.get("horizon") or 3),
+                                roll="forward"))
+
+
 def split(rows, val_frac=0.15, test_frac=0.15):
     """시간순 분할. **날짜 경계에서 자른다** — 같은 날이 두 쪽에 걸치면
-    위에 적은 누수가 그대로 일어난다."""
+    위에 적은 누수가 그대로 일어난다.
+
+    🔴 그리고 **purge** 한다. h=3 이면 훈련 마지막 날짜들의 라벨이 검증·테스트 기간
+    주가로 정해진다 — 같은 종목이 매일 다시 나오므로 그 종목 단어가 정답을 베낀다
+    (2026-11-06 experiments.py: purge 전후 IC +0.17 → -0.12). 라벨 끝이 다음 구간
+    시작보다 늦은 행은 뺀다."""
     dates = sorted({r["date"] for r in rows})
     n = len(dates)
     i_val = int(n * (1 - val_frac - test_frac))
@@ -101,8 +124,15 @@ def split(rows, val_frac=0.15, test_frac=0.15):
     tr = [r for r in rows if r["date"] in d_train]
     va = [r for r in rows if r["date"] in d_val]
     te = [r for r in rows if r["date"] not in d_train and r["date"] not in d_val]
+    if va and te:
+        v0, t0 = min(r["date"] for r in va), min(r["date"] for r in te)
+        tr = [r for r in tr if label_end(r) <= v0]
+        va = [r for r in va if label_end(r) <= t0]
     if not (tr and va and te):
-        raise SystemExit(f"날짜가 {n}일뿐이라 3분할이 안 된다. 더 모아야 한다.")
+        raise SystemExit(
+            f"날짜가 {n}거래일뿐이라 purge 후 3분할이 안 된다(훈련 {len(tr)} · 검증 {len(va)} · "
+            f"테스트 {len(te)}건).\n검증 구간이 horizon 보다 짧으면 purge 로 통째로 빠진다. "
+            f"더 모으거나 walkforward.py 를 쓸 것.")
     return tr, va, te
 
 
@@ -126,11 +156,11 @@ def check_dates(rows, min_dates=MIN_DATES, force=False):
     의미 없는 best.pt 를 만들어 두면 나중에 history.json 의 검증정확도만 보고
     "83% 나왔네" 로 읽게 된다. 실제로 그 83% 는 검증셋 6건 중 5건이었다.
     """
-    dates = sorted({r["date"] for r in rows})
+    dates = sorted({r["date"] for r in rows})      # load() 가 이미 거래일로 바꿔 둔다
     n = len(dates)
     i_val, i_test = int(n * 0.70), int(n * 0.85)
     n_tr, n_va, n_te = i_val, i_test - i_val, n - i_test
-    line = (f"[날짜] 고유 {n}일 ({dates[0]} ~ {dates[-1]})"
+    line = (f"[날짜] 진입 거래일 {n}일 ({dates[0]} ~ {dates[-1]})"
             f" → 훈련 {n_tr}일 · 검증 {n_va}일 · 테스트 {n_te}일")
     if n >= min_dates:
         print(line)
@@ -143,8 +173,8 @@ def check_dates(rows, min_dates=MIN_DATES, force=False):
         f"\n   체인이 하루에 한 날짜씩 쌓는다. yfinance 는 최근 1주일 기사만\n"
         f"   주므로 지난 날짜는 소급해서 못 채운다. 기다리는 수밖에 없다.\n"
         f"   남은 날짜: {min_dates - n}일.\n"
-        f"   🔴 {MIN_ROWS_PER_DATE}건 미만인 날짜는 위에서 이미 빠졌다 — 주로 일요일이다.\n"
-        f"   그래서 달력으로 {min_dates - n}일이 아니라 그보다 며칠 더 걸린다.\n"
+        f"   🔴 거래일로 센다 — 주말 기사는 월요일과 같은 가격창이라 하루로 안 친다.\n"
+        f"   그래서 달력으로 {min_dates - n}일이 아니라 그 1.4배쯤 걸린다.\n"
         f"\n   진행 상황: python collect.py --stats\n"
         f"   그래도 돌려보려면: python train.py --force  (성적은 믿지 말 것)\n")
     if force:

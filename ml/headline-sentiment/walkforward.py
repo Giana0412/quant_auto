@@ -56,7 +56,7 @@ hf_logging.disable_progress_bar()
 
 import baseline
 from baseline import report
-from data import LABELS, load
+from data import LABELS, label_end, load
 from model import ENCODER
 from train import (add_common_args, class_loss, evaluate, fit, loader,
                    pick_device)
@@ -81,6 +81,17 @@ def by_date(rows):
     for r in rows:
         d.setdefault(r["date"], []).append(r)
     return d
+
+
+def purged(dates, buckets, i, val):
+    """🔴 테스트 날짜 dates[i] 이전 중 **라벨이 테스트 진입 전에 확정된 날짜만** 쓴다.
+
+    purge 없이 dates[:i] 를 다 쓰면 h=3 에서 훈련·검증 라벨이 테스트 기간 주가를
+    이미 담는다. 같은 종목이 매일 다시 나오므로 그 종목 단어가 테스트 정답을 베낀다.
+    2026-11-06 experiments.py 에서 purge 전후 IC 가 +0.17 → -0.12 로 뒤집혔다.
+    검증 날짜도 같은 규칙으로 고른다(조기 종료가 누수된 검증셋을 보면 같은 문제다)."""
+    ok = [d for d in dates[:i] if max(label_end(r) for r in buckets[d]) <= dates[i]]
+    return ok[:-val], ok[-val:]
 
 
 def folds(dates, warmup, val, step):
@@ -135,7 +146,8 @@ def main():
     rec, all_y, all_p, all_lex, all_maj = [], [], [], [], []
     t_start = time.time()
 
-    for k, (d_fit, d_val, d_te) in enumerate(plan, 1):
+    for k, (_, _, d_te) in enumerate(plan, 1):
+        d_fit, d_val = purged(dates, buckets, dates.index(d_te[0]), a.val)
         # 🔴 폴드마다 시드를 다시 심는다. 안 그러면 뒤쪽 폴드일수록 난수
         #    상태가 달라져 "데이터가 늘어서 좋아진 것"과 구분이 안 된다.
         torch.manual_seed(a.seed)

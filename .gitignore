@@ -19,6 +19,9 @@ company-src/
 # 자동화 실행 로그 — 매 실행마다 갱신된다. 스크립트 자체는 계속 추적한다.
 .automation/logs/
 
+# 스크리너 출력 — 돌릴 때마다 새로 나오는 결과물이라 추적하지 않는다
+screener_result.csv
+
 # OMC 런타임 상태 — 세션마다 새 JSON 이 생겨 폭증한다.
 **/.omc/*
 !**/.omc/skills/

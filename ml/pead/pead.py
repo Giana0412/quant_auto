@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import pickle
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, time as dtime
@@ -56,18 +57,57 @@ HEADLINES = Path("/Users/gyuhyeongkim/orca/projects/quant_auto/personal/10-marke
 
 # ── 데이터 ────────────────────────────────────────────────────────────────
 
-def sp500() -> tuple[list[str], dict]:
-    """(티커, {티커: 편입일}). 🔴 편입일 전 이벤트는 쓰면 안 된다 — 지금 지수에 있는 종목은
-    '나중에 올라서 들어온' 종목이 섞여 있어, 편입 전 서프라이즈 뒤 상승이 미래 정보로 들어간다."""
+WIKI = "https://en.wikipedia.org/w/index.php?title=List_of_S%26P_500_companies"
+CHANGES_REV = 1340186477   # 2026-02-24 판. 이후 판에서 '편입·편출 변경' 표가 빠졌다
+
+
+def _wiki(url):
     import io
     import urllib.request
-    req = urllib.request.Request("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-                                 headers={"User-Agent": "Mozilla/5.0 (research script)"})
-    html = urllib.request.urlopen(req, timeout=20).read().decode()
-    t = pd.read_html(io.StringIO(html))[0]
-    t["Symbol"] = t["Symbol"].str.replace(".", "-", regex=False)
-    added = pd.to_datetime(t["Date added"], errors="coerce")
-    return sorted(t["Symbol"]), dict(zip(t["Symbol"], added))
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (research script)"})
+    return pd.read_html(io.StringIO(urllib.request.urlopen(req, timeout=30).read().decode()))
+
+
+def membership(refresh=False) -> tuple[dict, dict]:
+    """({티커: [(편입일|NaT, 편출일|NaT), …]}, {티커: 업종}).
+
+    🔴 지금 종목만 쓰면 두 편향이 생긴다.
+      · 편입 전: 나중에 올라서 들어온 종목의 편입 전 서프라이즈 뒤 상승이 미래 정보다 → 편입일 이후만.
+      · 생존: 편출된 종목(부진·피인수)이 빠진다 → 2013 이후 편출 종목을 편출일 전까지 넣는다.
+    편출 종목의 티커가 나중에 다른 회사로 재사용돼도, 재사용은 편출 뒤라 편출일 컷에서 걸러진다.
+    """
+    f = RUNS / "membership.pkl"
+    if f.exists() and not refresh:
+        with open(f, "rb") as fh:
+            return pickle.load(fh)
+    cur = _wiki(WIKI)[0]
+    cur["Symbol"] = cur["Symbol"].str.replace(".", "-", regex=False)
+    win = {t: [(pd.to_datetime(d, errors="coerce"), pd.NaT)] for t, d in zip(cur["Symbol"], cur["Date added"])}
+    sector = dict(zip(cur["Symbol"], cur["GICS Sector"]))
+    ch = _wiki(f"{WIKI}&oldid={CHANGES_REV}")[1]
+    ch.columns = ["date", "add", "add_name", "rem", "rem_name", "reason"][:len(ch.columns)]
+    ch["date"] = pd.to_datetime(ch["date"], errors="coerce")
+    for c in ("add", "rem"):
+        ch[c] = ch[c].astype(str).str.strip().str.replace(".", "-", regex=False)
+    ch = ch.dropna(subset=["date"]).sort_values("date")
+    adds = ch[ch["add"].str.match(r"^[A-Z-]+$")].groupby("add")["date"].apply(list).to_dict()
+    for _, r in ch[(ch["date"] >= START) & ch["rem"].str.match(r"^[A-Z-]+$")].iterrows():
+        t, d = r["rem"], r["date"]
+        before = [x for x in adds.get(t, []) if x < d]
+        stint = (max(before) if before else pd.NaT, d)
+        if t in win and pd.notna(win[t][0][0]) and win[t][0][0] > d:
+            win[t].append(stint)                        # 빠졌다가 다시 들어온 종목
+        elif t not in win:
+            win[t] = [stint]
+            sector[t] = "(편출)"
+    RUNS.mkdir(exist_ok=True)
+    with open(f, "wb") as fh:
+        pickle.dump((win, sector), fh)
+    return win, sector
+
+
+def member(windows, d) -> bool:
+    return any((pd.isna(a) or d >= a) and (pd.isna(b) or d < b) for a, b in windows)
 
 
 def headline_universe() -> list[str]:
@@ -103,26 +143,31 @@ def earnings(tickers, refresh) -> pd.DataFrame:
     return have[have["ticker"].isin(tickers)]
 
 
-def prices(tickers, refresh) -> pd.DataFrame:
-    f = RUNS / "close.pkl"
+def prices(tickers, refresh) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(수정종가, 거래량). 거래량은 시장충격 계산(일평균 거래대금)에 쓴다."""
+    f = RUNS / "px.pkl"
     if f.exists() and not refresh:
-        c = pd.read_pickle(f)
+        c, v = pd.read_pickle(f)
         if set(tickers) <= set(c.columns):
-            return c
+            return c, v
     import yfinance as yf
-    c = yf.download(sorted(set(tickers) | {"SPY"}), start=START, auto_adjust=True, progress=False,
-                    threads=True)["Close"]
-    c.index = pd.to_datetime(c.index).tz_localize(None)
+    raw = yf.download(sorted(set(tickers) | {"SPY"}), start=START, auto_adjust=True, progress=False,
+                      threads=True)
+    c, v = raw["Close"], raw["Volume"]
+    c.index = v.index = pd.to_datetime(c.index).tz_localize(None)
+    c = c.dropna(axis=1, how="all")
+    v = v[c.columns]
     RUNS.mkdir(exist_ok=True)
-    c.to_pickle(f)
-    return c
+    pd.to_pickle((c, v), f)
+    return c, v
 
 
 # ── 이벤트 표 ──────────────────────────────────────────────────────────────
 
-def events(E: pd.DataFrame, C: pd.DataFrame, added: dict | None = None, beta_adj: bool = True
-           ) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
+def events(E: pd.DataFrame, C: pd.DataFrame, V: pd.DataFrame, win: dict | None = None,
+           sector: dict | None = None, beta_adj: bool = True) -> tuple[pd.DataFrame, dict, pd.DataFrame]:
     R = C.pct_change(fill_method=None)
+    DV = (C * V).rolling(20, min_periods=10).mean().shift(1)      # 직전 20일 평균 거래대금($)
     m = R["SPY"]
     if beta_adj:
         # 직전 250거래일 베타(🔴 shift(1) — 그날 수익률이 베타에 안 들어가게). 고변동 종목이 상승장에서
@@ -132,6 +177,7 @@ def events(E: pd.DataFrame, C: pd.DataFrame, added: dict | None = None, beta_adj
         ex = R - beta.mul(m, axis=0)
     else:
         ex = R.sub(m, axis=0)
+        beta = pd.DataFrame(1.0, index=R.index, columns=R.columns)
     sessions = C["SPY"].dropna().index
     n_sess = len(sessions)
     info = dict(raw=len(E))
@@ -149,25 +195,28 @@ def events(E: pd.DataFrame, C: pd.DataFrame, added: dict | None = None, beta_adj
         if i < 2 or i + max(HORIZONS) >= n_sess or r["ticker"] not in C:
             continue
         tk = r["ticker"]
-        if added is not None:
-            a_ = added.get(tk)
-            if a_ is None or pd.isna(a_) or sessions[i] < a_:
-                pre_add += 1
-                continue
+        if win is not None and not member(win.get(tk, []), sessions[i]):
+            pre_add += 1
+            continue
         p_prev = C[tk].iat[i - 1] if not np.isnan(C[tk].iat[i - 1]) else np.nan
         if not np.isfinite(p_prev) or p_prev <= 0:
             continue
         e = ex[tk].to_numpy()
-        win = e[i - 1:i + max(HORIZONS) + 1]
-        if np.isnan(win).mean() > 0.1:
+        span = e[i - 1:i + max(HORIZONS) + 1]
+        if np.isnan(span).mean() > 0.1:
             continue
-        rec = dict(ticker=tk, i0=i, d0=sessions[i], q=f"{sessions[i].year}Q{(sessions[i].month - 1) // 3 + 1}",
+        b0 = beta[tk].iat[i] if tk in beta else np.nan
+        rec = dict(ticker=tk, i0=i, d0=sessions[i], sector=(sector or {}).get(tk, "?"),
+                   removed=(sector or {}).get(tk) == "(편출)",
+                   beta0=float(b0) if np.isfinite(b0) else 1.0,
+                   vol20=float(np.nanstd(e[i - 21:i - 1])) if i > 21 else np.nan,
+                   adv20=float(DV[tk].iat[i]) if tk in DV else np.nan, q=f"{sessions[i].year}Q{(sessions[i].month - 1) // 3 + 1}",
                    sue=(r["rep"] - r["est"]) / p_prev, surp_pct=r["surp_pct"],
                    pre=e[i - 1], ear=e[i], post1=e[i + 1])
         for k in HORIZONS:
             rec[f"drift{k}"] = np.nansum(e[i + 2:i + k + 1])   # d0+1 종가 진입 → d0+k 종가
         rows.append(rec)
-    info["pre_inclusion_dropped"] = pre_add
+    info["outside_membership"] = pre_add
     D = pd.DataFrame(rows)
     # 극단값: 분할·통화 오류성 SUE 를 1%/99% 로 자른다
     lo, hi = D["sue"].quantile([0.01, 0.99])
@@ -253,30 +302,53 @@ COSTS_BP = (0, 5, 10, 20, 30, 50)
 
 
 def calendar(D: pd.DataFrame, EX: pd.DataFrame, b: pd.Series, legs: dict[int, float], cost_bp: float,
-             hold: int = HOLD) -> pd.Series:
-    """legs: {버킷: 부호}. 예) 롱 Q5 = {5: +1}, 롱숏 = {5: +1, 1: -1} (다리마다 자본 절반)."""
+             hold: int = HOLD, hedge_bp: float = 0.0, borrow_stock: float = 0.0, borrow_spy: float = 0.0,
+             capital: float | None = None, impact_y: float = 1.0) -> pd.Series:
+    """달력시간 포트폴리오 일간 수익. legs: {버킷: 부호} — 롱 Q5 = {5: +1}, 롱숏 = {5: +1, 1: -1}
+    (다리마다 자본 절반). 포지션 비중은 그날 열린 포지션 수로 동일가중, MIN_POS 미만이면 현금.
+
+    비용 (모두 포지션 금액 대비 비율):
+      cost_bp       종목 왕복 스프레드 (진입·청산 반씩)
+      hedge_bp      SPY 거래 1단위당 비용. 진입·청산 때 β만큼, 그리고 매일 헤지 비율을 맞추느라
+                    β·|초과수익| 만큼 거래한다고 본다(가격이 벌어진 만큼 헤지를 다시 맞춘다).
+      borrow_stock  공매도 종목 차입비(연). 숏 다리에만.
+      borrow_spy    SPY 공매도 차입비(연). 롱 다리의 헤지(β×SPY 숏)에만 — 숏 다리 헤지는 SPY 롱이다.
+      capital       총자본($). 주면 제곱근 시장충격 = Y·σ일·√(주문금액 ÷ 일평균 거래대금) 을 진입·청산에.
+    """
     T, X = len(EX), EX.to_numpy()
     cols = {c: j for j, c in enumerate(EX.columns)}
     out = np.zeros(T)
-    per_leg = {}
+    w_leg = 1.0 / len(legs)
     for bk, sign in legs.items():
         g = D[b == bk]
-        ret_sum, n_open, cost = np.zeros(T), np.zeros(T), np.zeros(T)
-        for i0, tk in zip(g["i0"].to_numpy(), g["ticker"].to_numpy()):
+        spans = []
+        n_open = np.zeros(T)
+        for i0, tk, be, vo, adv in zip(g["i0"].to_numpy(), g["ticker"].to_numpy(), g["beta0"].to_numpy(),
+                                       g["vol20"].to_numpy(), g["adv20"].to_numpy()):
             a_, z_ = i0 + 2, min(i0 + hold, T - 1)
-            if a_ > z_:
-                continue
-            r = X[a_:z_ + 1, cols[tk]]
-            ret_sum[a_:z_ + 1] += np.nan_to_num(r)
-            n_open[a_:z_ + 1] += 1
-            cost[a_] += (cost_bp / 2 + 0.5) / 1e4      # 진입: 종목 반 + SPY 반
-            cost[z_] += (cost_bp / 2 + 0.5) / 1e4      # 청산
+            if a_ <= z_:
+                spans.append((a_, z_, cols[tk], be, vo, adv))
+                n_open[a_:z_ + 1] += 1
+        ret_sum, cost = np.zeros(T), np.zeros(T)
+        for a_, z_, j, be, vo, adv in spans:
+            r = np.nan_to_num(X[a_:z_ + 1, j])
+            ret_sum[a_:z_ + 1] += r
+            side = cost_bp / 2 / 1e4 + be * hedge_bp / 2 / 1e4
+            if capital and np.isfinite(adv) and adv > 0 and np.isfinite(vo):
+                for t_ in (a_, z_):
+                    q = capital * w_leg / max(n_open[t_], MIN_POS)
+                    cost[t_] += min(impact_y * vo * np.sqrt(q / adv), 0.05)
+            cost[a_] += side
+            cost[z_] += side
+            daily = be * hedge_bp / 1e4 * np.abs(r)
+            if sign < 0:
+                daily = daily + borrow_stock / 252
+            else:
+                daily = daily + be * borrow_spy / 252
+            cost[a_:z_ + 1] += daily
         with np.errstate(invalid="ignore", divide="ignore"):
             leg = np.where(n_open >= MIN_POS, (sign * ret_sum - cost) / n_open, 0.0)
-        per_leg[bk] = leg
-    w = 1.0 / len(legs)
-    for leg in per_leg.values():
-        out += w * leg
+        out += w_leg * leg
     return pd.Series(out, index=EX.index)
 
 
@@ -308,30 +380,125 @@ def pct(x):
     return f"{x * 100:+.2f}%"
 
 
+# ── 2020 년부터 생긴 이유 ───────────────────────────────────────────────────────
+
+PERIODS = [("2014–2019", "2014", "2019Q4"), ("2020–2022", "2020", "2022Q4"), ("2023–", "2023", "2099")]
+TECH = {"Information Technology", "Communication Services", "Consumer Discretionary"}
+MAG7 = {"AAPL", "MSFT", "AMZN", "GOOGL", "GOOG", "META", "NVDA", "TSLA"}
+
+
+def qspread(G: pd.DataFrame, y="drift20", min_each=3) -> pd.Series:
+    """분기별 Q5 평균 − Q1 평균 (버킷 b 는 직전 90일 백분위)."""
+    s = {}
+    for q, g in G.groupby("q"):
+        a, z = g[g["b"] == 5][y], g[g["b"] == 1][y]
+        if len(a) >= min_each and len(z) >= min_each:
+            s[q] = a.mean() - z.mean()
+    return pd.Series(s, dtype=float)
+
+
+def by_period(sp: pd.Series) -> str:
+    cells = []
+    for lab, a_, b_ in PERIODS:
+        x = sp[(sp.index >= a_) & (sp.index <= b_)]
+        cells.append(f"{pct(x.mean()):>8} (t={tstat(x):+5.1f})" if len(x) > 2 else f"{'–':>17}")
+    return "  ".join(cells)
+
+
+def why(D: pd.DataFrame, b: pd.Series, C: pd.DataFrame, out: dict):
+    G = D.assign(b=b).dropna(subset=["b"])
+    hdr = "  ".join(f"{lab:>17}" for lab, _, _ in PERIODS)
+    print("\n[5. 왜 2020년부터인가]  지표 = drift20 Q5−Q1 (직전 90일 분류), 괄호는 분기간 t")
+    print(f"  {'':<26}{hdr}")
+    rows = {}
+
+    def row(lab, mask):
+        sp = qspread(G[mask])
+        rows[lab] = {p: float(sp[(sp.index >= a_) & (sp.index <= b_)].mean()) for p, a_, b_ in PERIODS}
+        print(f"  {lab:<26}{by_period(sp)}")
+
+    row("전체", G["b"].notna())
+    print("  · 업종")
+    row("기술·통신·경기소비재", G["sector"].isin(TECH))
+    row("그 외 업종", ~G["sector"].isin(TECH) & (G["sector"] != "(편출)"))
+    row("매그니피센트 7 제외", ~G["ticker"].isin(MAG7))
+    for sec in sorted(set(G["sector"]) - {"?", "(편출)"}):
+        n = (G["sector"] == sec).sum()
+        if n >= 600:
+            row(f"  {sec[:22]}", G["sector"] == sec)
+    print("  · 크기 (분기 안 거래대금 3분위)")
+    G["size3"] = G.groupby("q")["adv20"].transform(lambda x: pd.qcut(x.rank(method="first"), 3, labels=False))
+    for k, lab in [(0, "소형(거래대금 하위)"), (1, "중형"), (2, "대형(거래대금 상위)")]:
+        row(lab, G["size3"] == k)
+    out["why_rows"] = rows
+
+    # 서프라이즈 자체가 바뀌었나
+    print("\n  · 서프라이즈와 즉시 반응의 변화")
+    print(f"  {'':<26}{hdr}")
+    stats = {}
+    for lab, a_, b_ in PERIODS:
+        g = G[(G["q"] >= a_) & (G["q"] <= b_)]
+        e5, e1 = g[g["b"] == 5], g[g["b"] == 1]
+        stats[lab] = dict(beat=float((g["sue"] > 0).mean()), med_abs=float(g["sue"].abs().median() * 1e4),
+                          ear_spread=float(e5["ear"].mean() - e1["ear"].mean()),
+                          drift_spread=float(e5["drift20"].mean() - e1["drift20"].mean()))
+        stats[lab]["ratio"] = stats[lab]["drift_spread"] / stats[lab]["ear_spread"] if stats[lab]["ear_spread"] else np.nan
+    for key, lab, f in [("beat", "예상 상회 비율", lambda v: f"{v:.0%}"),
+                        ("med_abs", "|SUE| 중앙값 (주가 대비 bp)", lambda v: f"{v:.1f}bp"),
+                        ("ear_spread", "발표일 반응 Q5−Q1", pct),
+                        ("drift_spread", "20일 drift Q5−Q1 (건수 가중)", pct),
+                        ("ratio", "drift ÷ 발표일 반응", lambda v: f"{v:.2f}")]:
+        print(f"  {lab:<26}" + "  ".join(f"{f(stats[p][key]):>17}" for p, _, _ in PERIODS))
+    out["why_stats"] = stats
+
+    # 시장 국면 — 분기 스프레드가 변동성·시장 수익과 같이 움직이나
+    sp = qspread(G)
+    spy = C["SPY"].pct_change(fill_method=None)
+    qv = spy.groupby(spy.index.to_period("Q")).agg(lambda x: x.std() * np.sqrt(252))
+    qr = (1 + spy).groupby(spy.index.to_period("Q")).prod() - 1
+    qv.index = qr.index = [str(i) for i in qv.index]
+    M = pd.DataFrame({"sp": sp, "vol": qv.reindex(sp.index), "ret": qr.reindex(sp.index)}).dropna()
+    post = (M.index >= "2020").astype(float)
+    X = np.column_stack([np.ones(len(M)), (M["vol"] - M["vol"].mean()) / M["vol"].std(),
+                         (M["ret"] - M["ret"].mean()) / M["ret"].std(), post])
+    coef, *_ = np.linalg.lstsq(X, M["sp"].to_numpy(), rcond=None)
+    resid = M["sp"].to_numpy() - X @ coef
+    se = np.sqrt(np.diag(np.linalg.inv(X.T @ X)) * (resid @ resid) / (len(M) - X.shape[1]))
+    print("\n  · 시장 국면 회귀 (분기 스프레드 ~ SPY 변동성 + SPY 수익 + 2020 이후 더미, 변수는 표준화)")
+    for nm, c_, s_ in zip(["상수", "SPY 변동성 1σ", "SPY 분기수익 1σ", "2020 이후"], coef, se):
+        print(f"    {nm:<16} {pct(c_)}  (t={c_ / s_:+.2f})")
+    hv = M["vol"] > M["vol"].median()
+    print(f"    고변동 분기 평균 {pct(M.loc[hv, 'sp'].mean())} ({hv.sum()}분기) · 저변동 {pct(M.loc[~hv, 'sp'].mean())}"
+          f" ({(~hv).sum()}분기)")
+    out["why_regime"] = dict(coef=dict(zip(["const", "vol", "ret", "post2020"], map(float, coef))),
+                             t=dict(zip(["const", "vol", "ret", "post2020"], map(float, coef / se))))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--refresh", action="store_true")
     ap.add_argument("--universe", choices=["sp500", "headlines"], default="sp500")
-    ap.add_argument("--keep-pre-inclusion", action="store_true", help="편입 전 이벤트도 쓴다(편향 비교용)")
+    ap.add_argument("--keep-pre-inclusion", action="store_true", help="편입 기간 무시(편향 비교용)")
+    ap.add_argument("--current-only", action="store_true", help="편출 종목 빼기(생존 편향 비교용)")
     ap.add_argument("--no-beta", action="store_true", help="초과수익 = 종목 − SPY (베타 1)")
     a = ap.parse_args()
 
-    added = None
+    win, sector = None, None
     if a.universe == "sp500":
-        try:
-            tickers, added = sp500()
-            uni = "S&P 500 (현재 편입 종목" + (", 편입 후 발표만)" if not a.keep_pre_inclusion else ", 편입 전 포함)")
-            if a.keep_pre_inclusion:
-                added = None
-        except Exception as e:
-            print(f"[유니버스] S&P 500 목록 실패({type(e).__name__}) → 헤드라인 유니버스", file=sys.stderr)
-            tickers, uni = headline_universe(), "헤드라인 유니버스"
+        win, sector = membership(a.refresh)
+        if a.current_only:
+            win = {t: w for t, w in win.items() if sector.get(t) != "(편출)"}
+        tickers = sorted(win)
+        uni = ("S&P 500 " + ("현재 종목만" if a.current_only else "현재 + 2013 이후 편출 종목")
+               + (", 편입 기간 무시" if a.keep_pre_inclusion else ", 편입 기간 안의 발표만"))
+        if a.keep_pre_inclusion:
+            win = None
     else:
         tickers, uni = headline_universe(), "헤드라인 유니버스"
 
     E = earnings(tickers, a.refresh)
-    C = prices(sorted(set(E["ticker"])), a.refresh)
-    D, info, EX = events(E, C, added, beta_adj=not a.no_beta)
+    C, V = prices(sorted(set(E["ticker"])), a.refresh)
+    D, info, EX = events(E, C, V, win, sector, beta_adj=not a.no_beta)
     qs = D["q"].value_counts()
     D = D[D["q"].isin(qs[qs >= 25].index)]
     ys = ["pre", "ear", "post1"] + [f"drift{k}" for k in HORIZONS]
@@ -339,7 +506,12 @@ def main():
     print(f"[데이터] {uni} · {D['ticker'].nunique()}종목 · 발표 {len(D):,}건 · 실적 시즌 {D['q'].nunique()}개 "
           f"({D['q'].min()}~{D['q'].max()})")
     print(f"  원자료 {info['raw']:,}행 → EPS 있음 {info['with_eps']:,} → 시각 00:00 제외 {info['midnight_dropped']:,}"
-          f" → 편입 전 제외 {info['pre_inclusion_dropped']:,} → 가격 맞춘 이벤트 {info['events']:,}")
+          f" → 편입 기간 밖 제외 {info['outside_membership']:,} → 가격 맞춘 이벤트 {info['events']:,}")
+    if sector:
+        rem = [t for t, s_ in sector.items() if s_ == "(편출)"]
+        got = D[D["removed"]]
+        print(f"  편출 종목: 2013 이후 {len(rem)}개 중 실적·가격이 있는 {got['ticker'].nunique()}개 · 이벤트 {len(got):,}건"
+              f" ({len(got) / len(D):.1%})")
     print(f"  초과수익 = " + ("종목 − 직전 250일 베타 × SPY" if not a.no_beta else "종목 − SPY (베타 1)"))
 
     # 0. 반응일 점검 — d0 의 |초과수익|이 앞뒤 날보다 커야 시각 매핑이 맞다
@@ -392,7 +564,7 @@ def main():
     print(f"  이벤트당 총수익: 롱 Q5 {pct(g5.mean())} ({len(g5):,}건) · 롱숏 Q5−Q1 {pct(g5.mean() - g1.mean())}")
     print(f"  손익분기 비용(왕복, 헤지 1bp 포함): 롱 Q5 {(g5.mean() * 1e4 - 1):.0f}bp · "
           f"롱숏 {((g5.mean() - g1.mean()) * 1e4 / 2 - 1):.0f}bp (다리마다)")
-    print("\n  달력시간 포트폴리오 (2014~, 열린 포지션 동일가중, 10개 미만이면 현금)")
+    print("\n  달력시간 포트폴리오 (2014~, 열린 포지션 동일가중, 10개 미만이면 현금) — 스프레드만")
     print(f"  {'전략':<10}{'왕복비용':>8}{'연수익':>9}{'연변동':>9}{'샤프':>7}{'최대낙폭':>9}{'투자일':>7}")
     out["costs"] = {}
     for name, legs in [("롱 Q5", {5: +1}), ("롱숏", {5: +1, 1: -1})]:
@@ -401,12 +573,36 @@ def main():
             out["costs"][f"{name} {c}bp"] = pf
             print(f"  {name:<10}{c:>6}bp{pct(pf['ann']):>9}{pf['vol'] * 100:>8.1f}%{pf['sharpe']:>7.2f}"
                   f"{pf['mdd'] * 100:>8.1f}%{pf['invested']:>7.0%}")
-    print("\n  시기별 (롱 Q5, 왕복 10bp)")
-    r = calendar(D, EX, b, {5: +1}, 10)
+
+    # 전체 비용: 스프레드 10bp 에서 하나씩 더한다
+    print("\n  [전체 비용] 종목 왕복 10bp 에서 시작해 하나씩 더한다")
+    print("    헤지: SPY 1bp/거래단위, 매일 β·|초과수익| 만큼 재조정 · 차입: 종목 연 0.5%, SPY 연 0.25%")
+    print("    시장충격: Y·σ일·√(주문 ÷ 20일 평균 거래대금), Y=1 · 주문 = 다리 자본 ÷ 그날 열린 포지션 수")
+    steps = [("스프레드 10bp", {}),
+             ("+ 헤지 비용", dict(hedge_bp=1)),
+             ("+ 차입비", dict(hedge_bp=1, borrow_stock=0.005, borrow_spy=0.0025)),
+             ("+ 충격 $1M", dict(hedge_bp=1, borrow_stock=0.005, borrow_spy=0.0025, capital=1e6)),
+             ("+ 충격 $10M", dict(hedge_bp=1, borrow_stock=0.005, borrow_spy=0.0025, capital=1e7)),
+             ("+ 충격 $100M", dict(hedge_bp=1, borrow_stock=0.005, borrow_spy=0.0025, capital=1e8)),
+             ("+ 충격 $1B", dict(hedge_bp=1, borrow_stock=0.005, borrow_spy=0.0025, capital=1e9))]
+    print(f"  {'':<16}" + "".join(f"{n:>22}" for n in ["롱 Q5 연수익 · 샤프", "롱숏 연수익 · 샤프"]))
+    out["full_costs"] = {}
+    for lab, kw in steps:
+        cells = []
+        for name, legs in [("롱 Q5", {5: +1}), ("롱숏", {5: +1, 1: -1})]:
+            pf = perf(calendar(D, EX, b, legs, 10, **kw))
+            out["full_costs"][f"{name} {lab}"] = pf
+            cells.append(f"{pct(pf['ann']):>13} · {pf['sharpe']:5.2f}")
+        print(f"  {lab:<16}" + "".join(f"{c:>22}" for c in cells))
+
+    print("\n  시기별 (롱 Q5, 전체 비용 · 자본 $10M)")
+    r = calendar(D, EX, b, {5: +1}, 10, hedge_bp=1, borrow_spy=0.0025, capital=1e7)
     for lab, a_, b_ in [("2014–2019", "2014", "2020"), ("2020–2022", "2020", "2023"), ("2023–", "2023", "2100")]:
         pf = perf(r[(r.index >= a_) & (r.index < b_)])
         print(f"  {lab:<10} 연수익 {pct(pf['ann'])} · 샤프 {pf['sharpe']:.2f} · 최대낙폭 {pf['mdd'] * 100:.1f}%")
-        out["costs"][f"롱 Q5 10bp {lab}"] = pf
+        out["full_costs"][f"롱 Q5 $10M {lab}"] = pf
+
+    why(D, b, C, out)
 
     # 3. SUE 와 EAR 를 같이 — drift 가 서프라이즈 때문인가, 그냥 반응 모멘텀인가
     print("\n[3. 분기별 횡단면 회귀 (Fama–MacBeth)]  설명변수는 분기 안 순위(−0.5~+0.5) → 계수 = 최하위→최상위 차이")
@@ -427,10 +623,11 @@ def main():
             print(f"  {lab:<10} {len(s):>2}분기  평균 {pct(s.mean())}  t={tstat(s):+.2f}  양수 {(s > 0).mean():.0%}")
             out["by_period"][lab] = dict(n=len(s), mean=float(s.mean()), t=float(tstat(s)))
 
-    print("\n  한계: 생존 편향(현재 편입 종목만, 편출 종목 없음) · 거래비용 없음 · EPS 만(매출 없음).")
+    print("\n  한계: 편출 종목은 yfinance 에 이력이 남은 것만(피인수·상폐 종목 상당수는 없다) · EPS 만(매출 없음).")
     print("  drift 는 d0+1 종가 진입. 분기(실적 시즌)가 독립 단위라 |t|<2 는 잡음으로 읽는다.")
     RUNS.mkdir(exist_ok=True)
-    tag = ("-preinc" if a.keep_pre_inclusion else "") + ("-nobeta" if a.no_beta else "")
+    tag = ("-preinc" if a.keep_pre_inclusion else "") + ("-nobeta" if a.no_beta else "") + \
+        ("-current" if a.current_only else "")
     (RUNS / f"pead{tag}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1, default=float))
 
 

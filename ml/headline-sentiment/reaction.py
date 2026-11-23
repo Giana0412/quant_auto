@@ -23,8 +23,14 @@ B. **장전 기사의 당일 방향** — 장 시작 전에 나온 기사로 그
 라벨이 진입 세션 안에서 끝나므로 날짜 < 테스트 날짜 로 자르면 purge 가 된다.
 발행시각이 없는 옛 행(2026-10-27 이전 일부)은 쓸 수 없다.
 
+── 정제 비교 (2026-11-10) ──────────────────────────────────────────────────
+B-1 주인공: 제목에서 **처음 나오는 회사**가 그 종목이고, 여러 종목을 묶은 목록형 기사
+    ("3 Stocks to Buy", "A vs B")가 아닌 것. 단독 = 제목에 다른 유니버스 회사가 없음.
+B-2 발행처: 1차(통신·보도자료·주요 언론) / 재가공(Zacks·Simply Wall St. 같은 분석·목록 글) / 기타.
+판정은 모델 AUC 자체가 아니라 **이벤트 태그 대비 추가분**(폴드별 모델−태그의 평균과 t)으로 한다.
+
 실행:
-  python reaction.py            # A·B 표
+  python reaction.py            # A·B 표 + 정제 비교
   python reaction.py --refresh  # 가격 다시 받기
 """
 import argparse
@@ -40,7 +46,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 
-from experiments import ET, RUNS, mask, mentions, rows_all, universe
+from experiments import ET, GENERIC, RUNS, mask, mentions, rows_all, universe
 
 PX2 = RUNS / "px-ohlc.pkl"
 WARMUP = 3     # 발행시각이 있는 행은 10/27~ 뿐이라 거래일 9~10일. 6이면 폴드 3개
@@ -58,6 +64,63 @@ EVENTS = [
     ("계약·제품", r"\b(contract|launch\w*|partnership|partners with|order|award\w*|unveil\w*|deal)\b"),
 ]
 EVENT_RE = [(k, re.compile(p, re.I)) for k, p in EVENTS]
+
+
+# ── B-2 발행처 등급 ──────────────────────────────────────────────────────────
+# 1차: 사건을 처음 전하는 곳(통신사·보도자료 배포·주요 언론). 재가공: 이미 나온 사실을
+# 다시 쓰는 분석·추천·목록 글. 나머지는 '기타'로 두고 어느 쪽에도 넣지 않는다.
+PRIMARY = {"MT Newswires", "Business Wire", "GlobeNewswire", "PR Newswire", "CNW Group",
+           "ACCESS Newswire", "TMX Newsfile", "Associated Press", "Reuters", "Bloomberg", "AFP",
+           "The Wall Street Journal", "Barrons.com", "Benzinga", "Proactive", "Fortune", "TechCrunch"}
+REHASH = {"Zacks", "GuruFocus.com", "Simply Wall St.", "24/7 Wall St.", "Motley Fool", "TIKR",
+          "StockStory", "MarketBeat", "Moby", "Barchart", "Insider Monkey", "InvestorsHub", "Trefis",
+          "Moneywise", "Kiplinger", "Stocktwits", "TheStreet", "Investor's Business Daily"}
+
+
+def pub_tier(p):
+    return "1차" if p in PRIMARY else "재가공" if p in REHASH else "기타"
+
+
+# ── B-1 주인공 ───────────────────────────────────────────────────────────────
+ROUNDUP = re.compile(
+    r"(?i)\b(\d+|two|three|four|five|six|seven|eight|nine|ten|top|these)\s+(?:[\w-]+\s+){0,3}"
+    r"(stocks?|plays|picks|names|companies|etfs|shares|dividend\w*)\b"
+    r"|\bstocks?\s+to\s+(buy|watch|sell|own|hold)\b|\bvs\.?\s|\bversus\b")
+# 🔴 가격을 보고 쓴 제목 — "Shares jump after…", "Stock plunges". 반응창 라벨을 문장으로
+# 그대로 옮긴 것이라 누수다. 11/10: 실적 기사 beat−miss 차이(9/9일 양수)가 전부 이 단어에서
+# 나왔고, 빼면 사라졌다(6일 중 3일).
+PRICE_WORDS = re.compile(
+    r"(?i)\b(jumps?|soars?|surges?|rall(y|ies)|climbs?|spikes?|skyrockets?|slumps?|plunges?|tumbles?|"
+    r"sinks?|drops?|falls?|slides?|rises?|gains?|craters?|sell-?off|shares? (are |were )?(up|down)|"
+    r"stock (is |was )?(up|down)|higher|lower|(\d+(\.\d+)?%))\b")
+_CO = {}
+
+
+def companies(names):
+    """{티커: [정규식]} — 티커(대문자 단어)와 회사명 첫 핵심 단어."""
+    if not _CO:
+        for t, n in names.items():
+            toks = [w.strip(".").lower() for w in re.findall(r"[A-Za-z][A-Za-z&'.-]+", n or "")]
+            core = [w for w in toks if len(w) >= 4 and w not in GENERIC][:1]
+            pats = [re.compile(rf"(?<![A-Za-z]){re.escape(t)}(?![A-Za-z])")] if len(t) >= 2 else []
+            pats += [re.compile(rf"(?i)\b{re.escape(k)}") for k in core]
+            _CO[t] = pats
+    return _CO
+
+
+def subject(title, ticker, names):
+    """('주인공' 여부, '단독' 여부). 제목에서 처음 언급된 회사가 그 종목이면 주인공."""
+    if ROUNDUP.search(title):
+        return False, False
+    first = {}
+    for t, pats in companies(names).items():
+        hits = [m.start() for p in pats for m in p.finditer(title)]
+        if hits:
+            first[t] = min(hits)
+    if ticker not in first:
+        return False, False
+    lead = min(first.values())
+    return first[ticker] == lead, len(first) == 1
 
 
 def event_of(title):
@@ -113,8 +176,11 @@ def build(raw, px, names, only_mention=True):
         react = (c1 / c0 - spy_c[ts] / spy_c[tp]) * 100
         intraday = (c1 / o1 - spy_c[ts] / spy_o[ts]) * 100
         pre = p < datetime.combine(d, dtime(9, 30), tzinfo=ET)
+        lead, alone = subject(r["title"], t, names)
         out.append(dict(date=d.isoformat(), ticker=t, title=mask(r["title"], t, names),
                         raw_title=r["title"], event=event_of(r["title"]), pre=pre,
+                        tier=pub_tier(r.get("publisher")), lead=lead, alone=alone,
+                        pricey=bool(PRICE_WORDS.search(r["title"])),
                         react=float(react), intraday=float(intraday),
                         z=float(abs(react) / v) if np.isfinite(v) and v > 0 else np.nan))
     return out
@@ -179,12 +245,16 @@ def line(name, res, n, nd, kind):
     s = (f"  {name:<26} {n:>5}건 {nd:>2}일 폴드{len(res):>2}  "
          + (f"AUC {m.mean():.3f} (t={t:+.2f}, {sum(m > .5)}/{len(m)}폴드 >0.5)" if kind == "big"
             else f"IC {m.mean():+.3f} (t={t:+.2f}, {sum(m > 0)}/{len(m)}폴드 >0)"))
+    extra = {}
     if kind == "big":
         b = np.array([r["b"] for r in res])
-        s += f"  | 이벤트태그만 AUC {b.mean():.3f}"
+        d = m - b
+        td = d.mean() / (d.std(ddof=1) / np.sqrt(len(d))) if len(d) > 1 and d.std() else np.nan
+        s += f"  | 태그만 {b.mean():.3f}  추가분 {d.mean():+.3f} (t={td:+.2f}, {sum(d > 0)}/{len(d)})"
+        extra = dict(tag=float(b.mean()), inc=float(d.mean()), inc_t=float(td))
     print(s)
     return dict(name=name, rows=n, dates=nd, folds=len(res), mean=float(m.mean()), t=float(t),
-                folds_detail=res)
+                **extra, folds_detail=res)
 
 
 def main():
@@ -225,6 +295,35 @@ def main():
     out["B_trade"] = line("장전 → 시가~종가 (거래가능)", *walk([dict(r) for r in pre], "intraday", "dir"), "dir")
     out["B_react_pre"] = line("장전 → 전일종가~종가 (상한)", *walk([dict(r) for r in pre], "react", "dir"), "dir")
     out["B_react_all"] = line("전체 → 반응창 (상한)", *walk([dict(r) for r in rows], "react", "dir"), "dir")
+
+    # ── 정제 비교 ──
+    print("\n[정제 분포]")
+    c = collections.Counter((r["tier"], r["lead"]) for r in zs)
+    for tier in ("1차", "기타", "재가공"):
+        n_t = sum(v for (tt, _), v in c.items() if tt == tier)
+        print(f"  {tier:<4} {n_t:>5}건  그중 주인공 {c[(tier, True)]:>5}건")
+    print(f"  목록형·다른 회사 기사로 빠지는 행 {sum(not r['lead'] for r in zs)}건 / {len(zs)}건")
+    print(f"  가격을 묘사한 제목(누수) {sum(r['pricey'] for r in zs)}건 / {len(zs)}건")
+
+    variants = [
+        ("기준 (현재: 제목에 언급)", lambda r: True),
+        ("B-1 주인공", lambda r: r["lead"]),
+        ("B-1 단독", lambda r: r["alone"]),
+        ("B-2 재가공 제외", lambda r: r["tier"] != "재가공"),
+        ("B-2 1차만", lambda r: r["tier"] == "1차"),
+        ("B-1 주인공 + 재가공 제외", lambda r: r["lead"] and r["tier"] != "재가공"),
+        ("B-1 주인공 + 1차만", lambda r: r["lead"] and r["tier"] == "1차"),
+        ("(대조) 재가공만", lambda r: r["tier"] == "재가공"),
+        ("가격묘사 제외", lambda r: not r["pricey"]),
+        ("가격묘사 제외 + 1차만", lambda r: not r["pricey"] and r["tier"] == "1차"),
+        ("가격묘사 제외 + 주인공 + 1차", lambda r: not r["pricey"] and r["lead"] and r["tier"] == "1차"),
+        ("(대조) 가격묘사만", lambda r: r["pricey"]),
+    ]
+    print("\n[정제 비교 · A. 중요도]  판정은 '추가분'(모델 − 이벤트태그, 폴드별 짝지어)")
+    out["refine_A"] = [line(nm, *walk([dict(r) for r in zs if f(r)], "z", "big"), "big") for nm, f in variants]
+    print("\n[정제 비교 · B. 방향 (장전 → 시가~종가, 거래가능)]")
+    out["refine_B"] = [line(nm, *walk([dict(r) for r in pre if f(r)], "intraday", "dir"), "dir")
+                       for nm, f in variants]
 
     print("\n  AUC 0.5 = 무작위. IC 0 = 무관. 폴드(=거래일)가 10개 안팎이라 |t|<2 는 잡음으로 읽는다.")
     (RUNS / "reaction.json").write_text(json.dumps(

@@ -1,7 +1,8 @@
 #!/bin/bash
 # 결론 브리핑을 개인 Slack(Giana's Workspace) 채널로 보낸다. 2026-11-26 텔레그램 팀 그룹에서 옮겼다.
 #
-# 사용법: send_slack.sh <메시지파일경로> [--channel 이름]
+# 사용법: send_slack.sh <메시지파일경로> [--channel 이름] [--alert]
+#   --alert  브리핑이 아닌 알림(건강검진·워치독·이벤트 알림). 성공 문구가 달라진다(아래 🔴).
 #   채널 기본값은 SLACK_BRIEF_CHANNEL(없으면 quant-brief).
 #
 # 이름은 Sigma(:sigma:) — personal_wiki tools/hub.py 의 채널별 오버워치 캐릭터 규칙을 따른다.
@@ -12,6 +13,8 @@
 #
 # 🔴 성공 문구에 '발송 성공 → 그룹' 을 남긴다. evening-chain.sh 가 이 문구로
 #    "오늘 이미 보냈다"를 판단해 07:30 백업 실행의 중복 발송을 막는다.
+#    그래서 --alert 는 '발송 성공 → 알림' 을 찍는다. 텔레그램 시절엔 이벤트 알림도
+#    '→ 그룹' 을 찍어서, 결론 발송이 실패한 날에도 백업 실행이 건너뛰어졌다.
 #
 # 채널이 없거나 봇이 초대 안 됐으면 send_telegram.sh 의 미설정과 같이 exit 0 으로
 # 건너뛰되, 이유를 stderr 에 남긴다 — 그날 체인 전체를 실패로 만들지 않는다.
@@ -20,10 +23,12 @@ set -euo pipefail
 
 MSG_FILE=""
 CHANNEL="${SLACK_BRIEF_CHANNEL:-quant-brief}"
+KIND="그룹"
 while [ $# -gt 0 ]; do
   case "$1" in
     --channel) CHANNEL="${2:?--channel 뒤에 채널 이름}"; shift 2 ;;
     --channel=*) CHANNEL="${1#--channel=}"; shift ;;
+    --alert) KIND="알림"; shift ;;
     *) MSG_FILE="$1"; shift ;;
   esac
 done
@@ -41,7 +46,7 @@ if ! SLACK_TOKEN=$(security find-generic-password -a "$USER" -s newsbot-slack-bo
   exit 0
 fi
 
-export SLACK_TOKEN CHANNEL MSG_FILE
+export SLACK_TOKEN CHANNEL MSG_FILE KIND
 export SLACK_BRIEF_NAME="${SLACK_BRIEF_NAME:-Sigma}"
 export SLACK_BRIEF_ICON="${SLACK_BRIEF_ICON:-:sigma:}"
 
@@ -91,7 +96,7 @@ r = api("chat.postMessage", body={
     "unfurl_links": False, "unfurl_media": False,
     "username": os.environ["SLACK_BRIEF_NAME"], "icon_emoji": os.environ["SLACK_BRIEF_ICON"]})
 if r.get("ok"):
-    print(f"슬랙 발송 성공 → 그룹(#{want})")
+    print(f"슬랙 발송 성공 → {os.environ['KIND']}(#{want})")
 else:
     sys.exit(f"슬랙 발송 실패: {r.get('error')}")
 PY

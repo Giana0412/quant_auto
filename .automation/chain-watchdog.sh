@@ -202,5 +202,5 @@ fi
 
 {
   echo "$(date '+%F %T') 🚨 ${PROBLEMS[*]}"
-  "$VAULT_DIR/.automation/send_telegram.sh" "$MSG_FILE" 2>&1 || echo "발송 실패"
+  "$VAULT_DIR/.automation/send_slack.sh" "$MSG_FILE" --alert 2>&1 || echo "발송 실패"
 } >> "$WLOG"

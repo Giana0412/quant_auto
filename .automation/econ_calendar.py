@@ -13,9 +13,14 @@
 | **BEA** (GDP·PCE·무역) | ✅ 파싱됨 | 표 구조가 깔끔. 10/29 GDP 확인 |
 | **Census** (소매·내구재·주택) | ❌ **JS 렌더링** | calendar.html 에 표가 0개. 실측 확인 |
 | **BLS** (고용·CPI·PPI) | ❌ **403** | 크롤러를 막는다. 수동 입력 fallback |
+| **FXMacroData** (FOMC·CPI·고용·소매) | ✅ JSON API | 2026-11-26 추가. 키 없이 USD 1등급 |
 
 BLS 가 막혀 있는 게 뼈아프다 — 고용·CPI 가 시장을 가장 크게 흔드는데 자동화가 안 된다.
-그 둘은 `macro-calendar.json` 에 손으로 넣고 `source` 에 그렇게 적어 두었다.
+그래서 수동 입력에 기댔는데, 🔴 2026-11-26 확인해 보니 11월 이후 아무도 안 넣어서
+12/4 고용·12/9 FOMC·12/10 CPI 가 캘린더에 **하나도 없었다**(Fed 수집 함수도 실은 없었다).
+FXMacroData 는 BLS·Fed·Census 공식 일정을 모아 JSON 으로 주는 API 다
+(tradermonty/claude-trading-skills 의 fxmacrodata-calendar 스킬에서 가져옴, MIT).
+응답의 data_quality 가 '공식·비프록시·비폴백·최신'이 아니면 통째로 버린다.
 
 수집 결과는 **덮어쓰지 않고 병합**한다. 손으로 넣은 이벤트(대회 일정·9/23 행사 등)와
 수집분이 섞여 있어서, 수집분만 `auto_source` 로 표시해 구분한다.
@@ -138,10 +143,56 @@ def collect_census():
     return out, None
 
 
+FXM_URL = "https://api.fxmacrodata.com/v1/calendar/usd?limit=100"
+# release → (이름, kind, 리드). 같은 시각에 묶여 나오는 하위 지표(근원 CPI·실업률·
+# NFP 변화분·기자회견)는 버린다. GDP·PCE 는 BEA 수집분과 겹쳐서 버린다.
+FXM_KEEP = {
+    "policy_rate": ("FOMC 금리 결정", "정책", 14),
+    "policy_minutes": ("FOMC 의사록", "정책", 3),
+    "inflation": ("미국 CPI", "지표", 7),
+    "non_farm_payrolls": ("미국 고용보고서", "지표", 5),
+    "retail_sales": ("미국 소매판매", "지표", 4),
+}
+FXM_SAFE = dict(is_official=True, is_proxy=False, is_fallback=False, is_stale=False,
+                point_in_time_safe=True)
+
+
+def collect_fxmacro():
+    out = []
+    try:
+        req = urllib.request.Request(FXM_URL, headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            payload = json.load(r)
+    except Exception as e:
+        return out, f"FXMacroData 실패: {str(e)[:50]}"
+    dq = payload.get("data_quality") or {}
+    bad = [k for k, v in FXM_SAFE.items() if dq.get(k) is not v]
+    if payload.get("currency") != "USD" or dq.get("source_type") != "official" or bad:
+        # 🔴 품질이 안 되면 0건 처리 — 빈 캘린더로 착각하지 않게 사유를 남긴다.
+        return out, f"FXMacroData 품질 불합격: {bad or dq.get('source_type')}"
+    for ev in payload.get("data") or []:
+        keep = FXM_KEEP.get(ev.get("release"))
+        local = ev.get("announcement_datetime_local") or ""
+        if not keep or ev.get("market_tier") != 1 or len(local) < 16:
+            continue
+        name, kind, lead = keep
+        period = ev.get("reference_period")
+        out.append(dict(
+            date=local[:10],  # 미국 현지 날짜 — 기존 수동 입력분과 같은 기준
+            name=f"{name} ({period})" if period else name,
+            kind=kind,
+            confirmed=bool(ev.get("release_date_confirmed")),
+            watch_days=lead,
+            auto_source="api.fxmacrodata.com",
+            source=ev.get("source", "")[:80],
+            watch=f"{local[11:16]} ET 발표 · {ev.get('source_url', '')}"[:110]))
+    return out, None
+
+
 def main():
     merge = "--merge" in sys.argv
     got, notes = [], []
-    for fn in (collect_bea, collect_census):
+    for fn in (collect_bea, collect_census, collect_fxmacro):
         rows, err = fn()
         got += rows
         if err:
@@ -163,7 +214,7 @@ def main():
     print(f"[경제지표 수집] {len(got)}건 · 오늘 이후 {len(future)}건")
     for n in notes:
         print(f"  ⚠️ {n}")
-    print(f"  ⚠️ BLS(고용·CPI·PPI)는 403 으로 막혀 자동 수집 불가 — 수동 입력분 유지\n")
+    print(f"  (BLS 고용·CPI 는 FXMacroData 경유. 실패하면 위에 ⚠️ 로 뜬다)\n")
     for e in future[:25]:
         d = (date.fromisoformat(e["date"]) - today).days
         print(f"  D-{d:<3} {e['date']}  {e['name'][:62]}  (리드 {e['watch_days']}일)")

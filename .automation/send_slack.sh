@@ -4,6 +4,7 @@
 # 사용법: send_slack.sh <메시지파일경로> [--channel 이름]
 #   채널 기본값은 SLACK_BRIEF_CHANNEL(없으면 quant-brief).
 #
+# 이름은 Sigma(:sigma:) — personal_wiki tools/hub.py 의 채널별 오버워치 캐릭터 규칙을 따른다.
 # 봇은 personal_wiki 의 Talon 앱(dailynews 봇, #daily-news 의 Sombra)을 같이 쓴다.
 #   · 토큰은 macOS 키체인 newsbot-slack-bot 에서 읽는다 — 저장소·로그에 남기지 않는다.
 #   · 봇에 channels:manage 가 없어서 채널은 사람이 만들고 /invite @dailynews 해야 한다.
@@ -41,8 +42,8 @@ if ! SLACK_TOKEN=$(security find-generic-password -a "$USER" -s newsbot-slack-bo
 fi
 
 export SLACK_TOKEN CHANNEL MSG_FILE
-export SLACK_BRIEF_NAME="${SLACK_BRIEF_NAME:-Quant}"
-export SLACK_BRIEF_ICON="${SLACK_BRIEF_ICON:-:chart_with_upwards_trend:}"
+export SLACK_BRIEF_NAME="${SLACK_BRIEF_NAME:-Sigma}"
+export SLACK_BRIEF_ICON="${SLACK_BRIEF_ICON:-:sigma:}"
 
 # 토큰은 환경변수로만 넘긴다(argv 에 올리면 ps 에 보인다).
 exec /usr/bin/python3 -I - <<'PY'

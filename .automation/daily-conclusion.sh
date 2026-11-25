@@ -1,6 +1,6 @@
 #!/bin/bash
 # 분석봇: 오늘의 뉴스 다이제스트 + 시장 스냅샷을 종합해 "오늘의 결론"을 만들고
-# 텔레그램으로 발송한다. 독립 launchd 잡이 아니라 evening-chain.sh 의 3단계로
+# 개인 Slack(#quant-brief, send_slack.sh)으로 발송한다 — 2026-11-26 텔레그램 팀 그룹에서 옮겼다. 독립 launchd 잡이 아니라 evening-chain.sh 의 3단계로
 # 순서대로 불린다 (뉴스레터 → 시장봇 → 이 스크립트 → 건강검진, §evening-chain.sh 참고).
 
 set -euo pipefail
@@ -44,7 +44,7 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
 2. 있는 것만 읽어 종합한다. **없는 숫자를 지어내지 않는다.**
 3. ${CONCLUSION_PATH} 를 작성한다. **오늘 날짜로 이미 있어도 Edit 이 아니라 Write 로
    전체를 새로 써서 덮어쓴다** (allowedTools 에 Edit 이 없어 부분 수정은 헤드리스에서
-   승인 없이 그대로 멈춘다 — market-snapshot.sh 와 같은 이유). 텔레그램 Markdown 만 쓴다 (*bold*, \`code\`).
+   승인 없이 그대로 멈춘다 — market-snapshot.sh 와 같은 이유). Slack mrkdwn 만 쓴다 (*bold*, \`code\` — 텔레그램 Markdown 과 같은 문법).
    **중요**: _italic_ 문법은 쓰지 않는다 — 파일 경로의 언더스코어와 겹치면 짝이 안 맞아
    메시지 전체 발송이 실패한다. 강조는 *bold* 만, 경로는 \`백틱\` 으로 감싼다.
    형식 (없는 절은 통째로 생략, 전체 50줄 이내 — 절이 늘 때마다 올려 왔다:
@@ -162,24 +162,24 @@ PROMPT="오늘 날짜(KST): ${TODAY_ISO_KST} (YYMMDD: ${TODAY_KST})
 
 원문: \`personal/10-market/data/...\`
 
-4. 파일을 쓴 뒤 텔레그램 **팀 그룹**에 발송한다:
-   .automation/send_telegram.sh ${CONCLUSION_PATH} --to group
-   (--to group 을 빼먹으면 팀이 아니라 개인방으로 간다. 스크립트가 미설정이면 조용히
-    건너뛰므로 실패로 취급하지 않는다. 출력을 그대로 보고한다.)
+4. 파일을 쓴 뒤 Slack 브리핑 채널에 발송한다:
+   .automation/send_slack.sh ${CONCLUSION_PATH}
+   (채널이 없거나 봇이 초대 안 됐으면 스크립트가 이유를 남기고 건너뛰므로 실패로
+    취급하지 않는다. 출력을 그대로 보고한다.)
 
 5. ${EASY_PATH} 를 작성한다 — 같은 내용을 **왜 그런지까지 풀어쓴** 버전.
    숫자만 나열하지 말고 '이게 무슨 뜻이냐'를 설명한다. 예를 들어 베타가 4인 자산은
    벤치마크가 1% 움직일 때 4% 움직인다는 뜻이고, 상관이 0.95면 두 개를 나눠 사도
    한 곳에 몰아넣은 것과 같다는 식으로. 20줄 정도까지.
    여기서도 _italic_ 은 쓰지 않는다. **원본에 없는 숫자·사건을 만들지 않는다.**
-6. ${EASY_PATH} 도 같은 그룹에 발송한다:
-   .automation/send_telegram.sh ${EASY_PATH} --to group
+6. ${EASY_PATH} 도 같은 채널에 발송한다:
+   .automation/send_slack.sh ${EASY_PATH}
 
 personal/10-market/_conclusions/ 외의 다른 파일은 건드리지 않는다. git commit/push는 하지 않는다."
 
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [분석봇] 실행 시작 ==="
-  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/send_telegram.sh:*)" 2>&1
+  retry 3 60 "$CLAUDE_BIN" -p "$PROMPT" --allowedTools "Read Write Glob Grep Bash(.automation/send_slack.sh:*)" 2>&1
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [분석봇] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"

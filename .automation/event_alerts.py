@@ -29,7 +29,7 @@ wiki/competition/timeline.md 에 적어 두었다.
 실행:
   .automation/.venv/bin/python .automation/event_alerts.py            # 새 알림만
   .automation/.venv/bin/python .automation/event_alerts.py --all      # 감시 중 전부
-  .automation/.venv/bin/python .automation/event_alerts.py --send     # 텔레그램 발송
+  .automation/.venv/bin/python .automation/event_alerts.py --send     # Slack #quant-brief 발송
   .automation/.venv/bin/python .automation/event_alerts.py --dry-run  # 보낼 내용만 출력
 """
 import json
@@ -41,7 +41,7 @@ from pathlib import Path
 
 CAL = Path(".automation/macro-calendar.json")
 STATE = Path("personal/10-market/_events/alerted.json")
-SENDER = Path(".automation/send_telegram.sh")
+SENDER = Path(".automation/send_slack.sh")
 
 DEFAULT_WATCH = 7          # watch_days 가 없으면
 ICON = {"정책": "🏛", "지표": "📊", "대회": "🏆", "정치": "🗳", "실적": "📈"}
@@ -161,14 +161,15 @@ def main():
         return 0
     if do_send:
         if not SENDER.exists():
-            print("send_telegram.sh 가 없다", file=sys.stderr)
+            print("send_slack.sh 가 없다", file=sys.stderr)
             return 1
         with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False,
                                          encoding="utf-8") as f:
             f.write(msg)
             path = f.name
-        # 팀 그룹으로 보낸다 — 이건 시장 정보라 팀이 봐야 한다(건강검진과 다르다)
-        r = subprocess.run(["bash", str(SENDER), path, "--to", "group"],
+        # Slack #quant-brief 로 보낸다(2026-11-26 텔레그램 팀 그룹에서 옮김).
+        # --alert: 성공 문구가 '→ 그룹' 이 아니어야 evening-chain 의 결론 중복 검사를 안 속인다.
+        r = subprocess.run(["bash", str(SENDER), path, "--alert"],
                            capture_output=True, text=True)
         print(r.stdout.strip() or r.stderr.strip())
         if r.returncode != 0:

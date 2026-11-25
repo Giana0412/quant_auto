@@ -37,7 +37,7 @@ if ! wait_for_network >> "$LOG_FILE" 2>&1; then
 fi
 
 # 인자로 YYMMDD 를 주면 그날을 점검한다 (테스트·소급 확인용). 없으면 오늘.
-# --dry-run 을 같이 주면 텔레그램을 보내지 않고 메시지만 출력한다.
+# --dry-run 을 같이 주면 Slack(#quant-brief)에 보내지 않고 메시지만 출력한다.
 DRY=0
 TARGET=""
 for a in "$@"; do
@@ -224,7 +224,7 @@ fi
   # 자기 발견은 🔴 이 아니라 '문제:' 로 쓴다 — 위 ERRORS 계산이 이 줄을 다시 세면
   # 되먹임이 생긴다 (2→4건으로 불어났던 실제 버그).
   if [ ${#PROBLEMS[@]} -gt 0 ]; then printf '  문제: %s\n' "${PROBLEMS[@]}"; fi
-  "$VAULT_DIR/.automation/send_telegram.sh" "$MSG_FILE" 2>&1 || echo "발송 실패"
+  "$VAULT_DIR/.automation/send_slack.sh" "$MSG_FILE" --alert 2>&1 || echo "발송 실패"
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [건강검진] 실행 종료 ==="
   echo
 } >> "$LOG_FILE"

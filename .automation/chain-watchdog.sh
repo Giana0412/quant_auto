@@ -180,6 +180,8 @@ if [ ${#PROBLEMS[@]} -eq 0 ]; then
     echo "── dry-run (${TODAY}) — 문제 없음, 발송 안 함 ──"; echo "$LINE"
   else
     echo "$(date '+%F %T') $LINE" >> "$WLOG"
+    # 열린 워치독 인시던트가 있으면 복구로 닫는다(없으면 아무 일 없음). §jira_incident.py
+    /usr/bin/python3 "$VAULT_DIR/.automation/jira_incident.py" resolve "$LINE" >> "$WLOG" 2>&1 || true
   fi
   exit 0
 fi
@@ -203,4 +205,6 @@ fi
 {
   echo "$(date '+%F %T') 🚨 ${PROBLEMS[*]}"
   "$VAULT_DIR/.automation/send_slack.sh" "$MSG_FILE" --alert 2>&1 || echo "발송 실패"
+  # 장애 하나 = Jira 인시던트 하나. 이어지는 날은 댓글로 붙는다. §jira_incident.py
+  /usr/bin/python3 "$VAULT_DIR/.automation/jira_incident.py" open "$MSG_FILE" 2>&1 || true
 } >> "$WLOG"

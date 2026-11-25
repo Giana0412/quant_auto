@@ -146,9 +146,14 @@ def earnings(tickers, refresh) -> pd.DataFrame:
 def prices(tickers, refresh) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(수정종가, 거래량). 거래량은 시장충격 계산(일평균 거래대금)에 쓴다."""
     f = RUNS / "px.pkl"
+    # 🔴 받아 봤는데 yfinance 에 없던 티커(편출·상폐로 사라진 것)를 따로 적어 둔다. 안 적으면
+    # 그 티커가 캐시에 영영 없으니 `요청 ⊆ 캐시` 검사가 늘 실패해 **매번 전체를 다시 받는다**
+    # (2026-11-26 overlay 작업 중 발견 — 25개 편출 종목 때문에 hypo.py 도 매 실행 재다운로드).
+    gone_f = RUNS / "px-missing.json"
+    gone = set(json.loads(gone_f.read_text())) if gone_f.exists() else set()
     if f.exists() and not refresh:
         c, v = pd.read_pickle(f)
-        if set(tickers) <= set(c.columns):
+        if set(tickers) <= set(c.columns) | gone:
             return c, v
     import yfinance as yf
     raw = yf.download(sorted(set(tickers) | {"SPY"}), start=START, auto_adjust=True, progress=False,
@@ -159,6 +164,7 @@ def prices(tickers, refresh) -> tuple[pd.DataFrame, pd.DataFrame]:
     v = v[c.columns]
     RUNS.mkdir(exist_ok=True)
     pd.to_pickle((c, v), f)
+    gone_f.write_text(json.dumps(sorted(set(tickers) - set(c.columns))))
     return c, v
 
 

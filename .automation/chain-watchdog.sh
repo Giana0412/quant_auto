@@ -161,6 +161,10 @@ else
 fi
 
 # ② 헤드라인 수집. 하루 거르면 복구가 안 되므로 따로 본다.
+# 🔴 2026-11-26 KAN-28: 수집을 멈췄다(§evening-chain.sh STEPS). 끄지 않으면 사흘 뒤부터
+# "헤드라인 N일째 안 늘어남" 오보가 매일 나가고, 오보 하나면 알림 전체가 무시된다.
+HEADLINE_COLLECT="${HEADLINE_COLLECT:-0}"
+if [ "$HEADLINE_COLLECT" = 1 ]; then
 eval "$(python3 "$VAULT_DIR/.automation/headline_status.py" 2>/dev/null \
         | grep -E '^[A-Z_]+=' || true)"
 LAST_DATE="${LAST_DATE:--}"; DAYS_STALE="${DAYS_STALE:-999}"
@@ -180,11 +184,16 @@ elif [ "$ROWS_LAST" -lt 50 ] 2>/dev/null && [ "$DAYS_STALE" -le 2 ] 2>/dev/null;
   [ "$DOW" -le 5 ] 2>/dev/null \
     && PROBLEMS+=("헤드라인 ${LAST_DATE} 가 ${ROWS_LAST}건뿐 — 반쪽 수집 의심") || true
 fi
+fi   # HEADLINE_COLLECT
 
 # ── 발송 ──────────────────────────────────────────────────────────────────
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
-  LINE="정상 · 헤드라인 ${LAST_DATE} ${ROWS_LAST}건 · 라벨날짜 ${DATES_LABELED}일"
-  [ "$READY" -eq 1 ] && LINE="$LINE · 🎓 학습 가능" || LINE="$LINE (학습까지 D-${NEED})"
+  if [ "$HEADLINE_COLLECT" = 1 ]; then
+    LINE="정상 · 헤드라인 ${LAST_DATE} ${ROWS_LAST}건 · 라벨날짜 ${DATES_LABELED}일"
+    [ "$READY" -eq 1 ] && LINE="$LINE · 🎓 학습 가능" || LINE="$LINE (학습까지 D-${NEED})"
+  else
+    LINE="정상 · 체인 완주"
+  fi
   if [ "$DRY" -eq 1 ]; then
     echo "── dry-run (${TODAY}) — 문제 없음, 발송 안 함 ──"; echo "$LINE"
   else
@@ -200,8 +209,10 @@ trap 'rm -f "$MSG_FILE"' EXIT INT TERM
 {
   printf '🚨 *%s 체인 감시*\n' "$MD"
   for p in "${PROBLEMS[@]}"; do printf -- '- %s\n' "$p"; done
-  printf '\n헤드라인 마지막 %s (%s건) · 라벨날짜 %s일' "$LAST_DATE" "$ROWS_LAST" "$DATES_LABELED"
-  [ "$READY" -eq 1 ] && printf ' · 학습 가능\n' || printf ' · 학습까지 D-%s\n' "$NEED"
+  if [ "$HEADLINE_COLLECT" = 1 ]; then
+    printf '\n헤드라인 마지막 %s (%s건) · 라벨날짜 %s일' "$LAST_DATE" "$ROWS_LAST" "$DATES_LABELED"
+    [ "$READY" -eq 1 ] && printf ' · 학습 가능\n' || printf ' · 학습까지 D-%s\n' "$NEED"
+  fi
   printf '\n손으로 돌리기: `bash .automation/evening-chain.sh`\n'
 } > "$MSG_FILE"
 

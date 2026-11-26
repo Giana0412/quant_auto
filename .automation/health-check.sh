@@ -126,7 +126,9 @@ ERRORS=${ERRORS:-0}
 # 다음 날 다시 만들면 되지만, 헤드라인은 yfinance 가 티커당 최근 ~20건만 줘서
 # 하루 거르면 그날 기사가 영영 사라진다. 2026-11-14 학습 마감까지 하루도 못 버린다.
 # (§headline_status.py · §chain-watchdog.sh)
-eval "$(python3 "$VAULT_DIR/.automation/headline_status.py" 2>/dev/null \
+# 🔴 2026-11-26 KAN-28: 수집 중단 — 끄면 상태 조회도, 정체 경고도, 정상 메시지의 헤드라인 줄도 뺀다.
+HEADLINE_COLLECT="${HEADLINE_COLLECT:-0}"
+[ "$HEADLINE_COLLECT" = 1 ] && eval "$(python3 "$VAULT_DIR/.automation/headline_status.py" 2>/dev/null \
         | grep -E '^[A-Z_]+=' || true)"
 HL_LAST="${LAST_DATE:--}"; HL_STALE="${DAYS_STALE:-999}"
 HL_ROWS="${ROWS_LAST:-0}"; HL_DATES="${DATES_LABELED:-0}"
@@ -165,7 +167,9 @@ fi
 [ "$ERRORS" -gt 0 ] && PROBLEMS+=("로그에 오류 표시 ${ERRORS}건")
 # 🔴 "조회 실패"와 "데이터 정체"를 섞지 않는다. 섞으면 스크립트가 없을 때
 # "999일째 안 늘어남" 같은 오보가 나가고, 오탐 한 번이면 알림 전체가 무시된다.
-if [ "$HL_STATUS" = "missing" ]; then
+if [ "$HEADLINE_COLLECT" != 1 ]; then
+  :   # 수집 중단(KAN-28) — 헤드라인은 보지 않는다
+elif [ "$HL_STATUS" = "missing" ]; then
   PROBLEMS+=("헤드라인 상태 조회 실패 — .automation/headline_status.py 확인")
 elif [ "$HL_STALE" -gt 2 ] 2>/dev/null; then
   PROBLEMS+=("헤드라인 ${HL_STALE}일째 안 늘어남 (마지막 ${HL_LAST}) — 소급 복구 불가")
@@ -189,7 +193,9 @@ trap 'rm -f "$MSG_FILE"' EXIT INT TERM
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
   {
     printf '✅ *%s 자동화 정상*\n뉴스 %s · 시장 ✓ · 결론 ✓\n' "$MD" "$NEWS_TODAY"
-    if [ "$HL_READY" -eq 1 ]; then
+    if [ "$HEADLINE_COLLECT" != 1 ]; then
+      :
+    elif [ "$HL_READY" -eq 1 ]; then
       printf '헤드라인 %s건 · 라벨날짜 %s일 · 🎓 학습 가능\n' "$HL_ROWS" "$HL_DATES"
     else
       # 얇은 날짜가 몇 개 빠졌는지 같이 적는다. 안 적으면 "어제 6일이었는데
@@ -221,7 +227,7 @@ fi
 {
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [건강검진] 실행 시작 ==="
   echo "뉴스 ${NEWS_TODAY}건 / 시장 ${MARKET_OK} / 결론 ${CONCL_OK} / 오류 ${ERRORS}건"
-  echo "헤드라인 ${HL_LAST} ${HL_ROWS}건 / 라벨날짜 ${HL_DATES}일 / 학습까지 D-${HL_NEED}"
+  [ "$HEADLINE_COLLECT" = 1 ] && echo "헤드라인 ${HL_LAST} ${HL_ROWS}건 / 라벨날짜 ${HL_DATES}일 / 학습까지 D-${HL_NEED}"
   # 자기 발견은 🔴 이 아니라 '문제:' 로 쓴다 — 위 ERRORS 계산이 이 줄을 다시 세면
   # 되먹임이 생긴다 (2→4건으로 불어났던 실제 버그).
   if [ ${#PROBLEMS[@]} -gt 0 ]; then printf '  문제: %s\n' "${PROBLEMS[@]}"; fi

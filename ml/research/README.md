@@ -13,6 +13,7 @@ S&P 500 횡단면·변동성·실적 연구가 같이 쓰는 재료와 잣대. �
 | `baselines.py` | `Model` 인터페이스, `Zero` · `OLS` · `RidgeCV` · `LassoCV` |
 | `test_research.py` | 미래 차단·퍼지·심은 신호·위약·DSR 점검 (19개) |
 | `xsection.py` | KAN-23 횡단면 ML (OLS·벌점 선형·LightGBM·MLP) — 결과는 `STUDIES.md` |
+| `beta_label.py` | KAN-27 라벨의 β 정의(수축 없음·Vasicek·0.67β+0.33·경험 보정·β=1·원수익)별 저위험 신호와 β 중립 α — 결과는 `STUDIES.md` |
 | `STUDIES.md` | 연구별 결과 요약 |
 
 ## 경로

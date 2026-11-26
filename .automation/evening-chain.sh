@@ -127,6 +127,26 @@ CHAIN_T0=$(date +%s)
   echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 시작 ==="
 } >> "$LOG_FILE"
 
+# ── 절전 잠금 ─────────────────────────────────────────────────────────────
+# 🔴 2026-11-26 (KAN-19). 11/24~26 사흘 브리핑이 안 나갔다 — 배터리 + 뚜껑 닫힘.
+# 위 caffeinate 주석대로 클램셸 절전은 -i·-s 로 못 막고 `pmset disablesleep` 만
+# 막는다. 그건 root 가 필요해서, sudoers 에 **이 두 명령만** 비밀번호 없이 열어 뒀다:
+#   /etc/sudoers.d/quant-auto-pmset
+#     <user> ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0
+# 05:55 예약 기상(`pmset repeat wakeorpoweron MTWRFSU 05:55:00`)으로 깬 뒤
+# 체인이 도는 동안만 잠그고, 끝나면(EXIT trap) 푼다. 항상 꺼두지 않는 건
+# 가방 속에서 밤새 안 자며 배터리를 먹고 열이 나는 걸 피하려는 것이다.
+# sudo -n 은 비밀번호를 묻지 않고 실패한다 — sudoers 가 없으면 예전처럼 돈다.
+# SIGKILL 로 죽어 trap 이 안 돌면 잠금이 남는데, 감시견이 14:00 에 푼다(§chain-watchdog.sh).
+NOSLEEP=0
+if sudo -n /usr/bin/pmset -a disablesleep 1 >/dev/null 2>&1; then
+  NOSLEEP=1
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] 절전 잠금 (disablesleep 1) ===" >> "$LOG_FILE"
+else
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') [저녁체인] ⚠️ 절전 잠금 실패 — sudoers 미설정 ===" >> "$LOG_FILE"
+fi
+trap 'if [ "$NOSLEEP" = 1 ]; then sudo -n /usr/bin/pmset -a disablesleep 0 >/dev/null 2>&1 || true; fi; rm -rf "$LOCK" 2>/dev/null || true' EXIT INT TERM
+
 # ── 전원 확인 ─────────────────────────────────────────────────────────────
 # 🔴 배터리로 돌면 체인이 기어간다(위 caffeinate 주석). 막을 방법이 없으니 **알린다.**
 # 체인을 멈추지는 않는다 — 느리게라도 헤드라인은 주워야 한다. 날짜는 소급이

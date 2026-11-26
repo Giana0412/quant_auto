@@ -104,6 +104,15 @@ for ((i = 1; i <= TRIES; i++)); do
   fi
 done
 
+# 체인이 SIGKILL 등으로 죽어 절전 잠금(disablesleep 1)이 남았으면 푼다
+# (§evening-chain.sh 절전 잠금). 체인이 돌고 있으면 건드리지 않는다.
+if [ "$DRY" -eq 0 ] && ! chain_running \
+   && pmset -g 2>/dev/null | grep -Eq '^ *SleepDisabled[[:space:]]+1'; then
+  if sudo -n /usr/bin/pmset -a disablesleep 0 >/dev/null 2>&1; then
+    echo "$(date '+%F %T') 남은 절전 잠금 해제" >> "$WLOG"
+  fi
+fi
+
 # 🔴 살아있다는 표시. 건강검진이 이걸 본다.
 # dry-run 은 쓰지 않는다 — 사람이 손으로 테스트한 게 "감시견이 돌았다"로
 # 둔갑하면, 정작 잡이 죽었을 때 건강검진이 그걸 못 잡는다.

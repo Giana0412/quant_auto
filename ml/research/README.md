@@ -160,16 +160,17 @@ LightGBM·MLP·LSTM 은 연구 코드에서 같은 인터페이스로 구현한�
 과 `label_end_{h}`. QLIKE 는 분산 단위이므로 `rv_fwd_h ** 2` 로 넣는다.
 
 **실적 이벤트 표** — 발표 한 건 = 한 행 (편입 여부 무관, `member` 열로 구분). `sue`, `sue_pct`, `persist`,
-`pre_<피처>`(d0 직전 세션 `date_pre` 종가 기준, `pre_sue_*` 는 직전 발표), 라벨 `ear`(d0 하루 초과),
+`pre_<피처>`(발표 시각 전에 끝난 마지막 세션 `date_pre` 종가 기준, `pre_sue_*` 는 직전 발표), `intraday`(장중 발표 —
+`date_pre` 가 d0 두 세션 전; 이 행의 `sue` 분모·`ear` 는 pead 정의라 당일 반응이 섞인다, ~1%), 라벨 `ear`(d0 하루 초과),
 `drift20`·`drift60`(d0+2 … d0+h, pead 와 같은 d0+1 종가 진입), `sue_next`·`d0_next`(200일 안 다음 발표),
 `label_end_drift{h}`. 기준일 고르는 법은 `earnings_events` docstring.
 
 ## 점검 결과 (2026-11-26)
 
-- `pytest research/test_research.py` — 19 passed (13초).
+- `pytest research/test_research.py` — 19 passed.
 - 미래 차단: 2021-06-15 뒤 가격·거래량·실적(반응일이 그 뒤인 발표)을 바꾸거나 잘라 내도 그때까지의 21개 피처와
   확정된 라벨이 비트 단위로 같다. 이 점검에서 "발표 이력이 아직 없는 종목"의 발표 플래그가 NaN/0 으로 갈려
-  미래 발표 존재가 새던 것을 찾아 고쳤다.
+  미래 발표 존재가 새던 것을 찾아 고쳤다. 별도 리뷰에서 장중 발표의 `date_pre` 가 발표 당일(반응 포함)이던 것을 찾아 고쳤다.
 - 심은 신호(합성, 라벨과 상관 0.1): IC +0.105 (NW t +18.3), 롱숏 10bp 연 +35%, 잡음 기준 대비 증분 t +11.5, DM −10.5.
 - 심은 신호(실데이터, `y_ex` + 잡음 10σ 를 Ridge 피처로 추가): IC +0.082 (t +7.1), 롱숏 10bp 샤프 2.0,
   Ridge 대비 증분 연 +22.8% (t +5.3), DSR 0.999. 신호 없는 OLS-3·Ridge·Lasso 는 IC t < 1, DSR < 0.02.

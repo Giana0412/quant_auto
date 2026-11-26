@@ -179,6 +179,21 @@ def _events(raw: Raw) -> pd.DataFrame:
     D = D.drop(columns=["pct"]).merge(Dm, on=["ticker", "i0"], how="left")
     D["member"] = D["member"].fillna(False).astype(bool)
     # 같은 종목·같은 반응일에 두 행(정정 공시 등)이면 뒤의 것 하나만
+    # 🔴 발표 전 기준 세션 i_pre = 발표 시각 전에 끝난 마지막 세션. 장중 발표(09:30~16:00)는 d0 = 다음 세션이라
+    # i0−1 이 발표 당일이 된다 — 그날 종가에는 발표 반응이 이미 들어 있다 (리뷰에서 발견, 이벤트의 ~1%).
+    ts = pd.to_datetime(raw.E["ts"], utc=True).dt.tz_convert(_ov.ET)
+    day = pd.DatetimeIndex(ts.dt.tz_localize(None).dt.normalize())
+    before_open = (ts.dt.hour * 60 + ts.dt.minute < 9 * 60 + 30).to_numpy()
+    i0e = np.where(before_open, raw.sessions.searchsorted(day, "left"), raw.sessions.searchsorted(day, "right"))
+    after_close = (ts.dt.hour >= 16).to_numpy()
+    # 장후 발표면 발표일 종가가 '발표 전' 마지막 종가, 장전·장중이면 발표일 전 세션 종가
+    ipre = np.where(after_close, raw.sessions.searchsorted(day, "right"), raw.sessions.searchsorted(day, "left")) - 1
+    Mp = pd.DataFrame({"ticker": raw.E["ticker"].to_numpy(), "i0": i0e, "i_pre": ipre,
+                       "intraday": (~before_open) & ~after_close})
+    Mp = Mp.drop_duplicates(["ticker", "i0"], keep="last")
+    D = D.merge(Mp, on=["ticker", "i0"], how="left")
+    D["i_pre"] = D["i_pre"].fillna(D["i0"] - 1).astype(int).clip(upper=D["i0"] - 1)
+    D["intraday"] = D["intraday"].fillna(False).astype(bool)
     D = D.sort_values(["ticker", "i0"], kind="stable").drop_duplicates(["ticker", "i0"], keep="last")
     D = D.reset_index(drop=True)
     persist = np.full(len(D), np.nan)
@@ -435,7 +450,9 @@ def earnings_events(raw: Raw | None = None, start: str = START, cache: bool = Tr
     """발표 한 건 = 한 행. d0 규칙·SUE 는 pead/overlay 그대로.
 
     열:
-      ticker, d0(반응일), date_pre(d0 직전 세션 — 발표 전 피처의 기준일), member(d0 에 편입 중)
+      ticker, d0(반응일), date_pre(발표 시각 전에 끝난 마지막 세션 — 발표 전 피처의 기준일), member(d0 에 편입 중)
+      intraday  장중(09:30~16:00 ET) 발표 — date_pre 가 d0 두 세션 전이다. 🔴 이 행의 sue 분모(d0 전날 종가)와
+                ear 는 pead 정의 그대로라 발표 당일 반응이 분모에 섞이고 ear 에서 빠진다(이벤트 ~1%).
       sue, sue_pct(직전 90일 백분위), surprise 관련 = 이 발표의 값 (d0 에 알려진다)
       pre_<피처>: FEATURES 를 date_pre 종가에 샘플 — pre_sue_* 는 **직전** 발표의 값
       ear     d0 하루 베타조정 초과수익
@@ -459,11 +476,12 @@ def earnings_events(raw: Raw | None = None, start: str = START, cache: bool = Tr
     _, _, ex = beta_excess(raw.C)
     X = ex.to_numpy()
     T = len(raw.sessions)
-    D = D[(D["d0"] >= pd.Timestamp(start)) & (D["i0"] >= 1)].reset_index(drop=True)
+    D = D[(D["d0"] >= pd.Timestamp(start)) & (D["i_pre"] >= 0)].reset_index(drop=True)
     i0, j = D["i0"].to_numpy(), D["j"].to_numpy()
-    D["date_pre"] = raw.sessions[i0 - 1]
+    ip = D["i_pre"].to_numpy()
+    D["date_pre"] = raw.sessions[ip]
     for k in FEATURES:
-        D[f"pre_{k}"] = F[k].to_numpy()[i0 - 1, j]
+        D[f"pre_{k}"] = F[k].to_numpy()[ip, j]
     D["ear"] = X[i0, j]
     cs = np.vstack([np.zeros(X.shape[1]), np.cumsum(np.nan_to_num(X), axis=0)])   # cs[k] = Σ_{<k}
     for h in (20, 60):
@@ -471,7 +489,7 @@ def earnings_events(raw: Raw | None = None, start: str = START, cache: bool = Tr
         e = np.minimum(i0 + h, T - 1)
         D[f"drift{h}"] = np.where(ok, cs[e + 1, j] - cs[i0 + 2, j], np.nan)
         D[f"label_end_drift{h}"] = pd.DatetimeIndex(np.where(ok, raw.sessions.to_numpy().astype("datetime64[ns]")[e], _NAT))
-    D = D.drop(columns=["j", "i0_next"]).rename(columns={"pct": "sue_pct"})
+    D = D.drop(columns=["j", "i0_next", "i_pre"]).rename(columns={"pct": "sue_pct"})
     D["ticker"] = D["ticker"].astype("category")
     if save:
         _write_cache(name, D)

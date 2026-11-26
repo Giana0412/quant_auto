@@ -160,7 +160,7 @@ def summarize(R: pd.DataFrame, ppy: float = 12, costs=COSTS, n_q: int = 10, benc
 
     bench  R²_hist 용 기준 예측 (행별 배열, 또는 날짜→값 Series — hist_mean 의 출력).
     키: r2_zero, r2_hist, ic_*, ls_c{c}_{ann,vol,sr,t,p,srpp,skew,kurt,n}, top_c{c}_*, topuni_c0_*,
-        turnover_ls, turnover_top (회당 교체율 = Σ|Δw|/2 평균), n_dates.
+        turnover_ls, turnover_top (회당 교체율 0~1: 상위 = Σ|Δw|/2, 롱숏 = Σ|Δw|/4 — 두 다리 총자본 2 기준), n_dates.
     """
     Rl = R.dropna(subset=[y, pred])
     out = dict(n_rows=int(len(Rl)), n_dates=int(Rl["date"].nunique()), r2_zero=oos_r2(Rl[y], Rl[pred]))
@@ -178,7 +178,7 @@ def summarize(R: pd.DataFrame, ppy: float = 12, costs=COSTS, n_q: int = 10, benc
                 out[f"{leg}_c{c}_{k}"] = v
     for k, v in series_stats(pf["top_uni"], ppy).items():
         out[f"topuni_c0_{k}"] = v
-    out["turnover_ls"] = float(pf["to_ls"].iloc[1:].mean() / 2)
+    out["turnover_ls"] = float(pf["to_ls"].iloc[1:].mean() / 4)
     out["turnover_top"] = float(pf["to_top"].iloc[1:].mean() / 2)
     return out
 

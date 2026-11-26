@@ -83,7 +83,7 @@ def walk_forward(dates, label_end=None, *, first_test, refit_months: int = 12, v
         if in_blk.any():
             t_test = dv[in_blk].min()
             cand = (dv < t_test) & has_label & (lv <= t_test - emb)
-            if len(np.unique(dv[cand])) >= min_train_dates:
+            if cand.any():
                 if val_months > 0:
                     t_val0 = np.datetime64(pd.Timestamp(t_test) - pd.DateOffset(months=val_months))
                     val = cand & (dv >= t_val0)
@@ -92,6 +92,9 @@ def walk_forward(dates, label_end=None, *, first_test, refit_months: int = 12, v
                 else:
                     val = np.zeros_like(cand)
                     tr = cand
+                if len(np.unique(dv[tr])) < min_train_dates:       # 안쪽 학습 기준으로 센다
+                    start = nxt
+                    continue
                 folds.append(Fold(k, np.flatnonzero(tr), np.flatnonzero(val), np.flatnonzero(in_blk),
                                   pd.Timestamp(t_test), pd.Timestamp(dv[in_blk].max())))
                 k += 1

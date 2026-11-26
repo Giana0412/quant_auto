@@ -116,6 +116,13 @@ def test_sue_feature_timing(raw_full):
     EV = panel.earnings_events(raw_full)
     e = EV[EV["ticker"].astype(str) == g["ticker"].iloc[0]].sort_values("d0")
     assert np.allclose(e["pre_sue_raw"].to_numpy()[1:], e["sue"].to_numpy()[:-1], equal_nan=True, rtol=1e-5)
+    # 🔴 장중 발표: date_pre 는 발표 당일이 아니라 그 전 세션 (d0 두 세션 전)
+    sess = raw_full.sessions
+    intr = EV[EV["intraday"]]
+    assert len(intr) > 0
+    assert (sess.get_indexer(intr["date_pre"]) == sess.get_indexer(intr["d0"]) - 2).all()
+    nrm = EV[~EV["intraday"]]
+    assert (sess.get_indexer(nrm["date_pre"]) == sess.get_indexer(nrm["d0"]) - 1).mean() > 0.99
     nxt = e["sue_next"].to_numpy()[:-1]
     ok = np.isfinite(nxt)
     assert np.allclose(nxt[ok], e["sue"].to_numpy()[1:][ok])

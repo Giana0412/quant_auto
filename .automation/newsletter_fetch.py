@@ -31,8 +31,11 @@ from collections import defaultdict
 from email.header import decode_header, make_header
 from html.parser import HTMLParser
 
+# 🔴 2026-11-26 KAN-30: 기본값이 셸 문법 문자열("${VAULT_DIR:-$HOME/...}") 그대로였다 — 10/05
+# 개인정보 정리(4d13e0b)에서 셸 스크립트용 치환이 파이썬에도 들어갔다. 체인은 VAULT_DIR 을
+# export 하지 않으므로 자격증명 경로가 존재하지 않는 문자열이 되어 수집이 매일 조용히 실패했다.
 VAULT_DIR = os.environ.get(
-    "VAULT_DIR", "${VAULT_DIR:-$HOME/orca/projects/quant_auto}"
+    "VAULT_DIR", os.path.expanduser("~/orca/projects/quant_auto")
 )
 ENV_FILE = os.path.join(VAULT_DIR, ".automation/.gmail.env")
 BASE = os.path.join(VAULT_DIR, "personal/09-newsletters")

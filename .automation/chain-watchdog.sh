@@ -187,6 +187,22 @@ fi
 fi   # HEADLINE_COLLECT
 
 # ── 발송 ──────────────────────────────────────────────────────────────────
+# 🔴 2026-11-28 (KAN-19). 감시견은 대개 절전에서 막 깨어난 순간에 돈다
+# (14:00 에 자고 있었으면 깰 때 뒤늦게 뜬다). 그때는 네트워크가 아직 안 붙어
+#   11/26 14:00  Jira "read operation timed out" → KAN-19 자동 해결 실패
+#   11/27 15:51  DNS 실패 → Slack 경보·Jira 기록 둘 다 유실
+# 그래서 보내기 전에 최대 2분 네트워크를 기다린다. 끝내 안 붙어도 보내기는 시도한다.
+wait_net() {
+  local i
+  for ((i = 0; i < 12; i++)); do
+    /usr/bin/curl -sS -o /dev/null --max-time 8 https://slack.com/api/api.test 2>/dev/null && return 0
+    sleep 10
+  done
+  echo "$(date '+%F %T') 네트워크 2분 기다려도 안 붙음 — 그래도 발송 시도" >> "$WLOG"
+  return 1
+}
+[ "$DRY" -eq 1 ] || wait_net || true
+
 if [ ${#PROBLEMS[@]} -eq 0 ]; then
   if [ "$HEADLINE_COLLECT" = 1 ]; then
     LINE="정상 · 헤드라인 ${LAST_DATE} ${ROWS_LAST}건 · 라벨날짜 ${DATES_LABELED}일"

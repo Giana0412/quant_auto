@@ -25,6 +25,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -54,9 +55,22 @@ def api(auth, method, path, body=None):
         data=json.dumps(body).encode() if body is not None else None,
         headers={"Authorization": f"Basic {auth}", "Accept": "application/json",
                  "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        raw = r.read()
-    return json.loads(raw) if raw else {}
+    # 네트워크 흔들림(타임아웃·DNS)만 다시 시도한다. HTTP 오류(4xx/5xx)는 바로 올린다.
+    # 2026-11-26 14:00 에 "read operation timed out" 한 번으로 자동 해결이 빠졌다.
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                raw = r.read()
+            return json.loads(raw) if raw else {}
+        except urllib.error.HTTPError:
+            raise
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            # 쓰기(POST/PUT)가 응답 대기 중에 끊기면 서버엔 이미 반영됐을 수 있다 —
+            # 다시 보내면 인시던트가 두 개 생긴다. 연결 자체가 안 된 경우만 재시도.
+            timed_out = isinstance(e, TimeoutError) or isinstance(getattr(e, "reason", None), TimeoutError)
+            if attempt == 2 or (timed_out and method != "GET"):
+                raise
+            time.sleep(15)
 
 
 def open_incident(auth):

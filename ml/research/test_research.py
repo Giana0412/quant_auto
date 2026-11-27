@@ -322,3 +322,117 @@ def test_ledger_roundtrip(tmp_path):
     L = registry.deflate(registry.adjust(L), "ls_c10")
     assert {"ls_c10_p_holm", "ls_c10_p_bh", "ls_c10_dsr", "ls_c10_sr0"} <= set(L.columns)
     assert (L["ls_c10_p_holm"] >= L["ls_c10_p"] - 1e-12).all() and L["ls_c10_sr0"].iloc[0] > 0
+
+
+# ── KAN-32 EDGAR 본문 (Lazy Prices) ──────────────────────────────────────────
+
+_HTML_10K = """<html><head><title>x</title><style>p{color:red}</style></head><body>
+<div style="display:none"><ix:header><ix:hidden>HIDDENTAG dei stuff</ix:hidden></ix:header></div>
+<p>TABLE OF CONTENTS</p>
+<table><tr><td>Item 1A.</td><td>Risk Factors</td><td>12</td></tr>
+<tr><td>Item 1B.</td><td>Unresolved Staff Comments</td><td>20</td></tr>
+<tr><td>Item 7.</td><td>Management&#8217;s Discussion and Analysis</td><td>30</td></tr>
+<tr><td>Item 7A.</td><td>Quantitative</td><td>40</td></tr></table>
+<p><b>Item 1.</b> Business</p><p>We make widgets. See Item 1A, Risk Factors, for more.</p>
+<p><span>ITEM 1A.</span><span>&nbsp;RISK FACTORS</span></p>
+<p>Our sup<span>pliers</span> may fail. """ + "Competition is intense and demand may fall. " * 40 + """</p>
+<div>Item 1B. Unresolved Staff Comments</div><p>None.</p>
+<div>Item 2. Properties</div><p>We lease offices.</p>
+<p>Item 7. Management&rsquo;s Discussion and Analysis of Financial Condition</p>
+<p>""" + "Revenue grew because customers bought more widgets. " * 40 + """</p>
+<table><tr><td>1,234</td><td>5,678</td></tr></table>
+<p>Item 7A. Quantitative and Qualitative Disclosures About Market Risk</p><p>Rates.</p>
+<p>Item 8. Financial Statements</p></body></html>"""
+
+
+def test_edgar_clean_and_sections():
+    from research import edgar
+    t = edgar.clean_html(_HTML_10K)
+    assert "HIDDENTAG" not in t and "color:red" not in t and "1,234" not in t   # ix:header·style·숫자 줄 제거
+    assert "suppliers" in t                                                      # 인라인 태그는 단어를 안 쪼갠다
+    s = edgar.sections(t, "10-K")
+    rf = t[s["rf"][0]:s["rf"][1]]
+    mda = t[s["mda"][0]:s["mda"][1]]
+    assert rf.startswith("ITEM 1A. RISK FACTORS") and "Competition is intense" in rf
+    assert "Unresolved" not in rf and "We make widgets" not in rf                # 목차·본문 속 참조가 아니라 제목에서
+    assert mda.startswith("Item 7. Management's Discussion") and "Revenue grew" in mda
+    assert "Quantitative" not in mda
+    # 짧은 '참조 편입' MD&A 는 실패로 본다
+    t2 = edgar.clean_html("<p>Item 7. Management's Discussion and Analysis</p><p>Incorporated by reference to Exhibit 13.</p>"
+                          "<p>Item 8. Financial Statements</p>")
+    assert edgar.sections(t2, "10-K")["mda"] is None
+    # 10-Q: Part I Item 2 MD&A, Part II Item 1A (짧은 '변경 없음' 도 인정)
+    q = edgar.clean_html("<p>PART I</p><p>Item 2. Management's Discussion and Analysis</p><p>"
+                         + "Sales rose. " * 120 + "</p><p>Item 3. Quantitative</p><p>Item 4. Controls</p>"
+                         "<p>PART II</p><p>Item 1. Legal Proceedings</p><p>None.</p><p>Item 1A. Risk Factors</p>"
+                         "<p>There have been no material changes to the risk factors disclosed in our annual report on Form 10-K.</p>"
+                         "<p>Item 2. Unregistered Sales of Equity Securities</p>")
+    sq = edgar.sections(q, "10-Q")
+    assert q[sq["mda"][0]:sq["mda"][1]].count("Sales rose") == 120
+    assert "no material changes" in q[sq["rf"][0]:sq["rf"][1]]
+
+
+def test_edgar_similarity_math():
+    from collections import Counter
+
+    from research import edgar
+    a = Counter(edgar.tokens("the risk the risk x supply"))       # 'x' 는 2글자 미만이라 빠진다
+    assert a == Counter({"the": 2, "risk": 2, "supply": 1})
+    b = Counter({"the": 2, "risk": 2, "supply": 1})
+    assert edgar.cosine(a, b) == pytest.approx(1.0)
+    c = Counter({"the": 1, "demand": 3})
+    # 손으로: dot = 2·1 = 2, |a| = √9 = 3, |c| = √10
+    assert edgar.cosine(a, c) == pytest.approx(2 / (3 * np.sqrt(10)))
+    assert edgar.jaccard(a.keys(), c.keys()) == pytest.approx(1 / 4)          # {the} / {the,risk,supply,demand}
+    assert edgar.cosine(a, Counter({"zzz": 1})) == 0.0 and np.isnan(edgar.jaccard([], ["a"]))
+    # 비교 대상: 10-K 는 1년 전 10-K, 10-Q 는 전년 같은 분기, 먼저 접수된 것만
+    G = pd.DataFrame({
+        "acc": list("ABCDE"), "form": ["10-K", "10-Q", "10-K", "10-Q", "10-Q"],
+        "report_date": ["2019-12-31", "2020-03-31", "2020-12-31", "2021-03-31", "2020-06-30"],
+        "filing_date": ["2020-02-20", "2020-05-01", "2021-02-20", "2021-05-01", "2020-08-01"],
+        "accept_utc": ["2020-02-20T12:00:00Z", "2020-05-01T12:00:00Z", "2021-02-20T12:00:00Z",
+                       "2021-05-01T12:00:00Z", "2020-08-01T12:00:00Z"]})
+    pr = edgar.pick_prior(G)
+    assert pr.tolist() == [None, None, "A", "B", None]
+
+
+def test_edgar_asof_visibility():
+    """🔴 t 16:30 접수 공시는 t 행에 안 보이고 t+1 부터 보인다. 09:00 접수는 그날 행에 보인다."""
+    from research import edgar
+    sess = pd.DatetimeIndex(["2021-06-14", "2021-06-15", "2021-06-16", "2021-06-17", "2021-06-18"])
+    acc = pd.Series(["2021-06-15T20:30:00Z",      # 16:30 EDT 장후
+                     "2021-06-15T13:00:00Z",      # 09:00 EDT 장전
+                     "2021-06-15T14:00:00Z",      # 10:00 EDT 장중 → 보수적으로 다음 세션
+                     "2021-06-19T15:00:00Z"])     # 토요일 → 데이터 밖(NaT)
+    av = edgar.avail_session(acc, sess)
+    assert av.tolist()[:3] == [pd.Timestamp("2021-06-16"), pd.Timestamp("2021-06-15"), pd.Timestamp("2021-06-16")]
+    assert pd.isna(av.iloc[3])
+    # 월말 행 t = 06-15 : 장후 공시(sim 0.1) 는 안 보이고 그 전 공시(sim 0.9) 가 보인다
+    F = pd.DataFrame({"ticker": ["X", "X"], "avail": [pd.Timestamp("2021-03-01"), av.iloc[0]], "sim": [0.9, 0.1]})
+    P = pd.DataFrame({"date": pd.to_datetime(["2021-06-15", "2021-06-16", "2021-02-26", "2022-06-30"]),
+                      "ticker": ["X", "X", "X", "X"]})
+    A = edgar.asof_features(P, F, ["sim"], max_age_days=200)
+    assert A["sim"].iloc[0] == 0.9
+    assert A["age_days"].iloc[0] == (pd.Timestamp("2021-06-15") - pd.Timestamp("2021-03-01")).days
+    assert A["sim"].iloc[1] == 0.1 and A["age_days"].iloc[1] == 0
+    assert np.isnan(A["sim"].iloc[2])                                         # 첫 공시 전
+    assert np.isnan(A["sim"].iloc[3])                                         # 200일 넘게 묵은 정보는 버린다
+
+
+def test_lazy_overlap_portfolio():
+    """겹침 롱숏: 신호가 다음 달 수익만 맞히면 K=1 이 가장 크고 K 가 늘수록 희석된다.
+    🔴 신호를 한 달 '늦게' 맞히는(과거 수익과 상관) 경우는 0 근처여야 한다 — 미래 수익을 끌어오지 않는다."""
+    from research import lazy_prices as lp
+    rng = np.random.default_rng(0)
+    d = pd.date_range("2014-01-31", periods=120, freq="ME")
+    D = pd.DataFrame([(a, b) for a in d for b in range(200)], columns=["date", "ticker"])
+    D["ticker"] = D["ticker"].astype(str)
+    D["s"] = rng.normal(size=len(D))
+    D["y_ex"] = 0.01 * D["s"] + rng.normal(0, 0.05, len(D))
+    a = {K: lp.overlap_ls(D, "s", K)["ls"].mean() for K in (1, 3, 6)}
+    assert a[1] > 0.02 and a[1] / 3 * 0.7 < a[3] < a[1] / 3 * 1.3 and a[6] < a[3]
+    pf = lp.overlap_ls(D, "s", 1)
+    assert (pf["n_long"] == 40).all() and pf["to"].iloc[1:].mean() > 0 and (pf["ls_net10"] < pf["ls"]).all()
+    # 과거 수익과만 상관된 신호
+    D["s_lag"] = D.groupby("ticker")["y_ex"].shift(1)
+    assert abs(lp.overlap_ls(D.dropna(subset=["s_lag"]), "s_lag", 1)["ls"].mean()) < 0.004

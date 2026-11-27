@@ -11,9 +11,11 @@ S&P 500 횡단면·변동성·실적 연구가 같이 쓰는 재료와 잣대. �
 | `evaluate.py` | OOS R², 순위 IC, 10분위 롱숏·상위 롱(0/10/25bp), 짝지은 비교, Diebold–Mariano |
 | `registry.py` | 실험 장부(jsonl), Holm/BH, Deflated Sharpe Ratio |
 | `baselines.py` | `Model` 인터페이스, `Zero` · `OLS` · `RidgeCV` · `LassoCV` |
-| `test_research.py` | 미래 차단·퍼지·심은 신호·위약·DSR 점검 (19개) |
+| `test_research.py` | 미래 차단·퍼지·심은 신호·위약·DSR 점검 (19개) + KAN-32 EDGAR 정제·섹션·유사도·as-of·겹침 롱숏 (4개) |
 | `xsection.py` | KAN-23 횡단면 ML (OLS·벌점 선형·LightGBM·MLP) — 결과는 `STUDIES.md` |
 | `beta_label.py` | KAN-27 라벨의 β 정의(수축 없음·Vasicek·0.67β+0.33·경험 보정·β=1·원수익)별 저위험 신호와 β 중립 α — 결과는 `STUDIES.md` |
+| `edgar.py` | KAN-32 SEC EDGAR 10-K·10-Q 목록·본문 받기(정제 텍스트만 저장)·섹션 추출·전년 대비 유사도·as-of 병합 |
+| `lazy_prices.py` | KAN-32 Lazy Prices — 공시 문장 변화의 수익·변동성 예측력 — 결과는 `STUDIES.md` |
 | `STUDIES.md` | 연구별 결과 요약 |
 
 ## 경로
@@ -22,6 +24,9 @@ S&P 500 횡단면·변동성·실적 연구가 같이 쓰는 재료와 잣대. �
 |---|---|---|
 | `QA_PEAD_RUNS` | `<저장소 본체>/ml/pead/runs` | 입력 캐시 `px.pkl`·`earnings.pkl`·`membership.pkl` (pead 가 받아 둔 것, 다운로드 안 함) |
 | `QA_RESEARCH_RUNS` | `<저장소 본체>/ml/research/runs` | 출력 캐시 (parquet) + `ledger.jsonl` |
+| `QA_SEC_UA` | (없음) | SEC 요청 User-Agent ('이름 연락처'). 없으면 `QA_SEC_UA_FILE`(기본 `~/.config/quant_auto/sec_ua`) 첫 줄. 둘 다 없으면 `edgar` 가 멈춘다. 🔴 커밋·출력 금지 |
+
+EDGAR 캐시는 `QA_RESEARCH_RUNS/edgar/` (정제 텍스트 gzip + 섹션 오프셋, 원본 HTML 저장 안 함).
 
 git worktree(`.claude/worktrees/…`) 안에서 돌아도 기본값은 **저장소 본체**를 가리킨다 — 워크트리마다
 캐시를 다시 만들지 않는다. 둘 다 gitignore.
@@ -170,7 +175,7 @@ LightGBM·MLP·LSTM 은 연구 코드에서 같은 인터페이스로 구현한�
 
 ## 점검 결과 (2026-11-26)
 
-- `pytest research/test_research.py` — 19 passed.
+- `pytest research/test_research.py` — 19 passed (2026-11-27 KAN-32 이후 23 passed).
 - 미래 차단: 2021-06-15 뒤 가격·거래량·실적(반응일이 그 뒤인 발표)을 바꾸거나 잘라 내도 그때까지의 21개 피처와
   확정된 라벨이 비트 단위로 같다. 이 점검에서 "발표 이력이 아직 없는 종목"의 발표 플래그가 NaN/0 으로 갈려
   미래 발표 존재가 새던 것을 찾아 고쳤다. 별도 리뷰에서 장중 발표의 `date_pre` 가 발표 당일(반응 포함)이던 것을 찾아 고쳤다.
